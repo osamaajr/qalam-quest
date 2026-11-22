@@ -13,7 +13,7 @@
   --ui: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --ar: 'Noto Naskh Arabic', 'Amiri', 'Geeza Pro', serif;
   --quran: 'Amiri Quran', 'Amiri', 'Noto Naskh Arabic', serif;
-  --hand: 'Pacifico', cursive;
+  --hand: 'Dancing Script', cursive;
   --r: 16px;
   color-scheme: light;
 }
@@ -62,7 +62,7 @@ img { -webkit-user-drag: none; user-select: none; }
 
 /* ---------- logo (handwritten, written by a pen) ---------- */
 .logo { display: block; overflow: visible; }
-.logo text { font-family: var(--hand); }
+.logo text { font-family: var(--hand); font-weight: 600; }
 .logo .lg-reveal { transform-box: fill-box; transform-origin: left center; }
 .logo.write .lg-reveal { animation: lgWrite 1.5s cubic-bezier(.45,.05,.4,1) .2s backwards; }
 .logo.write .lg-pen { animation: lgPen 1.5s cubic-bezier(.45,.05,.4,1) .2s backwards, lgWiggle .18s ease-in-out .2s 8; }

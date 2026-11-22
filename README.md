@@ -80,5 +80,5 @@ RESEARCH.md       why it's built this way (pedagogy, tajwīd sources, Duolingo r
 - **Re-record audio after changing content:** `pip install edge-tts`, then `node tools/make-audio.js`
 - **Add a lesson:** add an entry to a unit in `js/content.js`, using the helpers `T` (teach), `MCQ`, `LISTEN`, `MATCH`, `SORT`, `TAP` and `BUILD`. For any Qur'an text, add the verse to `AYAH` and run the verifier.
 
-Qur'an text: Tanzil Uthmani (Ḥafṣ ʿan ʿĀṣim) via api.alquran.cloud. Fonts: Nunito, Pacifico (logo), Noto Naskh Arabic and Amiri Quran (Google Fonts, SIL OFL).
+Qur'an text: Tanzil Uthmani (Ḥafṣ ʿan ʿĀṣim) via api.alquran.cloud. Fonts: Nunito, Dancing Script (logo), Noto Naskh Arabic and Amiri Quran (Google Fonts, SIL OFL).
 Icons: [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) 3D (MIT licence).
