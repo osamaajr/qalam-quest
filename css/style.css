@@ -535,3 +535,6 @@ img { -webkit-user-drag: none; user-select: none; }
 .node-pop.locked .btn { color: #AEABBD; }
 .logo-mini { display: none; width: 52px; height: 52px; border-radius: 14px; box-shadow: 0 4px 0 var(--blue-d); }
 .mtop .statsrow { justify-content: space-around; }
+/* match tiles: identical size in both columns, content centred */
+.mt { height: 76px; min-height: 0; display: flex; align-items: center; justify-content: center; line-height: 1.2; padding: 0 10px; }
+.mt.ar { line-height: 1; font-size: 40px; padding-top: 10px; }
