@@ -165,34 +165,32 @@
     lock: '<svg viewBox="0 0 32 32"><rect x="7" y="14" width="18" height="14" rx="4.5" fill="currentColor"/><path d="M11 14v-3a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" stroke-width="3.4"/></svg>',
     book: '<svg viewBox="0 0 32 32"><path d="M4 7.5c4-2 8-2 11 .8v17.5c-3-2.6-7-2.8-11-.9z" fill="currentColor"/><path d="M28 7.5c-4-2-8-2-11 .8v17.5c3-2.6 7-2.8 11-.9z" fill="currentColor" opacity=".8"/></svg>',
   };
+  // Treasure chest: chunky, front-on and geometric, with a gold frame and a glossy lid.
   function chestSVG(open, cls = '') {
     const id = 'ch' + (++uid);
-    const body = 'M12 46 H88 V76 Q88 85 79 85 H21 Q12 85 12 76 Z';
-    const lid = 'M12 47 V34 Q12 12 50 12 Q88 12 88 34 V47 Z';
-    const lidOpen = 'M14 30 V18 Q14 -2 50 -2 Q86 -2 86 18 V30 Z';
-    return `<svg class="chest ${cls}" viewBox="0 -8 100 100" aria-hidden="true">
+    const gold = `url(#${id}g)`;
+    const frame = (y0, h) => `<rect x="12" y="${y0}" width="10" height="${h}" rx="2" fill="${gold}"/><rect x="78" y="${y0}" width="10" height="${h}" rx="2" fill="${gold}"/>`;
+    const lid = open
+      ? `<g><path d="M18 6 H82 L88 18 H12 Z" fill="#7A3E12"/><rect x="12" y="-14" width="76" height="22" rx="3" fill="#C47630"/><rect x="12" y="-14" width="76" height="6" rx="3" fill="#DD8F45"/>${frame(-14, 22)}<rect x="10" y="4" width="80" height="6" rx="2" fill="${gold}"/></g>`
+      : `<g><path d="M17 20 H83 L88 30 H12 Z" fill="#DD8F45"/><rect x="12" y="29" width="76" height="17" rx="2" fill="#C47630"/>${frame(20, 26)}<rect x="10" y="17" width="80" height="6" rx="2.5" fill="${gold}"/></g>`;
+    return `<svg class="chest ${cls}" viewBox="0 -16 100 112" aria-hidden="true">
       <defs>
-        <linearGradient id="${id}w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9893A"/><stop offset="1" stop-color="#B9571C"/></linearGradient>
-        <linearGradient id="${id}l" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFA552"/><stop offset="1" stop-color="#D8702A"/></linearGradient>
-        <linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFE07A"/><stop offset=".5" stop-color="#FFC21F"/><stop offset="1" stop-color="#E9A200"/></linearGradient>
-        <radialGradient id="${id}r" cx=".5" cy=".6" r=".6"><stop offset="0" stop-color="#FFF6C2"/><stop offset="1" stop-color="#FFC21F" stop-opacity="0"/></radialGradient>
-        <clipPath id="${id}cb"><path d="${body}"/></clipPath>
-        <clipPath id="${id}cl"><path d="${open ? lidOpen : lid}"/></clipPath>
+        <linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE45C"/><stop offset=".55" stop-color="#FFC21A"/><stop offset="1" stop-color="#F0A000"/></linearGradient>
+        <radialGradient id="${id}r" cx=".5" cy=".55" r=".55"><stop offset="0" stop-color="#FFF7C4"/><stop offset="1" stop-color="#FFC21A" stop-opacity="0"/></radialGradient>
+        <clipPath id="${id}c"><rect x="10" y="-16" width="80" height="112"/></clipPath>
       </defs>
-      <ellipse cx="50" cy="88" rx="40" ry="5" fill="rgba(60,30,10,.18)"/>
-      ${open ? `<ellipse cx="50" cy="40" rx="46" ry="34" fill="url(#${id}r)"/>` : ''}
-      <path d="${body}" fill="url(#${id}w)"/>
-      <path d="M12 64 H88" stroke="#9C4615" stroke-width="2" opacity=".45"/>
-      <g clip-path="url(#${id}cb)"><rect x="23" y="40" width="11" height="50" fill="url(#${id}g)"/><rect x="66" y="40" width="11" height="50" fill="url(#${id}g)"/></g>
-      ${open ? `<ellipse cx="50" cy="47" rx="36" ry="6" fill="#5E2A0B"/><path d="M28 46 l6 -8 6 8z" fill="#3DB2FF"/><path d="M44 47 l7 -11 7 11z" fill="#FFC21F"/><path d="M60 46 l6 -8 6 8z" fill="#FF6FA5"/>` : ''}
-      <path d="${open ? lidOpen : lid}" fill="url(#${id}l)"/>
-      <g clip-path="url(#${id}cl)"><rect x="23" y="-10" width="11" height="60" fill="url(#${id}g)"/><rect x="66" y="-10" width="11" height="60" fill="url(#${id}g)"/></g>
-      <path d="${open ? 'M24 8 Q30 2 44 1' : 'M22 26 Q26 17 42 15'}" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none" opacity=".45"/>
-      ${open ? '' : `<rect x="9" y="42" width="82" height="9" rx="4" fill="url(#${id}g)" stroke="#B57C00" stroke-width="1.6"/>
-      <rect x="41" y="38" width="18" height="21" rx="5" fill="url(#${id}g)" stroke="#B57C00" stroke-width="1.8"/>
-      <circle cx="50" cy="46" r="3" fill="#5E2A0B"/><path d="M48.6 47.5 h2.8 l.8 6 h-4.4z" fill="#5E2A0B"/>`}
-      <path d="${body}" fill="none" stroke="#7A3510" stroke-width="2.6"/>
-      <path d="${open ? lidOpen : lid}" fill="none" stroke="#7A3510" stroke-width="2.6"/>
+      <rect x="6" y="80" width="88" height="12" rx="6" fill="rgba(40,24,60,.16)"/>
+      ${open ? `<ellipse cx="50" cy="30" rx="48" ry="36" fill="url(#${id}r)"/>` : ''}
+      <rect x="12" y="44" width="76" height="42" rx="3" fill="#A65F22"/>
+      <rect x="22" y="50" width="56" height="13" fill="#8A4A17"/>
+      <rect x="22" y="66" width="56" height="13" fill="#8A4A17"/>
+      ${open ? `<rect x="14" y="30" width="72" height="16" fill="#5A2A08"/><path d="M26 44 l7 -10 7 10z" fill="#3DB2FF"/><path d="M43 44 l8 -13 8 13z" fill="#FFD23F"/><path d="M61 44 l7 -10 7 10z" fill="#FF6FA5"/><circle cx="36" cy="30" r="2" fill="#fff"/><circle cx="64" cy="26" r="1.6" fill="#fff"/>` : ''}
+      ${frame(44, 42)}
+      <rect x="10" y="44" width="80" height="7" rx="2.5" fill="${gold}"/>
+      <rect x="10" y="80" width="80" height="6" rx="2.5" fill="${gold}"/>
+      ${lid}
+      ${open ? '' : `<rect x="41" y="38" width="18" height="18" rx="4" fill="${gold}" stroke="#D08A00" stroke-width="1.6"/><circle cx="50" cy="45" r="2.8" fill="#8A4A17"/><path d="M48.6 46.5 h2.8 l.7 5 h-4.2z" fill="#8A4A17"/>`}
+      <g clip-path="url(#${id}c)" opacity=".32"><path d="M30 ${open ? -16 : 16} L46 ${open ? -16 : 16} L20 96 L4 96Z" fill="#fff"/><path d="M52 ${open ? -16 : 16} L58 ${open ? -16 : 16} L32 96 L26 96Z" fill="#fff"/></g>
     </svg>`;
   }
   function logoSVG(write, cls = '') {
@@ -255,9 +253,8 @@
   const avatarHTML = (size) => `<span class="avatar" style="width:${size}px;height:${size}px">${M.kid(S.buddy, 'idle', '', { headOnly: true })}</span>`;
   function statsHTML(where) {
     tickHearts();
-    const u = C.UNITS[curUnit()];
     const hearts = S.settings.classMode ? `<button class="stat hearts" data-pop="hearts" style="color:var(--pink)">${IMG('heart')}∞</button>` : `<button class="stat hearts" data-pop="hearts">${IMG('heart')}${S.hearts}</button>`;
-    return `<div class="statsrow" data-where="${where}"><span class="unit-chip c-${u.color}" title="${esc(u.title)}"><span class="ar">${esc(u.ar.split(' ')[0])}</span></span>
+    return `<div class="statsrow" data-where="${where}">
       <button class="stat streak ${S.lastDay === today() ? '' : 'off'}" data-pop="streak">${IMG('fire')}${S.streak}</button>
       <button class="stat gems" data-pop="gems">${IMG('gem')}${S.gems}</button>${hearts}</div>`;
   }
@@ -326,7 +323,7 @@
 
   // ======================= LEARN: THE PATH =======================
   const OFFS = [0, 62, 96, 62, 0, -62, -96, -62];
-  const DECO = [['huda', ['read', 'idle', 'wave', 'read']], ['zaid', ['dance', 'idle', 'happy', 'idle']], ['huda', ['think', 'idle', 'wave']], ['zaid', ['read', 'idle', 'think']], ['huda', ['dance', 'wave', 'idle']], ['zaid', ['wave', 'idle', 'think', 'happy']], ['huda', ['read', 'think', 'idle', 'dance']]];
+  const DECO = [['huda', ['read', 'idle', 'cheeky', 'wave']], ['zaid', ['dance', 'idle', 'happy', 'cheeky']], ['huda', ['think', 'idle', 'wave', 'dance']], ['zaid', ['read', 'idle', 'think', 'cheeky']], ['huda', ['dance', 'cheeky', 'idle', 'read']], ['zaid', ['wave', 'idle', 'think', 'happy']], ['huda', ['read', 'think', 'cheeky', 'dance']]];
   function pathView() {
     const cur = firstOpen();
     return C.UNITS.map((u, ui) => {
@@ -371,7 +368,7 @@
     $app.querySelectorAll('[data-jump]').forEach((b) => b.onclick = () => { Sfx.play('tap'); jumpPrompt(+b.dataset.jump); });
     $app.querySelectorAll('.deco-buddy').forEach((d) => M.liven(d.querySelector('.kid'), d.dataset.moods.split(','), 3800));
     const g = document.getElementById('guide');
-    if (g) { const k = g.querySelector('.kid'); setTimeout(() => { k.setAttribute('data-mood', 'wave'); M.liven(k, ['wave', 'idle', 'point', 'happy', 'idle', 'think', 'dance', 'idle'], 3000); }, 1400); }
+    if (g) { const k = g.querySelector('.kid'); setTimeout(() => { k.setAttribute('data-mood', 'wave'); M.liven(k, ['wave', 'idle', 'point', 'cheeky', 'happy', 'idle', 'think', 'dance', 'read', 'idle'], 3200); }, 1400); }
     if (scrollToCurrent) { const c = document.getElementById('current'); if (c) setTimeout(() => c.scrollIntoView({ block: 'center', behavior: 'smooth' }), 60); }
   }
   function lessonPop(btn) {

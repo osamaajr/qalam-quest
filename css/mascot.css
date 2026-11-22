@@ -1,129 +1,166 @@
-/* Zaid & Huda — rig animations (coordinates are in the 200x280 viewBox) */
-.kid { display: block; overflow: visible; }
-.kid .k-shadow { fill: rgba(40, 20, 70, .13); transform-origin: 100px 280px; transition: opacity .3s; }
-.kid .k-all { transform-origin: 100px 278px; }
-.kid .k-upper { transform-origin: 100px 212px; animation: k-breathe 3.4s ease-in-out infinite; }
-.kid .k-head { transform-origin: 101px 150px; transition: transform .4s cubic-bezier(.3,1.4,.5,1); }
-.kid .k-arm { transition: transform .45s cubic-bezier(.3,1.5,.5,1); }
+/* Zaid & Huda — rig animations v3 (coordinates are in the 200x292 viewBox).
+ * Every looping move eases in from the rest pose first, so changing mood never snaps.
+ */
+.kid { display: block; overflow: visible; --ease: cubic-bezier(.37, 0, .63, 1); --spring: cubic-bezier(.34, 1.45, .55, 1); }
+.kid .k-shadow { fill: rgba(40, 20, 70, .13); transform-origin: 102px 280px; transition: opacity .4s, transform .4s; }
+.kid .k-all { transform-origin: 102px 278px; }
+.kid .k-upper { transform-origin: 102px 212px; transition: transform .5s var(--spring); }
+.kid .k-head { transform-origin: 104px 150px; transition: transform .55s var(--spring); }
+.kid .k-arm { transition: transform .55s var(--spring); }
 .kid .k-arm-l { transform-origin: 63px 156px; }
 .kid .k-arm-r { transform-origin: 137px 156px; }
-.kid .k-leg { transition: transform .35s ease; }
-.kid .k-leg-l { transform-origin: 84px 200px; }
-.kid .k-leg-r { transform-origin: 116px 200px; }
-.kid .k-eyes { transform-origin: 101px 100px; animation: k-blink 4.8s infinite; transition: translate .35s; }
-.kid .k-brows path { transform-box: fill-box; transform-origin: center; transition: transform .3s; }
+.kid .k-leg { transition: transform .45s var(--ease); }
+.kid .k-leg-l { transform-origin: 82px 196px; }
+.kid .k-leg-r { transform-origin: 112px 198px; }
+.kid .k-eyes { transform-origin: 108px 100px; transition: translate .45s var(--ease); }
+.kid .k-brows path { transform-box: fill-box; transform-origin: center; transition: transform .4s var(--spring); }
 .kid .k-eyes-happy, .kid .k-eyes-shut, .kid .m, .kid .k-spark, .kid .k-book { display: none; }
-.kid .m-open { display: block; }
-.kid[data-buddy="huda"] .k-book { display: block; }
-.kid[data-buddy="huda"] .k-arm-l { transform: rotate(-38deg); }
+.kid[data-buddy="zaid"] .m-open, .kid[data-buddy="huda"] .m-grin { display: block; }
 .kid .k-spark { transform-box: fill-box; transform-origin: center; }
 
-@keyframes k-breathe { 0%, 100% { transform: translateY(0) scale(1, 1); } 50% { transform: translateY(1px) scale(1.012, .99); } }
-@keyframes k-blink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.08); } }
-@keyframes k-look { 0%, 40%, 100% { transform: rotate(0); } 50%, 70% { transform: rotate(-4deg); } 80% { transform: rotate(3deg); } }
-.kid[data-mood="idle"] .k-head { animation: k-look 7s ease-in-out infinite; }
+/* blinking and breathing run all the time, layered under every mood */
+.kid .k-eyes { animation: k-blink 5.2s infinite; }
+.kid .k-upper { animation: k-breathe 3.6s var(--ease) infinite; }
+@keyframes k-blink { 0%, 94%, 100% { transform: scaleY(1); } 96.5% { transform: scaleY(.08); } }
+@keyframes k-breathe { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(1.2px) rotate(-.6deg); } }
 
-/* wave */
-@keyframes k-wave { 0%, 100% { transform: rotate(-152deg); } 50% { transform: rotate(-116deg); } }
+/* idle: weight shift + an occasional curious head tilt */
+@keyframes k-look { 0%, 35%, 100% { transform: rotate(0); } 45%, 62% { transform: rotate(-5deg) translateY(1px); } 75% { transform: rotate(3deg); } }
+@keyframes k-shift { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(1.5px); } }
+.kid[data-mood="idle"] .k-head { animation: k-look 8s var(--ease) infinite; }
+.kid[data-mood="idle"] .k-all { animation: k-shift 4.2s var(--ease) infinite; }
+.kid[data-mood="idle"] .k-arm-l { transform: rotate(4deg); }
+.kid[data-mood="idle"] .k-arm-r { transform: rotate(-4deg); }
+
+/* wave: raise the near arm, then wave from the elbow-ish */
+@keyframes k-raiseR { from { transform: rotate(0); } to { transform: rotate(-145deg); } }
+@keyframes k-wave { 0%, 100% { transform: rotate(-145deg); } 50% { transform: rotate(-118deg); } }
 @keyframes k-spark { 0%, 100% { opacity: 0; transform: scale(.6); } 40%, 70% { opacity: 1; transform: scale(1); } }
-.kid[data-mood="wave"] .k-arm-r { animation: k-wave .8s ease-in-out infinite; }
-.kid[data-mood="wave"] .k-spark, .kid[data-mood="happy"] .k-spark { display: block; animation: k-spark .8s ease-in-out infinite; }
+.kid[data-mood="wave"] .k-arm-r { animation: k-raiseR .45s var(--spring) forwards, k-wave .9s var(--ease) .45s infinite; }
+.kid[data-mood="wave"] .k-spark, .kid[data-mood="happy"] .k-spark { display: block; animation: k-spark .9s var(--ease) .3s infinite; opacity: 0; }
 .kid[data-mood="wave"] .k-head { transform: rotate(5deg); }
+.kid[data-mood="wave"] .k-brow-r { transform: translateY(-3px) rotate(-6deg); }
 
-/* happy: jump with squash & stretch, both arms up */
+/* happy: anticipation squash, jump, land, arms up */
 @keyframes k-hop {
   0%, 100% { transform: translateY(0) scale(1, 1); }
-  15% { transform: translateY(0) scale(1.08, .9); }
-  45% { transform: translateY(-30px) scale(.96, 1.05); }
-  70% { transform: translateY(0) scale(1.06, .93); }
-  85% { transform: translateY(0) scale(1, 1); }
+  18% { transform: translateY(0) scale(1.07, .91); }
+  48% { transform: translateY(-30px) scale(.96, 1.05); }
+  72% { transform: translateY(0) scale(1.05, .94); }
+  86% { transform: translateY(0) scale(1, 1); }
 }
-@keyframes k-shadowHop { 0%, 100%, 15%, 70% { transform: scale(1); opacity: 1; } 45% { transform: scale(.7); opacity: .5; } }
-@keyframes k-armsUpL { 0%, 100% { transform: rotate(150deg); } 50% { transform: rotate(132deg); } }
-@keyframes k-armsUpR { 0%, 100% { transform: rotate(-150deg); } 50% { transform: rotate(-132deg); } }
-@keyframes k-tuckL { 0%, 30%, 60%, 100% { transform: rotate(0); } 45% { transform: rotate(14deg); } }
-@keyframes k-tuckR { 0%, 30%, 60%, 100% { transform: rotate(0); } 45% { transform: rotate(-14deg); } }
-.kid[data-mood="happy"] .k-all { animation: k-hop .8s cubic-bezier(.3,.9,.4,1) infinite; }
-.kid[data-mood="happy"] .k-shadow { animation: k-shadowHop .8s ease infinite; }
-.kid[data-mood="happy"] .k-arm-l { animation: k-armsUpL .4s ease-in-out infinite; }
-.kid[data-mood="happy"] .k-arm-r { animation: k-armsUpR .4s ease-in-out infinite; }
-.kid[data-mood="happy"] .k-leg-l { animation: k-tuckL .8s ease infinite; }
-.kid[data-mood="happy"] .k-leg-r { animation: k-tuckR .8s ease infinite; }
+@keyframes k-shadowHop { 0%, 18%, 72%, 100% { transform: scale(1); opacity: 1; } 48% { transform: scale(.68); opacity: .5; } }
+@keyframes k-upL { 0% { transform: rotate(0); } 100% { transform: rotate(148deg); } }
+@keyframes k-upR { 0% { transform: rotate(0); } 100% { transform: rotate(-148deg); } }
+@keyframes k-wiggleL { 0%, 100% { transform: rotate(148deg); } 50% { transform: rotate(130deg); } }
+@keyframes k-wiggleR { 0%, 100% { transform: rotate(-148deg); } 50% { transform: rotate(-130deg); } }
+@keyframes k-tuckL { 0%, 30%, 64%, 100% { transform: rotate(0); } 48% { transform: rotate(14deg); } }
+@keyframes k-tuckR { 0%, 30%, 64%, 100% { transform: rotate(0); } 48% { transform: rotate(-14deg); } }
+@keyframes k-headLag { 0%, 30%, 100% { transform: rotate(0); } 50% { transform: rotate(-3deg) translateY(2px); } 75% { transform: rotate(2deg); } }
+.kid[data-mood="happy"] .k-all { animation: k-hop .85s var(--ease) infinite; }
+.kid[data-mood="happy"] .k-shadow { animation: k-shadowHop .85s var(--ease) infinite; }
+.kid[data-mood="happy"] .k-arm-l { animation: k-upL .35s var(--spring) forwards, k-wiggleL .425s var(--ease) .35s infinite; }
+.kid[data-mood="happy"] .k-arm-r { animation: k-upR .35s var(--spring) forwards, k-wiggleR .425s var(--ease) .35s infinite; }
+.kid[data-mood="happy"] .k-leg-l { animation: k-tuckL .85s var(--ease) infinite; }
+.kid[data-mood="happy"] .k-leg-r { animation: k-tuckR .85s var(--ease) infinite; }
+.kid[data-mood="happy"] .k-head { animation: k-headLag .85s var(--ease) infinite; }
 .kid[data-mood="happy"] .k-eyes, .kid[data-mood="dance"] .k-eyes { display: none; }
 .kid[data-mood="happy"] .k-eyes-happy, .kid[data-mood="dance"] .k-eyes-happy { display: block; }
+.kid[data-mood="happy"] .k-brows path, .kid[data-mood="dance"] .k-brows path { transform: translateY(-3px); }
+.kid[data-mood="happy"] .m-grin, .kid[data-mood="dance"] .m-grin { display: none; }
+.kid[data-mood="happy"] .m-open, .kid[data-mood="dance"] .m-open { display: block; }
 
-/* talk */
+/* talk: mouth flaps, gentle nods, an explaining hand */
 @keyframes k-talkA { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 @keyframes k-talkB { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
-@keyframes k-nod { 0%, 100% { transform: rotate(0) translateY(0); } 50% { transform: rotate(2.5deg) translateY(1px); } }
-@keyframes k-gesture { 0%, 100% { transform: rotate(-34deg); } 50% { transform: rotate(-58deg); } }
-.kid[data-mood="talk"] .m-open { animation: k-talkA .34s steps(1) infinite; }
-.kid[data-mood="talk"] .m-o { display: block; animation: k-talkB .34s steps(1) infinite; }
-.kid[data-mood="talk"] .k-head { animation: k-nod 1.3s ease-in-out infinite; }
-.kid[data-mood="talk"] .k-arm-r { animation: k-gesture 1.3s ease-in-out infinite; }
+@keyframes k-nod { 0%, 100% { transform: rotate(0) translateY(0); } 50% { transform: rotate(3deg) translateY(1px); } }
+@keyframes k-gestIn { from { transform: rotate(0); } to { transform: rotate(-38deg); } }
+@keyframes k-gesture { 0%, 100% { transform: rotate(-38deg); } 50% { transform: rotate(-60deg); } }
+.kid[data-mood="talk"] .m-open, .kid[data-mood="talk"] .m-grin { animation: k-talkA .32s steps(1) infinite; }
+.kid[data-mood="talk"] .m-o { display: block; animation: k-talkB .32s steps(1) infinite; }
+.kid[data-mood="talk"] .k-head { animation: k-nod 1.4s var(--ease) infinite; }
+.kid[data-mood="talk"] .k-arm-r { animation: k-gestIn .4s var(--spring) forwards, k-gesture 1.4s var(--ease) .4s infinite; }
+.kid[data-mood="talk"] .k-brow-l { transform: translateY(-2px); }
 
-/* sad */
-.kid[data-mood="sad"] .k-upper { animation: none; transform: translateY(4px); }
-.kid[data-mood="sad"] .k-head { transform: rotate(-8deg) translateY(5px); }
-.kid[data-mood="sad"] .m-open { display: none; }
+/* sad: slump, droop, worried brows */
+.kid[data-mood="sad"] .k-upper { animation: none; transform: translateY(5px) rotate(1.5deg); }
+.kid[data-mood="sad"] .k-head { transform: rotate(-9deg) translateY(6px); }
+.kid[data-mood="sad"] .m-open, .kid[data-mood="sad"] .m-grin { display: none; }
 .kid[data-mood="sad"] .m-sad { display: block; }
-.kid[data-mood="sad"] .k-brow-l { transform: rotate(-16deg) translateY(2px); }
-.kid[data-mood="sad"] .k-brow-r { transform: rotate(16deg) translateY(2px); }
-.kid[data-mood="sad"] .k-eyes { translate: 0 3px; }
-.kid[data-mood="sad"] .k-arm-l { transform: rotate(-8deg); }
-.kid[data-mood="sad"] .k-arm-r { transform: rotate(8deg); }
+.kid[data-mood="sad"] .k-brow-l { transform: rotate(-16deg) translateY(3px); }
+.kid[data-mood="sad"] .k-brow-r { transform: rotate(16deg) translateY(3px); }
+.kid[data-mood="sad"] .k-eyes { translate: -1px 3px; }
+.kid[data-mood="sad"] .k-arm-l { transform: rotate(-6deg); }
+.kid[data-mood="sad"] .k-arm-r { transform: rotate(6deg); }
 
-/* think: hand on chin, looking up */
-.kid[data-mood="think"] .k-head { transform: rotate(7deg); }
-.kid[data-mood="think"] .k-eyes { translate: 4px -4px; }
-.kid[data-mood="think"] .m-open { display: none; }
-.kid[data-mood="think"] .m-o { display: block; transform: scale(.55); transform-origin: 102px 126px; }
-.kid[data-mood="think"] .k-arm-r { transform: rotate(92deg); }
-.kid[data-mood="think"] .k-brow-r { transform: translateY(-4px) rotate(-6deg); }
+/* think: hand on chin, eyes up, one brow raised */
+@keyframes k-ponder { 0%, 100% { transform: rotate(7deg); } 50% { transform: rotate(10deg) translateY(-1px); } }
+.kid[data-mood="think"] .k-head { animation: k-ponder 2.6s var(--ease) infinite; }
+.kid[data-mood="think"] .k-eyes { translate: 4px -5px; }
+.kid[data-mood="think"] .m-open, .kid[data-mood="think"] .m-grin { display: none; }
+.kid[data-mood="think"] .m-o { display: block; transform: scale(.55); transform-origin: 112px 127px; }
+.kid[data-mood="think"] .k-arm-r { transform: rotate(94deg); }
+.kid[data-mood="think"] .k-brow-r { transform: translateY(-6px) rotate(-10deg); }
 
-/* dance */
+/* cheeky: the reference expression — one brow up, sly grin, hand on hip */
+.kid[data-mood="cheeky"] .k-brow-r { transform: translateY(-7px) rotate(-16deg); }
+.kid[data-mood="cheeky"] .k-brow-l { transform: translateY(2px) rotate(6deg); }
+.kid[data-mood="cheeky"] .k-head { transform: rotate(-6deg); }
+.kid[data-mood="cheeky"] .k-arm-r { transform: rotate(-28deg); }
+.kid[data-mood="cheeky"] .k-arm-l { transform: rotate(20deg); }
+.kid[data-mood="cheeky"] .m-open { display: none; }
+.kid[data-mood="cheeky"] .m-grin { display: block; }
+
+/* dance: hips sway, arms take turns, feet step */
 @keyframes k-sway { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
 @keyframes k-danceL { 0%, 100% { transform: rotate(150deg); } 50% { transform: rotate(30deg); } }
 @keyframes k-danceR { 0%, 100% { transform: rotate(-30deg); } 50% { transform: rotate(-150deg); } }
 @keyframes k-stepL { 0%, 100% { transform: translateY(-8px) rotate(8deg); } 50% { transform: translateY(0) rotate(0); } }
 @keyframes k-stepR { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-8px) rotate(-8deg); } }
-.kid[data-mood="dance"] .k-upper { animation: k-sway .9s ease-in-out infinite; }
-.kid[data-mood="dance"] .k-arm-l { animation: k-danceL .9s ease-in-out infinite; }
-.kid[data-mood="dance"] .k-arm-r { animation: k-danceR .9s ease-in-out infinite; }
-.kid[data-mood="dance"] .k-leg-l { animation: k-stepL .9s ease-in-out infinite; }
-.kid[data-mood="dance"] .k-leg-r { animation: k-stepR .9s ease-in-out infinite; }
+@keyframes k-bopHead { 0%, 100% { transform: rotate(6deg); } 50% { transform: rotate(-6deg); } }
+.kid[data-mood="dance"] .k-upper { animation: k-sway 1s var(--ease) infinite; }
+.kid[data-mood="dance"] .k-head { animation: k-bopHead 1s var(--ease) .08s infinite; }
+.kid[data-mood="dance"] .k-arm-l { animation: k-danceL 1s var(--ease) infinite; }
+.kid[data-mood="dance"] .k-arm-r { animation: k-danceR 1s var(--ease) infinite; }
+.kid[data-mood="dance"] .k-leg-l { animation: k-stepL 1s var(--ease) infinite; }
+.kid[data-mood="dance"] .k-leg-r { animation: k-stepR 1s var(--ease) infinite; }
 
 /* walk (in place) */
-@keyframes k-walkL { 0%, 100% { transform: rotate(16deg); } 50% { transform: rotate(-16deg); } }
-@keyframes k-walkR { 0%, 100% { transform: rotate(-16deg); } 50% { transform: rotate(16deg); } }
+@keyframes k-walkL { 0%, 100% { transform: rotate(15deg); } 50% { transform: rotate(-15deg); } }
+@keyframes k-walkR { 0%, 100% { transform: rotate(-15deg); } 50% { transform: rotate(15deg); } }
 @keyframes k-bob { 0%, 50%, 100% { transform: translateY(0); } 25%, 75% { transform: translateY(-4px); } }
-.kid[data-mood="walk"] .k-leg-l { animation: k-walkL .6s ease-in-out infinite; }
-.kid[data-mood="walk"] .k-leg-r { animation: k-walkR .6s ease-in-out infinite; }
-.kid[data-mood="walk"] .k-arm-l { animation: k-walkR .6s ease-in-out infinite; }
-.kid[data-mood="walk"] .k-arm-r { animation: k-walkL .6s ease-in-out infinite; }
-.kid[data-mood="walk"] .k-upper { animation: k-bob .6s ease-in-out infinite; }
+.kid[data-mood="walk"] .k-leg-l { animation: k-walkL .64s var(--ease) infinite; }
+.kid[data-mood="walk"] .k-leg-r { animation: k-walkR .64s var(--ease) infinite; }
+.kid[data-mood="walk"] .k-arm-l { animation: k-walkR .64s var(--ease) infinite; }
+.kid[data-mood="walk"] .k-arm-r { animation: k-walkL .64s var(--ease) infinite; }
+.kid[data-mood="walk"] .k-upper { animation: k-bob .64s var(--ease) infinite; }
+.kid[data-mood="walk"] .k-head { transform: rotate(3deg); }
 
-/* read: book up, eyes down */
-@keyframes k-readHead { 0%, 100% { transform: rotate(-4deg) translateY(3px); } 50% { transform: rotate(-1deg) translateY(3px); } }
+/* read: the near hand brings the book up, eyes down, page-turn nod */
+@keyframes k-readHead { 0%, 100% { transform: rotate(-5deg) translateY(4px); } 50% { transform: rotate(-2deg) translateY(4px); } }
 .kid[data-mood="read"] .k-book { display: block; }
-.kid[data-mood="read"] .k-arm-l { transform: rotate(-64deg); }
-.kid[data-mood="read"] .k-arm-r { transform: rotate(40deg); }
-.kid[data-mood="read"] .k-head { animation: k-readHead 3s ease-in-out infinite; }
-.kid[data-mood="read"] .k-eyes { translate: -2px 4px; }
-.kid[data-mood="read"] .m-open { display: none; }
+.kid[data-mood="read"] .k-arm-r { transform: rotate(58deg); }
+.kid[data-mood="read"] .k-arm-l { transform: rotate(-12deg); }
+.kid[data-mood="read"] .k-head { animation: k-readHead 3.2s var(--ease) infinite; }
+.kid[data-mood="read"] .k-eyes { translate: -3px 5px; }
+.kid[data-mood="read"] .m-open, .kid[data-mood="read"] .m-grin { display: none; }
 .kid[data-mood="read"] .m-smile { display: block; }
 
 /* point to the right (flip the svg to point left) */
-@keyframes k-poke { 0%, 100% { transform: rotate(-90deg); } 50% { transform: rotate(-82deg); } }
-.kid[data-mood="point"] .k-arm-r { animation: k-poke .7s ease-in-out infinite; }
+@keyframes k-pointIn { from { transform: rotate(0); } to { transform: rotate(-90deg); } }
+@keyframes k-poke { 0%, 100% { transform: rotate(-90deg); } 50% { transform: rotate(-80deg); } }
+.kid[data-mood="point"] .k-arm-r { animation: k-pointIn .4s var(--spring) forwards, k-poke .8s var(--ease) .4s infinite; }
 .kid[data-mood="point"] .k-head { transform: rotate(6deg); }
 .kid[data-mood="point"] .k-eyes { translate: 4px 0; }
+.kid[data-mood="point"] .k-brow-r { transform: translateY(-5px) rotate(-12deg); }
+.kid[data-mood="point"] .m-open { display: none; }
+.kid[data-mood="point"] .m-grin { display: block; }
 
 /* sit: legs dangle off a ledge */
 @keyframes k-dangleL { 0%, 100% { transform: translateY(-26px) rotate(12deg); } 50% { transform: translateY(-26px) rotate(-8deg); } }
 @keyframes k-dangleR { 0%, 100% { transform: translateY(-26px) rotate(8deg); } 50% { transform: translateY(-26px) rotate(-12deg); } }
-.kid[data-mood="sit"] .k-leg-l { animation: k-dangleL 1.4s ease-in-out infinite; }
-.kid[data-mood="sit"] .k-leg-r { animation: k-dangleR 1.4s ease-in-out infinite; }
+.kid[data-mood="sit"] .k-leg-l { animation: k-dangleL 1.5s var(--ease) infinite; }
+.kid[data-mood="sit"] .k-leg-r { animation: k-dangleR 1.5s var(--ease) infinite; }
 .kid[data-mood="sit"] .k-shadow { opacity: 0; }
 .kid[data-mood="sit"] .k-arm-l { transform: rotate(-14deg); }
 .kid[data-mood="sit"] .k-arm-r { transform: rotate(14deg); }
@@ -131,12 +168,12 @@
 /* sleep */
 .kid[data-mood="sleep"] .k-eyes { display: none; }
 .kid[data-mood="sleep"] .k-eyes-shut { display: block; }
-.kid[data-mood="sleep"] .m-open { display: none; }
-.kid[data-mood="sleep"] .m-o { display: block; transform: scale(.45); transform-origin: 102px 126px; }
+.kid[data-mood="sleep"] .m-open, .kid[data-mood="sleep"] .m-grin { display: none; }
+.kid[data-mood="sleep"] .m-o { display: block; transform: scale(.45); transform-origin: 112px 127px; }
 .kid[data-mood="sleep"] .k-head { transform: rotate(10deg) translateY(3px); }
 
 .kid.flip { transform: scaleX(-1); }
 
 @media (prefers-reduced-motion: reduce) {
-  .kid * { animation: none !important; }
+  .kid * { animation: none !important; transition: none !important; }
 }
