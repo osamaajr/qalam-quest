@@ -665,3 +665,9 @@ img { -webkit-user-drag: none; user-select: none; }
 .side-promo { padding: 12px 12px 4px; }
 .side-promo .kid { width: 58px; }
 .side-promo p { font-size: 13px; }
+.theme-toggle { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; border: 2px solid var(--line); box-shadow: 0 3px 0 var(--line); background: var(--surface); flex: none; transition: transform .2s; }
+.theme-toggle .ico { width: 26px; height: 26px; transition: transform .4s cubic-bezier(.3,1.6,.5,1); }
+.theme-toggle:hover .ico { transform: rotate(-20deg) scale(1.1); }
+.theme-toggle:active { transform: translateY(3px); box-shadow: none; }
+html { transition: background-color .3s; }
+body, .sidenav, .mtop, .mtabs, .card, .side-card { transition: background-color .3s, border-color .3s, color .3s; }

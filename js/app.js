@@ -268,12 +268,18 @@
     { id: 'more', icon: 'grad', label: 'Teachers', desktopOnly: true },
   ];
   const avatarHTML = (size) => `<span class="avatar" style="width:${size}px;height:${size}px">${M.kid(S.buddy, 'idle', '', { headOnly: true })}</span>`;
+  const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
+  function setTheme(t) {
+    S.settings.theme = t; save();
+    if (window.__applyTheme) window.__applyTheme(t);
+    Sfx.play('pop'); render();
+  }
   function statsHTML(where) {
     tickHearts();
     const hearts = S.settings.classMode ? `<button class="stat hearts" data-pop="hearts" style="color:var(--pink)">${IMG('heart')}∞</button>` : `<button class="stat hearts" data-pop="hearts">${IMG('heart')}${S.hearts}</button>`;
     return `<div class="statsrow" data-where="${where}">
       <button class="stat streak ${S.lastDay === today() ? '' : 'off'}" data-pop="streak">${IMG('fire')}${S.streak}</button>
-      <button class="stat gems" data-pop="gems">${IMG('gem')}${S.gems}</button>${hearts}</div>`;
+      <button class="stat gems" data-pop="gems">${IMG('gem')}${S.gems}</button>${hearts}<button class="theme-toggle" data-theme-toggle aria-label="Switch light or dark mode" title="Light / dark">${IMG(isDark() ? 'sun' : 'moon')}</button></div>`;
   }
   function sidenavHTML() {
     return `<aside class="sidenav"><a class="logo-link" href="#" data-tab="learn" aria-label="Qalam home">${logoSVG(false)}<img class="logo-mini" src="icons/icon-192.png" alt=""></a>
@@ -301,6 +307,7 @@
     $app.innerHTML = `<div class="app">${sidenavHTML()}<div class="center"><header class="mtop">${statsHTML('top')}</header><main class="main">${page}</main></div>${rightbarHTML()}${mtabsHTML()}</div>`;
     $app.querySelectorAll('[data-tab]').forEach((b) => b.onclick = (e) => { e.preventDefault(); Sfx.play('tap'); tab = b.dataset.tab; render(tab === 'learn'); window.scrollTo(0, 0); });
     $app.querySelectorAll('[data-pop]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); Sfx.play('tap'); statPopup(b); });
+    $app.querySelectorAll('[data-theme-toggle]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); setTheme(isDark() ? 'light' : 'dark'); });
     $app.querySelectorAll('.side-card .kid, .page-hero .kid, .wip .kid').forEach((k) => M.liven(k, ['read', 'idle', 'think', 'wave'], 3600));
     $app.querySelectorAll('.side-promo .kid').forEach((k) => M.liven(k, ['read', 'cheeky', 'read', 'wave'], 4200));
     ({ learn: bindPath, quests: bindQuests, shop: bindShop, profile: bindProfile, more: bindMore, practice: bindPractice, leaderboards: () => {} })[tab](scrollToCurrent);
@@ -517,7 +524,7 @@
   }
   const switchRow = (k, label, sub) => `<div class="setting"><div><b>${label}</b><small>${sub}</small></div><button class="switch ${S.settings[k] ? 'on' : ''}" data-set="${k}" aria-label="${label}"></button></div>`;
   function bindSwitches() { $app.querySelectorAll('[data-set]').forEach((b) => b.onclick = () => { const k = b.dataset.set; S.settings[k] = !S.settings[k]; save(); Sfx.play('select'); render(); }); }
-  function bindProfile() { bindSwitches(); $app.querySelectorAll('[data-theme-set]').forEach((b) => b.onclick = () => { S.settings.theme = b.dataset.themeSet; save(); if (window.__applyTheme) window.__applyTheme(S.settings.theme); Sfx.play('select'); render(); }); document.getElementById('swapBuddy').onclick = () => { S.buddy = S.buddy === 'zaid' ? 'huda' : 'zaid'; save(); Sfx.play('pop'); render(); }; }
+  function bindProfile() { bindSwitches(); $app.querySelectorAll('[data-theme-set]').forEach((b) => b.onclick = () => setTheme(b.dataset.themeSet)); document.getElementById('swapBuddy').onclick = () => { S.buddy = S.buddy === 'zaid' ? 'huda' : 'zaid'; save(); Sfx.play('pop'); render(); }; }
   function moreView() {
     return `<div class="page"><div class="page-hero c-violet">${M.kid(S.buddy === 'zaid' ? 'huda' : 'zaid', 'read')}<div><h1>Teacher & parent corner</h1><p>Tools for using Qalam with a class or at home.</p></div></div>
       <div class="card">${switchRow('classMode', 'Class mode: unlimited hearts', 'Mistakes never stop a lesson — good for class')}${switchRow('unlockAll', 'Unlock every lesson', 'Jump to any lesson to preview or teach it')}
