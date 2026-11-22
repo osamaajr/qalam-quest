@@ -22,7 +22,8 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 OUT = os.path.join(ROOT, 'assets', 'audio'); CACHE = os.path.join(HERE, '.audio-cache')
 sys.path.insert(0, HERE)
-from vowel_check import expected, vowel_ok, consonant_ok   # noqa: E402
+from vowel_check import expected, vowel_ok, consonant_ok, vowel_onset   # noqa: E402
+HUMAN_DIR = os.path.join(HERE, 'human-audio')
 
 VOICES = [('zariyah', 'ar-SA-ZariyahNeural', '-10%'), ('zariyah_slow', 'ar-SA-ZariyahNeural', '-30%'),
           ('hamed', 'ar-SA-HamedNeural', '-10%'), ('google', None, None)]
@@ -107,9 +108,34 @@ def name_variants(t):
     elif not t.endswith('ْ'): v += [t + 'ْ']
     return v
 
+# ---------- human recordings (tools/human-audio) ----------
+A_NAMES = {'ب', 'ت', 'ث', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'ص', 'ض', 'ط', 'ظ', 'ف', 'ق', 'ك', 'ل', 'ه', 'و', 'ي'}   # names that begin consonant + ā
+PURE_A = {'ب', 'ت', 'ث', 'ح', 'خ', 'ر', 'ط', 'ظ', 'ف', 'ه', 'ي'}                                            # names that are exactly "Xā"
+
+def human_source(t, say_name):
+    """(file, label) of a real person saying t, or (None, None)."""
+    alpha = os.path.join(HUMAN_DIR, 'alphabet')
+    for L, n in say_name.items():                       # a letter name
+        if nfc(n) == t and os.path.exists(os.path.join(alpha, L + '.mp3')): return os.path.join(alpha, L + '.mp3'), 'human alphabet'
+    cr = os.path.join(HUMAN_DIR, 'words', 'credits.json')
+    if os.path.exists(cr):
+        c = json.load(open(cr)).get(t)
+        if c: return os.path.join(HUMAN_DIR, c['file']), 'human word (' + c['author'][:30] + ')'
+    base = letters(t)                                   # بَ / بَا from the human letter name
+    if len(base) in (1, 2) and base[0] in A_NAMES and t[1:2] == '\u064E' and not re.search(r'[\u064B-\u064D\u0650-\u0652]', t):
+        src = os.path.join(alpha, base[0] + '.mp3')
+        if len(base) == 2 and base[1] == 'ا' and base[0] in PURE_A: return src, 'human alphabet (long ā)'
+        if len(base) == 1:
+            on = vowel_onset(src)
+            if on is not None:
+                f = os.path.join(CACHE, 'hs_' + cid(t) + '.wav')
+                ffmpeg('-i', src, '-t', f'{on + 0.14:.3f}', '-af', f'afade=t=out:st={on + 0.08:.3f}:d=0.06', f)
+                return f, 'human alphabet (short)'
+    return None, None
+
 # ---------- main ----------
 async def main(job):
-    data = json.load(open(job)); texts = [nfc(t) for t in data['texts']]; names = set(nfc(n) for n in data['names'])
+    data = json.load(open(job)); texts = [nfc(t) for t in data['texts']]; names = set(nfc(n) for n in data['names']); say_name = data.get('say_name', {})
     os.makedirs(OUT, exist_ok=True); os.makedirs(CACHE, exist_ok=True)
     human = json.load(open(os.path.join(HERE, 'human-recorded.json'))) if os.path.exists(os.path.join(HERE, 'human-recorded.json')) else {}
     qidx = quran_index()
@@ -121,6 +147,9 @@ async def main(job):
     singles = [t for t in texts if ' ' not in t]
     for t in singles:
         if t in human: chosen[t] = human[t]; how[t] = 'your recording'; continue
+        # 0. a real person's recording
+        hf, hl = human_source(t, say_name)
+        if hf: keep(t, hf, hl); continue
         # 1. Qur'an word -> qāriʾ recitation
         q = qidx.get(qkey(t))
         if q:
@@ -161,6 +190,7 @@ async def main(job):
         if t in human: chosen[t] = human[t]; how[t] = 'your recording'; continue
         parts = t.split()
         if all(p in chosen for p in parts) and all(p in names or len(letters(p)) <= 2 for p in parts):
+            # prefer groups made only of human pieces; computer-voice pieces are still verified ones
             lst = os.path.join(CACHE, 'concat.txt'); gap = os.path.join(CACHE, 'gap.mp3')
             if not os.path.exists(gap): ffmpeg('-f', 'lavfi', '-i', 'anullsrc=r=24000:cl=mono', '-t', '0.35', gap)
             seq = []
