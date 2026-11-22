@@ -1,4 +1,4 @@
-# Qalam Quest: research notes
+# Qalam: research notes
 
 This file explains **why the game is built the way it is**: what to teach first, how children learn to read Arabic, and which Duolingo mechanics we borrowed or changed for children. Sources are linked inline. Anything we could not verify is marked.
 
@@ -133,6 +133,14 @@ The suggested grammar order (word types, then gender, then pronoun endings, then
 **Play before signing up**
 - **Evidence:** Duolingo delayed sign-up until after the first lesson. This is reported second-hand ([source](https://taplytics.com/blog/duolingo-ab-test-onboarding)).
 - **In the game:** There are no accounts at all. Onboarding is: pick a buddy, enter a first name, pick a daily goal, then the first lesson.
+
+**Placement tests**
+- **Evidence:** Duolingo lets learners test out of units they already know.
+- **In the game:** Onboarding asks "How much Arabic do you know?" and offers a placement test. Every locked unit has a "Jump here?" test: 12 questions drawn from every earlier lesson, with 3 lives.
+
+**A living mascot**
+- **Evidence:** Duolingo's characters are animated state machines (built in Rive) that react to the learner ([Duolingo blog](https://blog.duolingo.com/world-character-visemes)).
+- **In the game:** Zaid and Huda are rigged SVG characters. They walk onto the path, wave, point at the next lesson, dance, read and think, and they cheer or droop after each answer.
 
 ### What we deliberately changed for children
 

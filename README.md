@@ -1,4 +1,4 @@
-# Qalam Quest
+# Qalam
 
 A Duolingo-style game that teaches children (about 5–12) to read the Arabic of the Qur'an. It starts with the letters and works up through the vowel marks, tajwīd (sun and moon letters, noon rules, ghunna) and first Qur'anic grammar. It was made for the children at Didsbury Mosque, Manchester.
 
@@ -38,9 +38,20 @@ A Duolingo-style game that teaches children (about 5–12) to read the Arabic of
 - combo celebrations
 - confetti and sound effects
 
-**Buddies:** pick Zaid or Huda, two original animated kids who guide and react.
+**Buddies:** pick Zaid or Huda. Both are rigged SVG characters drawn from the reference artwork, with 12 animations: idle, wave, jump for joy, talk, sad, think, dance, walk, read, point, sit and sleep. They walk onto the path, cheer, read their books, and react to every answer.
 
-**Teacher & parent corner** (in the game, under *Me*):
+**Start at your level:** during onboarding, children say how much Arabic they already know and take a short placement test. Any locked unit also has a "Jump here?" button that offers a 12-question test with 3 lives; passing it unlocks everything before that unit.
+
+**Layout:** like Duolingo, there are three layouts:
+- **Desktop:** a left sidebar with the logo and nav, the path in the middle, and stats, quests and cards on the right.
+- **Tablet:** an icon-only sidebar.
+- **Phone:** stats along the top and icon tabs along the bottom.
+
+A short guided tour runs on first visit.
+
+**Read aloud:** every Arabic letter, syllable and word in the lessons has a recorded clip (`assets/audio`, macOS "Majed" voice), so the speaker buttons work on any phone or browser.
+
+**Teacher & parent corner** (in the game: Teachers in the sidebar, or Profile → Teacher & parent corner):
 
 - Class mode, which gives unlimited hearts
 - Unlock every lesson
@@ -57,7 +68,7 @@ The game is plain HTML, CSS and JS, with no build step.
 index.html        the game
 teacher.html      printable teacher guide (generated from the same data)
 js/content.js     ALL curriculum: units, lessons, exercises, verified Qur'an text
-js/mascot.js      Zaid & Huda (rigged SVG)
+js/mascot.js      Zaid & Huda (rigged SVG; animations in css/mascot.css, preview all moods at tools/mascot-sheet.html)
 js/app.js         game engine: state, streaks, quests, sounds, screens, exercises
 css/style.css     visual system
 tools/verify.js   checks every Qur'an quote against tools/quran-source/
@@ -66,6 +77,8 @@ RESEARCH.md       why it's built this way (pedagogy, tajwīd sources, Duolingo r
 
 - **Run locally:** `python3 -m http.server` and open http://localhost:8000. Double-clicking `index.html` also works.
 - **Verify the Qur'an text:** `node tools/verify.js`
+- **Re-record audio after changing content (Mac only):** `node tools/make-audio.js`
 - **Add a lesson:** add an entry to a unit in `js/content.js`, using the helpers `T` (teach), `MCQ`, `LISTEN`, `MATCH`, `SORT`, `TAP` and `BUILD`. For any Qur'an text, add the verse to `AYAH` and run the verifier.
 
-Qur'an text: Tanzil Uthmani (Ḥafṣ ʿan ʿĀṣim) via api.alquran.cloud. Fonts: Nunito, Noto Naskh Arabic and Amiri Quran (Google Fonts, SIL OFL).
+Qur'an text: Tanzil Uthmani (Ḥafṣ ʿan ʿĀṣim) via api.alquran.cloud. Fonts: Nunito, Pacifico (logo), Noto Naskh Arabic and Amiri Quran (Google Fonts, SIL OFL).
+Icons: [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) 3D (MIT licence).

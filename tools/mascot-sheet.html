@@ -1,0 +1,7 @@
+<!doctype html><meta charset="utf-8"><title>Mascot sheet</title>
+<link rel="stylesheet" href="../css/mascot.css">
+<style>body{font-family:sans-serif;background:#f6f7fb;margin:0;padding:16px}.g{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.c{background:#fff;border-radius:12px;text-align:center;font-size:12px;padding:6px}.c .kid{width:100%;height:170px}</style>
+<div class="g" id="g"></div>
+<script src="../js/mascot.js"></script>
+<script>const moods=['idle','wave','happy','talk','sad','think','dance','walk','read','point','sit','sleep'];
+document.getElementById('g').innerHTML=['zaid','huda'].map(b=>moods.map(m=>`<div class="c">${QQ_MASCOT.kid(b,m)}${b} · ${m}</div>`).join('')).join('');</script>

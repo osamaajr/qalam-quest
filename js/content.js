@@ -121,7 +121,7 @@
   }
 
   const unit1 = {
-    id: 'u1', title: 'Meet the Letters', ar: 'الحُرُوف', color: 'green',
+    id: 'u1', title: 'Meet the Letters', ar: 'الحُرُوف', color: 'blue',
     blurb: 'All 28 letters, learned in families that share a shape.',
     guide: [
       'Arabic is read from RIGHT to LEFT.',
@@ -235,7 +235,7 @@
     };
   }
   const unit2 = {
-    id: 'u2', title: 'Short Vowels', ar: 'الحَرَكَات', color: 'purple',
+    id: 'u2', title: 'Short Vowels', ar: 'الحَرَكَات', color: 'violet',
     blurb: 'Fatḥa, kasra and ḍamma — the little marks that make letters talk.',
     guide: [
       'Letters need a vowel mark to make a sound.',
@@ -280,7 +280,7 @@
 
   // ---------- Unit 3: tanween & madd ----------
   const unit3 = {
-    id: 'u3', title: 'Tanwīn & Long Vowels', ar: 'التَّنْوِين وَالمَدّ', color: 'blue',
+    id: 'u3', title: 'Tanwīn & Long Vowels', ar: 'التَّنْوِين وَالمَدّ', color: 'sky',
     blurb: 'Double marks with a hidden “n”, and letters that stretch the sound.',
     guide: [
       'Tanwīn = a DOUBLE vowel mark at the end of a word. It adds a hidden “n”: ـً an · ـٍ in · ـٌ un.',
@@ -493,7 +493,7 @@
   const HARF = [Q('مِن', '113:2', 'from'), Q('فِى', '113:4', 'in'), Q('عَلَىٰ', '2:5', 'on'), Q('لَمْ', '112:3', 'did not'), Q('إِنَّ', '108:3', 'indeed')];
   const WORD_BUCKETS = [{ label: 'Ism (name)', cls: 'ism' }, { label: 'Fi‘l (action)', cls: 'fil' }, { label: 'Ḥarf (link)', cls: 'harf' }];
   const unit7 = {
-    id: 'u7', title: 'Qur’an Word Detectives', ar: 'كَلِمَات القُرْآن', color: 'teal',
+    id: 'u7', title: 'Qur’an Word Detectives', ar: 'كَلِمَات القُرْآن', color: 'coral',
     blurb: 'Every word is a name, an action or a link — find out what words are doing!',
     guide: [
       'Every Arabic word is one of 3 types: Ism (a name or thing), Fi‘l (an action with a time), Ḥarf (a little linking word).',

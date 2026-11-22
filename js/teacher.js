@@ -18,13 +18,14 @@
     const r = e.quranRef || e.ref || '';
     return `<tr><td><span class="type">${TYPE[e.type]}</span></td><td>${q}</td><td>${a}${r ? `<br><small class="muted">📖 ${esc(r)}</small>` : ''}</td></tr>`;
   }
-  let html = `<header>${M.kid('huda', 'wave')}${M.kid('zaid', 'talk')}<div><h1>Qalam Quest · Teacher Guide</h1><p class="muted" style="margin:4px 0 0">Every lesson, answer and Qur’an reference in the game. Built for Didsbury Mosque.</p></div></header>
+  let html = `<header>${M.kid('huda', 'wave')}${M.kid('zaid', 'talk')}<div><h1>Qalam · Teacher Guide</h1><p class="muted" style="margin:4px 0 0">Every lesson, answer and Qur’an reference in the game. Built for Didsbury Mosque.</p></div></header>
   <div class="actions noprint"><a class="btn" href="index.html">Open the game</a><button class="btn btn-blue" onclick="window.print()">Print this guide</button></div>
   <div class="panel"><h2>How to use it in class</h2><ul>
     <li><b>Class mode:</b> in the game, tap <b>Me → Teacher &amp; parent corner → Class mode</b>. Mistakes then never stop a lesson (unlimited hearts).</li>
     <li><b>Preview any lesson:</b> switch on <b>Unlock every lesson</b> in the same place.</li>
     <li><b>Homework:</b> share the link. Each lesson takes about 3–5 minutes. Progress is saved on that device only — no accounts, no personal data sent anywhere.</li>
-    <li><b>Read aloud:</b> uses the device’s built-in Arabic voice if it has one. It is fine for letter names but is not a Qur’an reciter — model recitation yourself.</li>
+    <li><b>Read aloud:</b> letters, syllables and words use recorded clips of a computer Arabic voice (macOS “Majed”). It is fine for letter names and syllables but is not a Qur’an reciter — please model recitation yourself.</li>
+    <li><b>Mixed levels:</b> children who already read can take a short placement test (“Jump here?” on any unit) to skip ahead.</li>
     <li><b>Order:</b> follows the Noorani Qā‘ida path — letters → ḥarakāt → tanwīn → madd → sukūn → shadda → then sun/moon letters, noon rules and first grammar.</li>
   </ul>
   <div class="note"><b>Please check:</b> all tajwīd follows Ḥafṣ ‘an ‘Āṣim. Qur’an text is the Uthmani script from Tanzil (via api.alquran.cloud), checked automatically by <code>tools/verify.js</code>. Simple non-Qur’an practice words (e.g. كَتَبَ, مُعَلِّمَة) are marked without a 📖 reference. Exercises are shuffled each time; the lists below show one sample run.</div></div>`;
