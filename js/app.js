@@ -200,8 +200,8 @@
         <linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2B59FF"/><stop offset="1" stop-color="#8B3DFF"/></linearGradient>
         <clipPath id="${id}c"><rect class="lg-reveal" x="0" y="-20" width="236" height="130"/></clipPath>
       </defs>
-      <g class="lg-word" clip-path="url(#${id}c)"><text x="4" y="60" font-size="62" fill="url(#${id}g)">qalam</text></g>
-      <path class="lg-swoosh" d="M14 78 Q90 68 160 74" stroke="#FFB800" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <g class="lg-word" clip-path="url(#${id}c)"><text x="4" y="60" font-size="62" fill="url(#${id}g)" stroke="url(#${id}g)">qalam</text></g>
+      <path class="lg-swoosh" d="M14 78 Q90 68 160 74" stroke="#FFB800" stroke-width="4.8" fill="none" stroke-linecap="round"/>
       <image class="lg-pen" href="assets/icons/pen.png" x="146" y="6" width="68" height="68"/>
     </svg>`;
   }
