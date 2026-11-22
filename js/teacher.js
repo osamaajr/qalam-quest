@@ -24,7 +24,7 @@
     <li><b>Class mode:</b> in the game, tap <b>Me → Teacher &amp; parent corner → Class mode</b>. Mistakes then never stop a lesson (unlimited hearts).</li>
     <li><b>Preview any lesson:</b> switch on <b>Unlock every lesson</b> in the same place.</li>
     <li><b>Homework:</b> share the link. Each lesson takes about 3–5 minutes. Progress is saved on that device only — no accounts, no personal data sent anywhere.</li>
-    <li><b>Read aloud:</b> letters, syllables and words use recorded clips of a natural-sounding neural Arabic voice (Microsoft “Zariyah”). It is clear for letter names and syllables but is not a Qur’an reciter — please model recitation yourself.</li>
+    <li><b>Read aloud:</b> Qur’an words play a real qāriʾ’s word-by-word recitation (from Quran.com). Other letter names, syllables and practice words use a computer voice, and only takes that passed an automatic pronunciation check are used — anything that couldn’t be checked has no speaker button rather than a wrong sound. Please still model letters and recitation yourself.</li>
     <li><b>Mixed levels:</b> children who already read can take a short placement test (“Jump here?” on any unit) to skip ahead.</li>
     <li><b>Order:</b> follows the Noorani Qā‘ida path — letters → ḥarakāt → tanwīn → madd → sukūn → shadda → then sun/moon letters, noon rules and first grammar.</li>
   </ul>

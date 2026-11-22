@@ -1,37 +1,31 @@
-// Records every Arabic string the game can speak with a natural neural Arabic voice
-// (Microsoft ar-SA-HamedNeural via edge-tts) into assets/audio/*.mp3 and writes js/audio-manifest.js.
-// Run: pip install edge-tts && node tools/make-audio.js   (delete assets/audio/*.mp3 first to re-record all)
-const fs = require('fs'), path = require('path'), vm = require('vm'), crypto = require('crypto');
+// Lists every Arabic string the game can speak, then hands them to tools/build_audio.py,
+// which records them (human Qur'an recitation where possible, otherwise verified voice takes)
+// into assets/audio/*.mp3 and writes js/audio-manifest.js.
+// Run:  pip install edge-tts gTTS faster-whisper praat-parselmouth  &&  node tools/make-audio.js
+const fs = require('fs'), path = require('path'), vm = require('vm');
 const { execFileSync } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
-const OUT = path.join(ROOT, 'assets/audio');
-fs.mkdirSync(OUT, { recursive: true });
 const win = {};
 vm.runInNewContext(fs.readFileSync(path.join(ROOT, 'js/content.js'), 'utf8'), { window: win, Math });
 const C = win.QQ_CONTENT;
-
 const AR = /[ء-يٱ]/;
-// Same key function as the app (js/app.js audioKey)
-const key = (t) => String(t).normalize('NFC').trim();
-// What we feed the voice: plain script reads more reliably than Uthmani-specific marks.
-const forVoice = (t) => key(t).replace(/ٱ/g, 'ا').replace(/[ۖ-ۭـ]/g, '').replace(/\s+/g, '، ');  // a comma between syllables/words gives a short pause
-
-const texts = new Set();
-// Same rule as sayable() in js/app.js: lone letters and spaced root letters → names; skip mixed English and bare endings.
-const NAMES = Object.assign({ 'ء': 'هَمْزَة' }, ...Object.entries(C.L).map(([k, v]) => ({ [k]: v.ar })));
+const key = (t) => String(t).normalize('NFC').trim();   // same as audioKey() in js/app.js
+// Same rule as sayable() in js/app.js.
+const NAMES = C.SAY_NAME;
+const FULL = Object.fromEntries(Object.entries(C.L).map(([k, v]) => [String(v.ar).normalize('NFC'), NAMES[k]]));
 const sayable = (t) => {
   const k = String(t || '').trim();
   if (!k || /[A-Za-z]/.test(k) || k.startsWith('ـ')) return null;
   if (NAMES[k]) return NAMES[k];
+  if (FULL[k]) return FULL[k];
   const parts = k.split(/\s+/);
   if (parts.length > 1 && parts.every((p) => NAMES[p])) return parts.map((p) => NAMES[p]).join(' ');
   return k;
 };
-// Clips a listening check flagged as possibly wrong are left silent (tools/audio-muted.json).
-const MUTED = new Set(fs.existsSync(path.join(__dirname, 'audio-muted.json')) ? JSON.parse(fs.readFileSync(path.join(__dirname, 'audio-muted.json'))) : []);
-const add = (t) => { t = sayable(t); if (t && AR.test(t) && t.split(' ').length <= 4 && !MUTED.has(key(t))) texts.add(key(t)); };
-Object.values(C.L).forEach((l) => add(l.ar));
+const texts = new Set();
+const add = (t) => { t = sayable(t); if (t && AR.test(t) && t.split(' ').length <= 4) texts.add(key(t)); };
+Object.values(NAMES).forEach(add);
 for (let run = 0; run < 120; run++) for (const u of C.UNITS) for (const l of u.lessons) for (const e of l.steps()) {
   if (e.type === 'teach') { add(e.say); if (!e.say) add(e.bigQ); }
   if (e.type === 'mcq' || e.type === 'listen') { add(e.say); add(e.big); e.options.forEach(add); }
@@ -39,31 +33,7 @@ for (let run = 0; run < 120; run++) for (const u of C.UNITS) for (const l of u.l
   if (e.type === 'sort') e.items.forEach((i) => add(i.t));
   if (e.type === 'build') { e.tiles.forEach(add); add(e.target.join('')); }
 }
-// Engine: Microsoft neural voice via edge-tts (natural, human-sounding). Run with
-// PYTHONPATH pointing at an edge-tts install if it isn't installed globally.
-// Human recordings made in tools/record.html are never replaced by the computer voice.
-const HUMAN = fs.existsSync(path.join(__dirname, 'human-recorded.json')) ? JSON.parse(fs.readFileSync(path.join(__dirname, 'human-recorded.json'))) : {};
-Object.keys(HUMAN).forEach((t) => texts.add(key(t)));
-const manifest = {}; const jobs = {};
-for (const t of [...texts].sort()) {
-  const id = crypto.createHash('sha1').update(t).digest('hex').slice(0, 10);
-  manifest[t] = id;
-  if (!fs.existsSync(path.join(OUT, id + '.mp3'))) jobs[id] = forVoice(t);
-}
-const jobsFile = path.join(OUT, '_jobs.json');
-fs.writeFileSync(jobsFile, JSON.stringify({ jobs, names: Object.values(NAMES).map(key) }));
-if (Object.keys(jobs).length) execFileSync('python3', [path.join(__dirname, 'tts_edge.py'), jobsFile, OUT], { stdio: 'inherit' });
-fs.unlinkSync(jobsFile);
-// drop anything the voice couldn't say (e.g. a bare vowel mark on its own); remember them for the studio
-const silent = [];
-for (const [t, id] of Object.entries(manifest)) {
-  if (HUMAN[t]) continue;
-  const f = path.join(OUT, id + '.mp3');
-  if (!fs.existsSync(f) || fs.statSync(f).size < 2000) { if (fs.existsSync(f)) fs.unlinkSync(f); delete manifest[t]; silent.push(t); }
-}
-fs.writeFileSync(path.join(__dirname, 'audio-silent.json'), JSON.stringify(silent, null, 1));
-// remove clips nothing uses any more
-const used = new Set(Object.values(manifest));
-for (const f of fs.readdirSync(OUT)) if (f.endsWith('.mp3') && !used.has(f.slice(0, -4))) fs.unlinkSync(path.join(OUT, f));
-fs.writeFileSync(path.join(ROOT, 'js/audio-manifest.js'), '/* generated by tools/make-audio.js */\nwindow.QQ_AUDIO = ' + JSON.stringify(manifest) + ';\n');
-console.log(`${Object.keys(manifest).length} clips (${Object.keys(jobs).length} new)`);
+const job = path.join(__dirname, '.audio-job.json');
+fs.writeFileSync(job, JSON.stringify({ texts: [...texts].sort(), names: Object.values(NAMES).map(key) }));
+execFileSync('python3', [path.join(__dirname, 'build_audio.py'), job], { stdio: 'inherit' });
+fs.unlinkSync(job);

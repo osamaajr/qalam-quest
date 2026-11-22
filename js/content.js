@@ -561,5 +561,8 @@
 
   const UNITS = [unit1, unit2, unit3, unit4, unit5, unit6, unit7];
 
-  window.QQ_CONTENT = { UNITS, AYAH, SURAH, L, SUN, MOON, ref, shuffle, sample, pick, SUN_WORDS, MOON_WORDS, ISM, FIL, HARF };
+  // How each letter's NAME is said aloud when a child taps it — the way teachers and the
+  // alphabet chant say it ("bā, tā, thā"), without the dictionary hamza that voices stumble on.
+  const SAY_NAME = { 'ا': 'أَلِف', 'ب': 'بَا', 'ت': 'تَا', 'ث': 'ثَا', 'ج': 'جِيم', 'ح': 'حَا', 'خ': 'خَا', 'د': 'دَال', 'ذ': 'ذَال', 'ر': 'رَا', 'ز': 'زَاي', 'س': 'سِين', 'ش': 'شِين', 'ص': 'صَاد', 'ض': 'ضَاد', 'ط': 'طَا', 'ظ': 'ظَا', 'ع': 'عَيْن', 'غ': 'غَيْن', 'ف': 'فَا', 'ق': 'قَاف', 'ك': 'كَاف', 'ل': 'لَام', 'م': 'مِيم', 'ن': 'نُون', 'ه': 'هَا', 'و': 'وَاو', 'ي': 'يَا', 'ء': 'هَمْزَة' };
+  window.QQ_CONTENT = { UNITS, AYAH, SURAH, L, SUN, MOON, SAY_NAME, ref, shuffle, sample, pick, SUN_WORDS, MOON_WORDS, ISM, FIL, HARF };
 })();

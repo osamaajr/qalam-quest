@@ -141,11 +141,14 @@
   // What the voice should actually say for a piece of on-screen text, or null if nothing sensible:
   // a lone letter → its name (ت → تَاء); spaced root letters (ك ت ب) → their names; mixed English or
   // a bare ending (ـهُ) → nothing. Must match sayable() in tools/make-audio.js.
-  const NAMES = Object.assign({ 'ء': 'هَمْزَة' }, ...Object.entries(C.L).map(([k, v]) => ({ [k]: v.ar })));
+  const NAMES = C.SAY_NAME;
+  // dictionary spellings (تَاء) are said the same way as the spoken name (تَا)
+  const FULL = Object.fromEntries(Object.entries(C.L).map(([k, v]) => [String(v.ar).normalize('NFC'), NAMES[k]]));
   const sayable = (t) => {
     const k = String(t || '').trim();
     if (!k || /[A-Za-z]/.test(k) || k.startsWith('ـ')) return null;
     if (NAMES[k]) return NAMES[k];
+    if (FULL[k]) return FULL[k];
     const parts = k.split(/\s+/);
     if (parts.length > 1 && parts.every((p) => NAMES[p])) return parts.map((p) => NAMES[p]).join(' ');
     return k;

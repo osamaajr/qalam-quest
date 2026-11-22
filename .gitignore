@@ -3,3 +3,5 @@
 node_modules/
 .claude/
 tools/voice-pick/
+tools/.audio-cache/
+tools/.audio-job.json
