@@ -669,5 +669,15 @@ img { -webkit-user-drag: none; user-select: none; }
 .theme-toggle .ico { width: 26px; height: 26px; transition: transform .4s cubic-bezier(.3,1.6,.5,1); }
 .theme-toggle:hover .ico { transform: rotate(-20deg) scale(1.1); }
 .theme-toggle:active { transform: translateY(3px); box-shadow: none; }
-html { transition: background-color .3s; }
-body, .sidenav, .mtop, .mtabs, .card, .side-card { transition: background-color .3s, border-color .3s, color .3s; }
+
+/* current-lesson ring: centred on the button including its 3D edge */
+.node-ring { width: 102px; height: 96px; left: -16px; top: -13px; transform: none; }
+.node-ring ellipse, .node-ring path { fill: none; stroke-width: 8; }
+#current .start-bubble { top: -68px; }
+#current { margin-top: 58px; }
+
+/* theme switch: one synchronised circular reveal (View Transitions), instant swap elsewhere */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-new(root) { animation: themeReveal .6s cubic-bezier(.4, 0, .2, 1); }
+@keyframes themeReveal { from { clip-path: circle(0 at var(--vx, 50%) var(--vy, 0)); } to { clip-path: circle(150vmax at var(--vx, 50%) var(--vy, 0)); } }
+.no-anim *, .no-anim *::before, .no-anim *::after { transition: none !important; }

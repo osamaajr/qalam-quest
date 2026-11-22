@@ -269,10 +269,16 @@
   ];
   const avatarHTML = (size) => `<span class="avatar" style="width:${size}px;height:${size}px">${M.kid(S.buddy, 'idle', '', { headOnly: true })}</span>`;
   const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
-  function setTheme(t) {
-    S.settings.theme = t; save();
-    if (window.__applyTheme) window.__applyTheme(t);
-    Sfx.play('pop'); render();
+  // Switch theme in one synchronised motion: the new colours sweep out in a circle from the button.
+  function setTheme(t, from) {
+    const apply = () => { S.settings.theme = t; save(); if (window.__applyTheme) window.__applyTheme(t); render(); };
+    Sfx.play('pop');
+    const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!document.startViewTransition || reduce) { document.documentElement.classList.add('no-anim'); apply(); requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.remove('no-anim'))); return; }
+    const r = from ? from.getBoundingClientRect() : { left: innerWidth / 2, top: 0, width: 0, height: 0 };
+    document.documentElement.style.setProperty('--vx', r.left + r.width / 2 + 'px');
+    document.documentElement.style.setProperty('--vy', r.top + r.height / 2 + 'px');
+    document.startViewTransition(apply);
   }
   function statsHTML(where) {
     tickHearts();
@@ -307,7 +313,7 @@
     $app.innerHTML = `<div class="app">${sidenavHTML()}<div class="center"><header class="mtop">${statsHTML('top')}</header><main class="main">${page}</main></div>${rightbarHTML()}${mtabsHTML()}</div>`;
     $app.querySelectorAll('[data-tab]').forEach((b) => b.onclick = (e) => { e.preventDefault(); Sfx.play('tap'); tab = b.dataset.tab; render(tab === 'learn'); window.scrollTo(0, 0); });
     $app.querySelectorAll('[data-pop]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); Sfx.play('tap'); statPopup(b); });
-    $app.querySelectorAll('[data-theme-toggle]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); setTheme(isDark() ? 'light' : 'dark'); });
+    $app.querySelectorAll('[data-theme-toggle]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); setTheme(isDark() ? 'light' : 'dark', b); });
     $app.querySelectorAll('.side-card .kid, .page-hero .kid, .wip .kid').forEach((k) => M.liven(k, ['read', 'idle', 'think', 'wave'], 3600));
     $app.querySelectorAll('.side-promo .kid').forEach((k) => M.liven(k, ['read', 'cheeky', 'read', 'wave'], 4200));
     ({ learn: bindPath, quests: bindQuests, shop: bindShop, profile: bindProfile, more: bindMore, practice: bindPractice, leaderboards: () => {} })[tab](scrollToCurrent);
@@ -383,7 +389,7 @@
         const done = S.done[it.l.id]; const unlocked = isUnlocked(it.l.id); const isCur = cur && cur.l.id === it.l.id;
         const icon = done && !it.l.review ? V.check : V[lessonKind(it.l)];
         const stars = done ? `<div class="node-stars">${[1, 2, 3].map((n) => IMG('star', n <= done.stars ? '' : 'off')).join('')}</div>` : '';
-        const ring = isCur ? `<svg class="node-ring" viewBox="0 0 100 92"><ellipse cx="50" cy="46" rx="45" ry="41" stroke="var(--line)"/><ellipse cx="50" cy="46" rx="45" ry="41" stroke="var(--c)" stroke-dasharray="272" stroke-dashoffset="${272 - 272 * Math.max(.04, it.li / u.lessons.length)}" stroke-linecap="round" transform="rotate(-90 50 46)"/></svg>` : '';
+        const ring = isCur ? `<svg class="node-ring" viewBox="0 0 102 96"><ellipse cx="51" cy="48" rx="46" ry="43" stroke="var(--line)"/><path d="M51 5 A46 43 0 1 1 50.9 5" pathLength="100" stroke="var(--c)" stroke-dasharray="100" stroke-dashoffset="${100 - 100 * Math.max(.06, it.li / u.lessons.length)}" stroke-linecap="round"/></svg>` : '';
         const bubble = isCur ? '<div class="start-bubble">START</div>' : '';
         const buddy = isCur ? `<div class="path-buddy walk-in" id="guide" style="${x >= 0 ? 'right:calc(100% + 34px)' : 'left:calc(100% + 34px)'};top:-80px;--from:${x >= 0 ? '-120px' : '120px'}">${M.kid(S.buddy, 'walk', x >= 0 ? '' : 'flip')}</div>` : '';
         return `<div class="node-wrap" style="transform:translateX(${x}px)" ${isCur ? 'id="current"' : ''}>${decoHTML}${bubble}${buddy}<div class="node-box">${ring}<button class="node ${unlocked ? '' : 'locked'} ${isCur ? 'cur' : ''}" data-lesson="${it.l.id}" aria-label="${esc(it.l.title)}">${icon}</button></div>${stars}</div>`;
@@ -524,7 +530,7 @@
   }
   const switchRow = (k, label, sub) => `<div class="setting"><div><b>${label}</b><small>${sub}</small></div><button class="switch ${S.settings[k] ? 'on' : ''}" data-set="${k}" aria-label="${label}"></button></div>`;
   function bindSwitches() { $app.querySelectorAll('[data-set]').forEach((b) => b.onclick = () => { const k = b.dataset.set; S.settings[k] = !S.settings[k]; save(); Sfx.play('select'); render(); }); }
-  function bindProfile() { bindSwitches(); $app.querySelectorAll('[data-theme-set]').forEach((b) => b.onclick = () => setTheme(b.dataset.themeSet)); document.getElementById('swapBuddy').onclick = () => { S.buddy = S.buddy === 'zaid' ? 'huda' : 'zaid'; save(); Sfx.play('pop'); render(); }; }
+  function bindProfile() { bindSwitches(); $app.querySelectorAll('[data-theme-set]').forEach((b) => b.onclick = () => setTheme(b.dataset.themeSet, b)); document.getElementById('swapBuddy').onclick = () => { S.buddy = S.buddy === 'zaid' ? 'huda' : 'zaid'; save(); Sfx.play('pop'); render(); }; }
   function moreView() {
     return `<div class="page"><div class="page-hero c-violet">${M.kid(S.buddy === 'zaid' ? 'huda' : 'zaid', 'read')}<div><h1>Teacher & parent corner</h1><p>Tools for using Qalam with a class or at home.</p></div></div>
       <div class="card">${switchRow('classMode', 'Class mode: unlimited hearts', 'Mistakes never stop a lesson — good for class')}${switchRow('unlockAll', 'Unlock every lesson', 'Jump to any lesson to preview or teach it')}
