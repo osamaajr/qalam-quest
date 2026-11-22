@@ -685,3 +685,19 @@ img { -webkit-user-drag: none; user-select: none; }
 :root[data-theme="dark"] .ref-tag { color: #C9B4FF; }
 :root[data-theme="dark"] .test-tag { color: #C9B4FF; }
 :root[data-theme="dark"] .wip .tag { color: #FFD66B; }
+/* "NEW LETTER" badge — chunky 3D pill with a sparkle and a shine sweep */
+.new-badge {
+  --nb: var(--violet); --nbd: var(--violet-d);
+  position: relative; overflow: hidden; align-self: flex-start; display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px 8px 12px; border-radius: 999px; background: var(--nb); color: #fff; box-shadow: 0 4px 0 var(--nbd);
+  font-weight: 900; font-size: 14px; letter-spacing: 1.2px; text-transform: uppercase; line-height: 1;
+  animation: nbPop .55s cubic-bezier(.3, 1.7, .5, 1) backwards;
+}
+.new-badge.pattern { --nb: var(--orange); --nbd: var(--orange-d); }
+.new-badge.quran { --nb: var(--sky); --nbd: var(--sky-d); }
+.new-badge b { position: relative; z-index: 1; }
+.new-badge .nb-spark { width: 18px; height: 18px; position: relative; z-index: 1; color: #FFE45C; animation: nbTwinkle 1.6s ease-in-out .5s infinite; }
+.new-badge::after { content: ''; position: absolute; top: 0; bottom: 0; width: 40%; left: -60%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.45), transparent); animation: nbShine 1.1s ease-out .45s; }
+@keyframes nbPop { from { transform: scale(.4) translateY(8px); opacity: 0; } }
+@keyframes nbShine { to { left: 130%; } }
+@keyframes nbTwinkle { 0%, 100% { transform: scale(1) rotate(0); } 50% { transform: scale(1.25) rotate(18deg); } }

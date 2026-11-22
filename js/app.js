@@ -167,6 +167,7 @@
 
   // ======================= ART: vector bits, chest, logo =======================
   const V = {
+    spark: '<svg viewBox="0 0 24 24" class="nb-spark"><path d="M12 1.5c.6 4.6 2.6 7.6 9 10.5-6.4 2.9-8.4 5.9-9 10.5-.6-4.6-2.6-7.6-9-10.5 6.4-2.9 8.4-5.9 9-10.5z" fill="currentColor"/><path d="M20 1.5c.2 1.5.9 2.4 2.5 3-1.6.6-2.3 1.5-2.5 3-.2-1.5-.9-2.4-2.5-3 1.6-.6 2.3-1.5 2.5-3z" fill="currentColor" opacity=".75"/></svg>',
     close: '<svg viewBox="0 0 32 32"><path d="M8 8l16 16M24 8L8 24" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg>',
     speaker: '<svg viewBox="0 0 32 32"><path d="M4.5 12.5h5.2l7.1-6.2c.8-.7 2.2-.1 2.2 1v21.4c0 1.1-1.4 1.7-2.2 1l-7.1-6.2H4.5a1.5 1.5 0 0 1-1.5-1.5v-8a1.5 1.5 0 0 1 1.5-1.5z" fill="currentColor"/><path d="M22.5 11.5c2.4 2.6 2.4 6.4 0 9M26 8c4.4 4.6 4.4 11.4 0 16" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg>',
     star: '<svg viewBox="0 0 32 32"><path d="M16 3.5l3.8 7.8 8.6 1.2-6.2 6 1.5 8.5L16 23l-7.7 4 1.5-8.5-6.2-6 8.6-1.2z" fill="currentColor" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/></svg>',
@@ -790,7 +791,7 @@
       else if (ex.bigQ) visual = `<div class="glyph-card"><div class="g qr">${esc(ex.bigQ)}</div>${speakBtn(ex.say || ex.bigQ)}</div>`;
       else if (ex.bigRow) visual = `<div class="glyph-row">${ex.bigRow.map((c) => `<span class="chip ${/^[+=→]$/.test(c) ? 'op' : ''}">${esc(c)}</span>`).join('')}</div>${ex.say ? `<div>${speakBtn(ex.say)}</div>` : ''}`;
       else if (ex.ayah) visual = `<div class="ayah-box">${esc(C.AYAH[ex.ayah])}</div>`;
-      w.innerHTML = `<span class="ex-kicker">${IMG('sparkles')}${esc(ex.kicker || 'NEW')}</span>
+      w.innerHTML = `<span class="new-badge ${/PATTERN/.test(ex.kicker || '') ? 'pattern' : /QUR/.test(ex.kicker || '') ? 'quran' : ''}">${V.spark}<b>${esc(ex.kicker || 'NEW')}</b></span>
         <div class="teach-card">${visual}<h2>${rich(ex.title)}</h2>${ex.sub ? `<p>${rich(ex.sub)}</p>` : ''}${refTag(ex.quranRef)}</div>
         <div class="tip-row">${M.kid(S.buddy, ex.mood || 'talk')}<div class="bubble">${ex.tip ? rich(ex.tip) : C.pick(['Look closely!', 'Can you see it?', 'Say it out loud!', 'Easy peasy!'])}</div></div>`;
       bindSpeak(w);
