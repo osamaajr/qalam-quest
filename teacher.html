@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Qalam Quest · Teacher Guide</title>
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Noto+Naskh+Arabic:wght@500;700&family=Amiri+Quran&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { font-weight: 600; background: var(--soft); }
+    .tg { max-width: 900px; margin: 0 auto; padding: 24px 16px 60px; }
+    .tg header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .tg header .kid { width: 90px; }
+    .tg h1 { font-size: 32px; font-weight: 900; margin: 0; }
+    .tg h2 { font-size: 24px; font-weight: 900; margin: 0 0 4px; }
+    .tg h3 { font-size: 18px; font-weight: 900; margin: 18px 0 6px; }
+    .panel { background: #fff; border: 2px solid var(--line); border-radius: 20px; padding: 18px 20px; margin-top: 18px; }
+    .unit-head { border-left: 8px solid var(--c); padding-left: 12px; }
+    .tg ul { margin: 6px 0; padding-left: 20px; line-height: 1.6; }
+    .tg .ar { font-size: 1.35em; }
+    .tg .qr { font-size: 1.5em; line-height: 1.9; }
+    table { width: 100%; border-collapse: collapse; font-size: 15px; }
+    td, th { border-bottom: 1px solid var(--line); padding: 8px 6px; text-align: left; vertical-align: top; }
+    th { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .5px; }
+    .type { display: inline-block; font-size: 11px; font-weight: 900; letter-spacing: .5px; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; background: var(--soft); color: var(--ink-2); white-space: nowrap; }
+    .ans { color: var(--green-d); font-weight: 800; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .actions .btn { width: auto; }
+    .note { background: var(--gold-l); border-radius: 14px; padding: 12px 16px; margin-top: 12px; }
+    @media print { body { background: #fff; } .actions, .noprint { display: none; } .panel { break-inside: avoid-page; border-color: #ccc; } }
+  </style>
+</head>
+<body>
+  <div class="tg" id="tg"></div>
+  <script src="js/content.js"></script>
+  <script src="js/mascot.js"></script>
+  <script src="js/teacher.js"></script>
+</body>
+</html>
