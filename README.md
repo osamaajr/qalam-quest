@@ -49,7 +49,7 @@ A Duolingo-style game that teaches children (about 5–12) to read the Arabic of
 
 A short guided tour runs on first visit.
 
-**Read aloud:** every Arabic letter, syllable and word in the lessons has a recorded clip (`assets/audio`, macOS "Majed" voice), so the speaker buttons work on any phone or browser.
+**Read aloud:** every Arabic letter, syllable and word in the lessons has a recorded clip (`assets/audio`, Microsoft's natural-sounding neural Arabic voice "Hamed"), so the speaker buttons work on any phone or browser.
 
 **Teacher & parent corner** (in the game: Teachers in the sidebar, or Profile → Teacher & parent corner):
 
@@ -77,7 +77,7 @@ RESEARCH.md       why it's built this way (pedagogy, tajwīd sources, Duolingo r
 
 - **Run locally:** `python3 -m http.server` and open http://localhost:8000. Double-clicking `index.html` also works.
 - **Verify the Qur'an text:** `node tools/verify.js`
-- **Re-record audio after changing content (Mac only):** `node tools/make-audio.js`
+- **Re-record audio after changing content:** `pip install edge-tts`, then `node tools/make-audio.js`
 - **Add a lesson:** add an entry to a unit in `js/content.js`, using the helpers `T` (teach), `MCQ`, `LISTEN`, `MATCH`, `SORT`, `TAP` and `BUILD`. For any Qur'an text, add the verse to `AYAH` and run the verifier.
 
 Qur'an text: Tanzil Uthmani (Ḥafṣ ʿan ʿĀṣim) via api.alquran.cloud. Fonts: Nunito, Pacifico (logo), Noto Naskh Arabic and Amiri Quran (Google Fonts, SIL OFL).
