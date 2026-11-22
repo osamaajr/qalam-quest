@@ -135,9 +135,8 @@
   // browser's own Arabic voice is only a fallback for anything without a clip.
   const AUDIO = window.QQ_AUDIO || {};
   const audioKey = (t) => String(t).normalize('NFC').trim();
-  let arVoice = null, curAudio = null;
-  function loadVoices() { if (!window.speechSynthesis) return; arVoice = speechSynthesis.getVoices().find((v) => /^ar/i.test(v.lang)) || null; }
-  if (window.speechSynthesis) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+  // Only ever our recorded natural-voice clips — never the browser's robotic built-in voice.
+  let curAudio = null;
   // A lone letter is spoken by its name (ت → تَاء), which is how children learn it.
   // What the voice should actually say for a piece of on-screen text, or null if nothing sensible:
   // a lone letter → its name (ت → تَاء); spaced root letters (ك ت ب) → their names; mixed English or
@@ -163,10 +162,6 @@
       if (btn) { btn.classList.add('playing'); a.onended = a.onpause = a.onerror = () => { if (curAudio === a || !curAudio) btn.classList.remove('playing'); }; }
       a.play().catch(() => { if (btn) btn.classList.remove('playing'); });
       curAudio = a; return;
-    }
-    if (arVoice && window.speechSynthesis) {
-      speechSynthesis.cancel();
-      setTimeout(() => { const u = new SpeechSynthesisUtterance(text); u.voice = arVoice; u.lang = arVoice.lang; u.rate = slow ? 0.45 : 0.75; speechSynthesis.speak(u); }, 80);
     }
   }
 
@@ -278,7 +273,10 @@
     const r = from ? from.getBoundingClientRect() : { left: innerWidth / 2, top: 0, width: 0, height: 0 };
     document.documentElement.style.setProperty('--vx', r.left + r.width / 2 + 'px');
     document.documentElement.style.setProperty('--vy', r.top + r.height / 2 + 'px');
-    document.startViewTransition(apply);
+    // safety net: if the browser never runs the animation (hidden tab, throttled frame), switch anyway
+    let done = false; const once = () => { if (!done) { done = true; apply(); } };
+    try { document.startViewTransition(once); } catch (e) { once(); }
+    setTimeout(once, 700);
   }
   function statsHTML(where) {
     tickHearts();
@@ -688,7 +686,7 @@
     modal(`${M.kid(S.buddy, 'sad')}<h2>Leave this ${what}?</h2><p>Your progress here won’t be saved.</p><button class="btn" data-x>Keep learning</button><button class="link-btn" style="color:var(--red)" data-y>End ${what}</button>`,
       (m, close) => { m.querySelector('[data-x]').onclick = () => { Sfx.play('tap'); close(); }; m.querySelector('[data-y]').onclick = () => { close(); endRun(); tab = 'learn'; render(true); }; });
   }
-  function endRun() { L = null; document.onkeydown = null; if (curAudio) curAudio.pause(); if (window.speechSynthesis) speechSynthesis.cancel(); }
+  function endRun() { L = null; document.onkeydown = null; if (curAudio) curAudio.pause(); }
   function setProgress() {
     const p = document.getElementById('prog'); if (!p || !L) return;
     p.querySelector('i').style.width = (L.doneCount / (L.doneCount + L.queue.length)) * 100 + '%';

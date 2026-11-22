@@ -681,3 +681,7 @@ img { -webkit-user-drag: none; user-select: none; }
 ::view-transition-new(root) { animation: themeReveal .6s cubic-bezier(.4, 0, .2, 1); }
 @keyframes themeReveal { from { clip-path: circle(0 at var(--vx, 50%) var(--vy, 0)); } to { clip-path: circle(150vmax at var(--vx, 50%) var(--vy, 0)); } }
 .no-anim *, .no-anim *::before, .no-anim *::after { transition: none !important; }
+:root[data-theme="dark"] .opt.sel .k { color: #A9BDFF; border-color: #3E5BC4; }
+:root[data-theme="dark"] .ref-tag { color: #C9B4FF; }
+:root[data-theme="dark"] .test-tag { color: #C9B4FF; }
+:root[data-theme="dark"] .wip .tag { color: #FFD66B; }

@@ -1,0 +1,88 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Qalam QA run</title>
+<!-- Automated end-to-end check. Serve the project (python3 -m http.server) and open
+     tools/qa.html, or run headless:  chrome --headless --virtual-time-budget=3000000 --dump-dom http://localhost:8000/tools/qa.html -->
+<style>body{font:14px system-ui;margin:16px}pre{white-space:pre-wrap}iframe{width:1280px;height:860px;border:1px solid #ccc}</style>
+<pre id="log">running…</pre>
+<iframe id="f" src="about:blank"></iframe>
+<script>
+const out = []; const log = (s) => { out.push(s); document.getElementById('log').textContent = out.join('\n'); };
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const F = document.getElementById('f');
+let W, Dc, errors = [];
+const q = (s) => Dc.querySelector(s), qa = (s) => [...Dc.querySelectorAll(s)];
+async function until(fn, ms = 4000) { const t = Date.now() + ms; while (Date.now() < t) { try { if (fn()) return true; } catch (e) {} await sleep(40); } return false; }
+async function boot(state) {
+  F.src = '../index.html?qa=' + Math.random(); await new Promise((r) => (F.onload = r));
+  F.contentWindow.localStorage.setItem('qalamquest.v1', JSON.stringify(state));
+  F.src = '../index.html?qa=' + Math.random(); await new Promise((r) => (F.onload = r));
+  W = F.contentWindow; Dc = W.document;
+  W.addEventListener('error', (e) => errors.push(e.message + ' @' + e.lineno));
+  await sleep(400);
+}
+const base = (extra) => Object.assign({ onboarded: true, toured: true, buddy: 'huda', name: 'QA', settings: { sound: false, tts: false, classMode: true, unlockAll: true, theme: 'light' } }, extra || {});
+async function solve(wrong) {
+  const ex = W.__qqEx;
+  if (ex.type === 'teach') { q('#check').click(); return; }
+  if (ex.type === 'mcq' || ex.type === 'listen') qa('.opt').find((b) => (wrong ? b.querySelector('.t').textContent !== ex.correct : b.querySelector('.t').textContent === ex.correct)).click();
+  if (ex.type === 'tap') { const w = qa('.wd'); const i = ex.byIndex ? ex.answers[0] : ex.words.indexOf(ex.answers[0]); w[wrong ? (i + 1) % w.length : i].click(); }
+  if (ex.type === 'build') for (const x of ex.target) qa('#bank .tile').find((b) => b.textContent === x && !b.classList.contains('used')).click();
+  if (ex.type === 'match') { for (const p of ex.pairs) { const L = qa('.mt[data-s=L]').find((b) => b.textContent === p[0] && !b.classList.contains('good')); L.click(); q(`.mt[data-s=R][data-i="${L.dataset.i}"]`).click(); } await until(() => q('#sheet.show')); q('#cont').click(); return; }
+  if (ex.type === 'sort') { for (let k = 0; k < ex.items.length; k++) { await until(() => q('.sort-card:not([class*=fly]) .g')); const it = ex.items.find((x) => x.t === q('.sort-card:not([class*=fly]) .g').textContent); qa('.bucket')[it.b].click(); await until(() => !q('.sort-card[class*=fly]')); } await until(() => q('#sheet.show')); q('#cont').click(); return; }
+  q('#check').click(); await until(() => q('#cont')); q('#cont').click();
+}
+async function playLesson(id, wrongAt) {
+  q('[data-tab=learn]').click(); await sleep(100);
+  q(`[data-lesson=${id}]`).click(); await sleep(50); q('.node-pop .btn').click(); await sleep(100);
+  let n = 0;
+  while (q('#lb') && n < 90) { n++; const before = W.__qqEx; await solve(n === wrongAt); await until(() => !q('#lb') || W.__qqEx !== before || q('.modal-bg')); if (q('.modal-bg')) return 'modal: ' + q('.modal h2').textContent; }
+  const screens = []; for (let k = 0; k < 8 && q('#go'); k++) { screens.push(q('.result h1') ? q('.result h1').textContent : '?'); q('#go').click(); await sleep(120); }
+  return n >= 90 ? 'stuck' : 'ok (' + screens.join(' → ') + ')';
+}
+(async () => {
+  try {
+    const ONLY = new URLSearchParams(location.search).get('only');
+    if (!ONLY) {
+    // 1. every lesson, with a deliberate mistake in every third one
+    await boot(base());
+    const ids = qa('[data-lesson]').map((b) => b.dataset.lesson);
+    let bad = 0;
+    for (const [i, id] of ids.entries()) { const r = await playLesson(id, i % 3 === 0 ? 2 : -1); if (!r.startsWith('ok')) { bad++; log('✗ ' + id + ' ' + r); } }
+    log(`lessons: ${ids.length - bad}/${ids.length} completed`);
+    const S = W.QQ_APP.state;
+    log(`state after run: xp=${S.xp} done=${Object.keys(S.done).length} badges=${S.badges.length} streak=${S.streak}`);
+
+    // 2. hearts: run out with class mode off
+    await boot(base({ hearts: 1, settings: { sound: false, tts: false, classMode: false, unlockAll: true, theme: 'light' } }));
+    q('[data-lesson=u1l1]').click(); await sleep(50); q('.node-pop .btn').click(); await sleep(100);
+    for (let k = 0; k < 20 && !q('.modal-bg'); k++) { const before = W.__qqEx; if (['mcq', 'tap', 'build', 'listen'].includes(before.type)) { await solve(true); } else await solve(false); await until(() => W.__qqEx !== before || q('.modal-bg')); }
+    log('out of hearts modal: ' + (q('.modal h2') ? q('.modal h2').textContent : 'MISSING'));
+
+    // 3. placement test: pass and fail
+    for (const pass of [true, false]) {
+      await boot(base({ settings: { sound: false, tts: false, classMode: false, unlockAll: false, theme: 'dark' } }));
+      q('[data-jump="2"]').click(); await until(() => q('.modal [data-y]')); q('.modal [data-y]').click(); await until(() => q('#lb'));
+      let k = 0; while (q('#lb') && k < 20) { const b = W.__qqEx; await solve(!pass); await until(() => !q('#lb') || W.__qqEx !== b); k++; }
+      await until(() => q('.result h1'));
+      log(`placement ${pass ? 'pass' : 'fail'}: ${q('.result h1') ? q('.result h1').textContent : 'MISSING'}; unit 2 unlocked=${!!W.QQ_APP.state.done.u2l4 || !!W.QQ_APP.state.done.u1l8}`);
+    }
+
+    }
+    // 4. pages, theme toggle, chest, tour
+    await boot(base({ gems: 200, done: { u1l1: { stars: 3, best: 100 }, u1l2: { stars: 3, best: 100 }, u1l3: { stars: 3, best: 100 } }, settings: { sound: false, tts: false, classMode: false, unlockAll: false, theme: 'light' } }));
+    for (const t of ['practice', 'leaderboards', 'quests', 'shop', 'profile', 'more', 'learn']) { q(`.nav-item[data-tab=${t}]`).click(); await sleep(150); log(`page ${t}: ${q('.main').innerText.trim().split('\n')[0].slice(0, 40)}`); }
+    const theme0 = Dc.documentElement.dataset.theme; const tb = q('[data-theme-toggle]'); log('toggle button found: ' + !!tb + ', visible: ' + !!(tb && tb.offsetParent)); tb.click(); await sleep(2500); log(`theme toggle: ${theme0} → ${Dc.documentElement.dataset.theme} (saved setting: ${W.QQ_APP.state.settings.theme})`);
+    q('[data-chest]').click(); await sleep(1600); log('chest: ' + (q('.modal h2') ? q('.modal h2').textContent : 'MISSING')); if (q('.modal [data-x]')) q('.modal [data-x]').click(); await sleep(200);
+    q('.nav-item[data-tab=shop]').click(); await sleep(150); q('#buyFreeze').click(); await sleep(150); log('shop freeze bought: freezes=' + W.QQ_APP.state.freezes);
+    q('.nav-item[data-tab=learn]').click(); await sleep(200); W.QQ_APP.tour(); await sleep(800); let steps = 0; while (q('.tour-card') && steps < 10) { q('[data-next]').click(); steps++; await sleep(600); } log(`tour: ${steps} steps, closed=${!q('.tour-card')}`);
+
+    // 5. onboarding from scratch
+    await boot({});
+    for (const go of ['buddy', 'name', 'level', 'goal', 'done']) { await until(() => q(`[data-go=${go}]`)); q(`[data-go=${go}]`).click(); await sleep(200); }
+    await sleep(1500); log('onboarding → home: ' + !!q('#ubanner') + ', tour shown: ' + !!Dc.querySelector('.tour-card'));
+  } catch (e) { log('HARNESS ERROR: ' + e.message + '\n' + e.stack); }
+  log(errors.length ? 'JS ERRORS:\n' + [...new Set(errors)].join('\n') : 'JS errors: none');
+  log('DONE');
+})();
+</script>
