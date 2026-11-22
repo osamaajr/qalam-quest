@@ -262,7 +262,7 @@
       <button class="stat gems" data-pop="gems">${IMG('gem')}${S.gems}</button>${hearts}</div>`;
   }
   function sidenavHTML() {
-    return `<aside class="sidenav"><a class="logo-link" href="#" data-tab="learn" aria-label="Qalam home">${logoSVG(false)}</a>
+    return `<aside class="sidenav"><a class="logo-link" href="#" data-tab="learn" aria-label="Qalam home">${logoSVG(false)}<img class="logo-mini" src="icons/icon-192.png" alt=""></a>
       ${NAV.map((n) => `<button class="nav-item ${tab === n.id ? 'on' : ''}" data-tab="${n.id}">${n.avatar ? avatarHTML(34) : IMG(n.icon)}<span>${n.label}</span></button>`).join('')}</aside>`;
   }
   function mtabsHTML() {
@@ -293,9 +293,9 @@
   // ---------- stat popovers ----------
   function statPopup(btn) {
     const kind = btn.dataset.pop;
-    const had = btn.querySelector('.stat-pop'); closePops(); if (had) return;
+    const had = document.querySelector(`.stat-pop[data-for="${kind}"]`); closePops(); if (had) return;
     let html = '';
-    if (kind === 'streak') html = `<h4>${IMG('fire')} ${S.streak} day streak</h4><p>${S.lastDay === today() ? 'You’ve practised today. Mashā’Allāh!' : 'Do one lesson today to keep your flame going!'}</p>${weekHTML()}<p style="margin:12px 0 0">${IMG('snowflake')} Streak freezes: <b>${S.freezes}/${MAX_FREEZES}</b> — they protect your streak if you miss a day.</p>`;
+    if (kind === 'streak') html = `<h4>${IMG('fire')} ${S.streak ? `${S.streak} day streak` : 'Start a streak today!'}</h4><p>${S.lastDay === today() ? 'You’ve practised today. Mashā’Allāh!' : 'Do one lesson today to keep your flame going!'}</p>${weekHTML()}<p style="margin:12px 0 0">${IMG('snowflake')} Streak freezes: <b>${S.freezes}/${MAX_FREEZES}</b> — they protect your streak if you miss a day.</p>`;
     else if (kind === 'gems') html = `<h4>${IMG('gem')} ${S.gems} gems</h4><p>Earn gems from quests, chests and streaks. Spend them in the shop.</p><button class="btn btn-sm btn-sky" data-tab-go="shop">Go to shop</button>`;
     else {
       tickHearts();
@@ -307,9 +307,12 @@
       modal(html + '<button class="btn" data-x>Okay</button>', (m, close) => { m.querySelector('[data-x]').onclick = close; bindGo(m, close); });
       return;
     }
-    const pop = document.createElement('div'); pop.className = 'stat-pop'; pop.innerHTML = html;
+    const pop = document.createElement('div'); pop.className = 'stat-pop'; pop.innerHTML = html; pop.dataset.for = kind;
     pop.onclick = (e) => e.stopPropagation();
-    btn.appendChild(pop); bindGo(pop, closePops);
+    document.body.appendChild(pop);
+    const r = btn.getBoundingClientRect();
+    Object.assign(pop.style, { position: 'fixed', top: r.bottom + 10 + 'px', right: 'auto', left: Math.max(12, Math.min(r.left + r.width / 2 - pop.offsetWidth / 2, innerWidth - pop.offsetWidth - 12)) + 'px' });
+    bindGo(pop, closePops);
   }
   function bindGo(root, close) { root.querySelectorAll('[data-tab-go]').forEach((b) => b.onclick = () => { close(); tab = b.dataset.tabGo; render(); }); }
   function closePops() {
@@ -331,7 +334,10 @@
       u.lessons.forEach((l, li) => { items.push({ kind: 'lesson', l, li }); if (li === 2 || (li === 5 && u.lessons.length > 7)) items.push({ kind: 'chest', id: chestId(u, li), after: l.id }); });
       const deco = DECO[ui % DECO.length];
       const decoBuddy = deco[0] === S.buddy ? (S.buddy === 'zaid' ? 'huda' : 'zaid') : deco[0];
-      const decoAt = ui % 2 ? 6 : 2;
+      // keep the decorative kid well away from the guide standing by the current lesson
+      const curK = cur && cur.ui === ui ? items.findIndex((it) => it.kind === 'lesson' && it.l.id === cur.l.id) : -1;
+      let decoAt = ui % 2 ? 6 : 2;
+      if (curK >= 0 && Math.abs(decoAt - curK) < 3) decoAt = curK + 4 < items.length ? curK + 4 : curK - 4;
       const nodes = items.map((it, k) => {
         const x = OFFS[k % OFFS.length];
         const decoHTML = k === decoAt ? `<div class="deco-buddy" style="${x > 0 ? 'right' : 'left'}:calc(100% + 70px);top:-70px" data-moods="${deco[1].join(',')}">${M.kid(decoBuddy, deco[1][0])}</div>` : '';
@@ -743,7 +749,7 @@
       w.innerHTML = `<h2 class="ex-prompt">${rich(ex.prompt)}</h2>${refTag(ex.quranRef)}
         ${ex.big ? `<div class="glyph-card"><div class="g ${isQ(ex.big) ? 'qr' : ''}">${esc(ex.big)}</div>${speakBtn(ex.big)}</div>` : ''}
         ${ex.gloss ? `<p class="gloss">“${esc(ex.gloss)}”</p>` : ''}
-        <div class="opts ${cols ? 'cols' : ''}">${opts.map((o, i) => `<button class="opt" data-i="${i}"><span class="k">${i + 1}</span>${optLabel(o, ar)}</button>`).join('')}</div>`;
+        <div class="opts ${cols ? 'cols' : ''} n${opts.length}">${opts.map((o, i) => `<button class="opt" data-i="${i}"><span class="k">${i + 1}</span>${optLabel(o, ar)}</button>`).join('')}</div>`;
       bindSpeak(w);
       let sel = -1;
       const choose = (i) => { sel = i; Sfx.play('select'); w.querySelectorAll('.opt').forEach((b, j) => b.classList.toggle('sel', j === i)); ctx.setReady(true); if (ar && canSpeak(opts[i])) speak(opts[i]); };
@@ -943,8 +949,10 @@
 
   // ======================= BOOT =======================
   function boot() {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     load(); tickHearts();
     document.addEventListener('click', closePops);
+    window.addEventListener('scroll', () => document.querySelectorAll('.stat-pop').forEach((p) => p.remove()), { passive: true });
     const s = checkStreak(); save();
     if (!S.onboarded) { onboarding(); return; }
     render(true);

@@ -15,7 +15,7 @@ const AR = /[ء-يٱ]/;
 // Same key function as the app (js/app.js audioKey)
 const key = (t) => String(t).normalize('NFC').trim();
 // What we feed the voice: plain script reads more reliably than Uthmani-specific marks.
-const forVoice = (t) => key(t).replace(/ٱ/g, 'ا').replace(/[ۖ-ۭـ]/g, '').replace(/\s+/g, ' ');
+const forVoice = (t) => key(t).replace(/ٱ/g, 'ا').replace(/[ۖ-ۭـ]/g, '').replace(/\s+/g, '، ');  // a comma between syllables/words gives a short pause
 
 const texts = new Set();
 const add = (t) => { if (t && AR.test(t) && t.split(' ').length <= 4) texts.add(key(t)); };
@@ -34,7 +34,7 @@ for (const t of [...texts].sort()) {
   const file = path.join(OUT, id + '.mp3');
   if (!fs.existsSync(file)) {
     const aiff = path.join(OUT, id + '.aiff');
-    execFileSync('say', ['-v', 'Majed', '-r', '120', '-o', aiff, forVoice(t)]);
+    execFileSync('say', ['-v', 'Majed', '-r', '95', '-o', aiff, forVoice(t)]);
     execFileSync('ffmpeg', ['-loglevel', 'error', '-y', '-i', aiff, '-ac', '1', '-ar', '22050', '-b:a', '40k', file]);
     fs.unlinkSync(aiff); made++;
   }
