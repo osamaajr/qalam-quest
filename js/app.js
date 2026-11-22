@@ -20,7 +20,7 @@
     xp: 0, gems: 20, hearts: MAX_HEARTS, heartsAt: Date.now(),
     streak: 0, bestStreak: 0, lastDay: null, freezes: 1, frozenDays: [],
     history: {}, done: {}, chests: [], badges: [], quests: null, joined: Date.now(),
-    settings: { sound: true, tts: true, classMode: false, unlockAll: false },
+    settings: { sound: true, tts: true, classMode: false, unlockAll: false, theme: 'auto' },
     stats: { lessons: 0, perfect: 0, correct: 0, answered: 0, bestCombo: 0 },
   });
   let S;
@@ -178,6 +178,9 @@
     check: '<svg viewBox="0 0 32 32"><path d="M7 17l6 6L25 10" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     lock: '<svg viewBox="0 0 32 32"><rect x="7" y="14" width="18" height="14" rx="4.5" fill="currentColor"/><path d="M11 14v-3a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" stroke-width="3.4"/></svg>',
     book: '<svg viewBox="0 0 32 32"><path d="M4 7.5c4-2 8-2 11 .8v17.5c-3-2.6-7-2.8-11-.9z" fill="currentColor"/><path d="M28 7.5c-4-2-8-2-11 .8v17.5c3-2.6 7-2.8 11-.9z" fill="currentColor" opacity=".8"/></svg>',
+    quran: '<svg viewBox="0 0 32 32"><path d="M3 9c4.5-2.2 9-2 12.2 1.2V27c-3.2-3-7.7-3.3-12.2-1.2z" fill="currentColor"/><path d="M29 9c-4.5-2.2-9-2-12.2 1.2V27c3.2-3 7.7-3.3 12.2-1.2z" fill="currentColor"/><path d="M16 4.5l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z" fill="currentColor"/></svg>',
+    pen: '<svg viewBox="0 0 32 32"><path d="M7 25l2.2-6.6L21.4 6.2a2.6 2.6 0 0 1 3.7 0l.7.7a2.6 2.6 0 0 1 0 3.7L13.6 22.8z" fill="currentColor"/><path d="M6 27.5c3.5-1 6-1.4 9-1" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round"/></svg>',
+    trophy: '<svg viewBox="0 0 32 32"><path d="M10 5h12v7.5a6 6 0 0 1-12 0z" fill="currentColor"/><path d="M10 8H6c0 4.2 1.8 6.6 5 7M22 8h4c0 4.2-1.8 6.6-5 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M14 18.5h4v4h-4z" fill="currentColor"/><rect x="10" y="22.5" width="12" height="4.5" rx="2" fill="currentColor"/></svg>',
   };
   // Treasure chest: chunky, front-on and geometric, with a gold frame and a glossy lid.
   function chestSVG(open, cls = '') {
@@ -191,7 +194,7 @@
       <defs>
         <linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE45C"/><stop offset=".55" stop-color="#FFC21A"/><stop offset="1" stop-color="#F0A000"/></linearGradient>
         <radialGradient id="${id}r" cx=".5" cy=".55" r=".55"><stop offset="0" stop-color="#FFF7C4"/><stop offset="1" stop-color="#FFC21A" stop-opacity="0"/></radialGradient>
-        <clipPath id="${id}c"><rect x="10" y="-16" width="80" height="112"/></clipPath>
+        <clipPath id="${id}c"><rect x="10" y="-16" width="80" height="102"/></clipPath>
       </defs>
       <rect x="6" y="80" width="88" height="12" rx="6" fill="rgba(40,24,60,.16)"/>
       ${open ? `<ellipse cx="50" cy="30" rx="48" ry="36" fill="url(#${id}r)"/>` : ''}
@@ -274,7 +277,8 @@
   }
   function sidenavHTML() {
     return `<aside class="sidenav"><a class="logo-link" href="#" data-tab="learn" aria-label="Qalam home">${logoSVG(false)}<img class="logo-mini" src="icons/icon-192.png" alt=""></a>
-      ${NAV.map((n) => `<button class="nav-item ${tab === n.id ? 'on' : ''}" data-tab="${n.id}">${n.avatar ? avatarHTML(34) : IMG(n.icon)}<span>${n.label}</span></button>`).join('')}</aside>`;
+      ${NAV.map((n) => `<button class="nav-item ${tab === n.id ? 'on' : ''}" data-tab="${n.id}">${n.avatar ? avatarHTML(34) : IMG(n.icon)}<span>${n.label}</span></button>`).join('')}
+      <div class="side-promo">${M.kid(S.buddy === 'zaid' ? 'huda' : 'zaid', 'read')}<b>Teaching a class?</b><p>Every lesson, answer and Qur’an reference in one place.</p><button class="link-btn" data-tab="more">Teacher corner</button></div></aside>`;
   }
   function mtabsHTML() {
     return `<nav class="mtabs">${NAV.filter((n) => !n.desktopOnly).map((n) => `<button class="mtab ${tab === n.id ? 'on' : ''}" data-tab="${n.id}" aria-label="${n.label}">${n.avatar ? avatarHTML(34) : IMG(n.icon)}</button>`).join('')}</nav>`;
@@ -284,11 +288,11 @@
     const q = S.quests;
     const lessonsLeft = Math.max(0, 10 - Object.keys(S.done).length);
     return `<aside class="rightbar">${statsHTML('right')}
+      <div class="side-card hero-card"><div class="hc-text"><span class="hc-label">Leaderboards</span><h3>${lessonsLeft ? 'Unlock class leagues!' : 'Class leagues are coming!'}</h3><p>${lessonsLeft ? `Complete ${lessonsLeft} more lesson${lessonsLeft > 1 ? 's' : ''} to start competing with your class.` : 'Soon you can race your classmates each week.'}</p></div>${IMG('shield', 'hc-art')}
+        <button class="btn btn-outline" data-tab="leaderboards">Go to leaderboards</button></div>
       <div class="side-card"><h3>Daily Quests <button data-tab="quests">View all</button></h3>${q.list.map(questRow).join('')}</div>
-      <div class="side-card"><h3>Your week</h3>${weekHTML()}<p style="margin-top:12px">${S.lastDay === today() ? `You’ve learned today — ${S.streak} day streak! 🔥` : 'Finish one lesson today to grow your streak.'}</p></div>
-      <div class="side-card"><div class="row">${IMG('shield', 'lock-art')}<div><h3 style="margin:0 0 4px">Leaderboards</h3><p>${lessonsLeft ? `Finish ${lessonsLeft} more lesson${lessonsLeft > 1 ? 's' : ''} to unlock class leaderboards — coming soon!` : 'Class leaderboards are coming soon!'}</p></div></div></div>
-      <div class="side-card"><div class="row">${M.kid(S.buddy === 'zaid' ? 'huda' : 'zaid', 'read')}<div><h3 style="margin:0 0 4px">Teaching a class?</h3><p>See every lesson, answer and Qur’an reference.</p><button class="btn btn-sm btn-violet" style="margin-top:10px" data-tab="more">Teacher corner</button></div></div></div>
-      <div class="footer-links"><a href="teacher.html">Teacher guide</a><a href="https://github.com/osamaajr/qalam-quest" target="_blank" rel="noopener">About</a><a href="https://github.com/osamaajr/qalam-quest/blob/main/RESEARCH.md" target="_blank" rel="noopener">Research</a></div>
+      <div class="side-card"><h3>Your week <span class="hc-label" style="margin:0">${S.streak} day streak</span></h3>${weekHTML()}</div>
+      <div class="footer-links"><a href="https://github.com/osamaajr/qalam-quest" target="_blank" rel="noopener">About</a><a href="teacher.html">Teacher guide</a><a href="https://github.com/osamaajr/qalam-quest/blob/main/RESEARCH.md" target="_blank" rel="noopener">Research</a><a href="https://github.com/osamaajr/qalam-quest#readme" target="_blank" rel="noopener">Privacy</a></div>
     </aside>`;
   }
   function render(scrollToCurrent) {
@@ -298,6 +302,7 @@
     $app.querySelectorAll('[data-tab]').forEach((b) => b.onclick = (e) => { e.preventDefault(); Sfx.play('tap'); tab = b.dataset.tab; render(tab === 'learn'); window.scrollTo(0, 0); });
     $app.querySelectorAll('[data-pop]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); Sfx.play('tap'); statPopup(b); });
     $app.querySelectorAll('.side-card .kid, .page-hero .kid, .wip .kid').forEach((k) => M.liven(k, ['read', 'idle', 'think', 'wave'], 3600));
+    $app.querySelectorAll('.side-promo .kid').forEach((k) => M.liven(k, ['read', 'cheeky', 'read', 'wave'], 4200));
     ({ learn: bindPath, quests: bindQuests, shop: bindShop, profile: bindProfile, more: bindMore, practice: bindPractice, leaderboards: () => {} })[tab](scrollToCurrent);
   }
 
@@ -336,11 +341,23 @@
   }
 
   // ======================= LEARN: THE PATH =======================
-  const OFFS = [0, 62, 96, 62, 0, -62, -96, -62];
+  const OFFS = [0, 44, 70, 44, 0, -44, -70, -44];
   const DECO = [['huda', ['read', 'idle', 'cheeky', 'wave']], ['zaid', ['dance', 'idle', 'happy', 'cheeky']], ['huda', ['think', 'idle', 'wave', 'dance']], ['zaid', ['read', 'idle', 'think', 'cheeky']], ['huda', ['dance', 'cheeky', 'idle', 'read']], ['zaid', ['wave', 'idle', 'think', 'happy']], ['huda', ['read', 'think', 'cheeky', 'dance']]];
+  const KIND = new Map(); // lesson id -> icon type, worked out once from its exercises
+  function lessonKind(l) {
+    if (l.review) return 'trophy';
+    if (!KIND.has(l.id)) { const t = l.steps().map((x) => x.type); KIND.set(l.id, t.includes('tap') ? 'quran' : t.includes('build') ? 'pen' : 'star'); }
+    return KIND.get(l.id);
+  }
+  const ARROW_L = '<svg viewBox="0 0 24 24" class="u-back"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function bannerHTML(ui) {
+    const u = C.UNITS[ui];
+    return `<div class="unit-banner c-${u.color}" id="ubanner" data-ui="${ui}"><div><div class="u-kicker">${ARROW_L}Unit ${ui + 1} · <span class="u-ar">${esc(u.ar)}</span></div><h2>${esc(u.title)}</h2></div>
+      <button class="guide-btn" data-guide="${u.id}" aria-label="Guidebook">${V.book.replace('<svg', '<svg class="ico"')}<span>GUIDEBOOK</span></button></div>`;
+  }
   function pathView() {
     const cur = firstOpen();
-    return C.UNITS.map((u, ui) => {
+    const units = C.UNITS.map((u, ui) => {
       const items = [];
       u.lessons.forEach((l, li) => { items.push({ kind: 'lesson', l, li }); if (li === 2 || (li === 5 && u.lessons.length > 7)) items.push({ kind: 'chest', id: chestId(u, li), after: l.id }); });
       const deco = DECO[ui % DECO.length];
@@ -351,25 +368,28 @@
       if (curK >= 0 && Math.abs(decoAt - curK) < 3) decoAt = curK + 4 < items.length ? curK + 4 : curK - 4;
       const nodes = items.map((it, k) => {
         const x = OFFS[k % OFFS.length];
-        const decoHTML = k === decoAt ? `<div class="deco-buddy" style="${x > 0 ? 'right' : 'left'}:calc(100% + 70px);top:-70px" data-moods="${deco[1].join(',')}">${M.kid(decoBuddy, deco[1][0])}</div>` : '';
+        const decoHTML = k === decoAt ? `<div class="deco-buddy" style="${x > 0 ? 'right' : 'left'}:calc(100% + 64px);top:-86px" data-moods="${deco[1].join(',')}">${M.kid(decoBuddy, deco[1][0])}</div>` : '';
         if (it.kind === 'chest') {
           const opened = S.chests.includes(it.id); const open = S.done[it.after] || S.settings.unlockAll;
           return `<div class="node-wrap" style="transform:translateX(${x}px)">${decoHTML}<button class="chest-node ${opened ? 'opened' : open ? 'ready' : 'locked'}" data-chest="${it.id}" data-open="${open ? 1 : 0}" aria-label="Treasure chest">${chestSVG(opened)}</button></div>`;
         }
         const done = S.done[it.l.id]; const unlocked = isUnlocked(it.l.id); const isCur = cur && cur.l.id === it.l.id;
-        const icon = !unlocked ? V.lock : it.l.review ? IMG('trophy') : done ? V.check : V.star;
+        const icon = done && !it.l.review ? V.check : V[lessonKind(it.l)];
         const stars = done ? `<div class="node-stars">${[1, 2, 3].map((n) => IMG('star', n <= done.stars ? '' : 'off')).join('')}</div>` : '';
-        const ring = isCur ? `<svg class="node-ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" stroke="var(--line)"/><circle cx="50" cy="50" r="44" stroke="var(--c)" stroke-dasharray="276" stroke-dashoffset="${276 - 276 * (it.li / u.lessons.length)}" stroke-linecap="round" transform="rotate(-90 50 50)"/></svg>` : '';
+        const ring = isCur ? `<svg class="node-ring" viewBox="0 0 100 92"><ellipse cx="50" cy="46" rx="45" ry="41" stroke="var(--line)"/><ellipse cx="50" cy="46" rx="45" ry="41" stroke="var(--c)" stroke-dasharray="272" stroke-dashoffset="${272 - 272 * Math.max(.04, it.li / u.lessons.length)}" stroke-linecap="round" transform="rotate(-90 50 46)"/></svg>` : '';
         const bubble = isCur ? '<div class="start-bubble">START</div>' : '';
-        const buddy = isCur ? `<div class="path-buddy walk-in" id="guide" style="${x >= 0 ? 'right:calc(100% + 26px)' : 'left:calc(100% + 26px)'};top:-74px;--from:${x >= 0 ? '-120px' : '120px'}">${M.kid(S.buddy, 'walk', x >= 0 ? '' : 'flip')}</div>` : '';
-        return `<div class="node-wrap" style="transform:translateX(${x}px)" ${isCur ? 'id="current"' : ''}>${decoHTML}${bubble}${buddy}<div class="node-box">${ring}<button class="node ${unlocked ? '' : 'locked'}" data-lesson="${it.l.id}" aria-label="${esc(it.l.title)}">${icon}</button></div>${stars}</div>`;
+        const buddy = isCur ? `<div class="path-buddy walk-in" id="guide" style="${x >= 0 ? 'right:calc(100% + 34px)' : 'left:calc(100% + 34px)'};top:-80px;--from:${x >= 0 ? '-120px' : '120px'}">${M.kid(S.buddy, 'walk', x >= 0 ? '' : 'flip')}</div>` : '';
+        return `<div class="node-wrap" style="transform:translateX(${x}px)" ${isCur ? 'id="current"' : ''}>${decoHTML}${bubble}${buddy}<div class="node-box">${ring}<button class="node ${unlocked ? '' : 'locked'} ${isCur ? 'cur' : ''}" data-lesson="${it.l.id}" aria-label="${esc(it.l.title)}">${icon}</button></div>${stars}</div>`;
       }).join('');
       const jump = ui > 0 && !unitStarted(ui) ? `<div class="jump-row"><button class="jump-btn" data-jump="${ui}">${IMG('key')} Jump here?</button></div>` : '';
-      return `<section class="unit c-${u.color}"><div class="unit-banner"><div><div class="u-kicker">Unit ${ui + 1} · <span class="u-ar">${esc(u.ar)}</span></div><h2>${esc(u.title)}</h2></div>
-        <button class="guide-btn" data-guide="${u.id}" aria-label="Guidebook">${V.book.replace('<svg', '<svg class="ico"')}<span>GUIDEBOOK</span></button></div>${jump}
-        <div class="path">${nodes}</div></section>`;
-    }).join('') + `<div class="wip" style="padding-top:0">${M.kid(S.buddy, 'think')}<p>More units are on the way, in shā’ Allāh!</p></div>`;
+      const divider = ui > 0 ? `<div class="unit-divider"><span>${esc(u.title)}</span></div>` : '';
+      return `<section class="unit c-${u.color}" data-ui="${ui}">${divider}${jump}<div class="path">${nodes}</div></section>`;
+    }).join('');
+    return `<div class="learn">${bannerHTML(curUnit() > 0 && !cur ? curUnit() : 0)}${units}
+      <div class="wip" style="padding-top:0">${M.kid(S.buddy, 'think')}<p>More units are on the way, in shā’ Allāh!</p></div>
+      <button class="to-current hidden" id="toCur" aria-label="Back to my lesson"><svg viewBox="0 0 24 24"><path d="M12 4v15M5 12l7 7 7-7" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`;
   }
+  let pathScroll = null;
   function bindPath(scrollToCurrent) {
     $app.querySelectorAll('[data-lesson]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); Sfx.play('tap'); lessonPop(b); });
     $app.querySelectorAll('[data-chest]').forEach((b) => b.onclick = (e) => {
@@ -378,12 +398,26 @@
       if (b.dataset.open !== '1') { Sfx.play('soft-wrong'); toast('Finish the lessons before it to open this chest!'); return; }
       openChest(id);
     });
-    $app.querySelectorAll('[data-guide]').forEach((b) => b.onclick = () => { Sfx.play('tap'); guidebook(C.UNITS.find((u) => u.id === b.dataset.guide)); });
+    const bindGuide = () => $app.querySelectorAll('[data-guide]').forEach((b) => b.onclick = () => { Sfx.play('tap'); guidebook(C.UNITS.find((u) => u.id === b.dataset.guide)); });
+    bindGuide();
     $app.querySelectorAll('[data-jump]').forEach((b) => b.onclick = () => { Sfx.play('tap'); jumpPrompt(+b.dataset.jump); });
     $app.querySelectorAll('.deco-buddy').forEach((d) => M.liven(d.querySelector('.kid'), d.dataset.moods.split(','), 3800));
     const g = document.getElementById('guide');
     if (g) { const k = g.querySelector('.kid'); setTimeout(() => { k.setAttribute('data-mood', 'wave'); M.liven(k, ['wave', 'idle', 'point', 'cheeky', 'happy', 'idle', 'think', 'dance', 'read', 'idle'], 3200); }, 1400); }
-    if (scrollToCurrent) { const c = document.getElementById('current'); if (c) setTimeout(() => c.scrollIntoView({ block: 'center', behavior: 'smooth' }), 60); }
+    // the one sticky banner always shows the unit you are looking at; the arrow button brings you back to your lesson
+    const banner = document.getElementById('ubanner'), toCur = document.getElementById('toCur'), cur = document.getElementById('current');
+    if (pathScroll) window.removeEventListener('scroll', pathScroll);
+    pathScroll = () => {
+      if (!document.body.contains(banner)) { window.removeEventListener('scroll', pathScroll); return; }
+      const edge = banner.getBoundingClientRect().bottom + 30;
+      let ui = 0; $app.querySelectorAll('.unit').forEach((sec) => { if (sec.getBoundingClientRect().top < edge) ui = +sec.dataset.ui; });
+      if (+banner.dataset.ui !== ui) { const tmp = document.createElement('div'); tmp.innerHTML = bannerHTML(ui); const nb = tmp.firstElementChild; banner.className = nb.className; banner.dataset.ui = ui; banner.innerHTML = nb.innerHTML; bindGuide(); }
+      if (cur && toCur) { const r = cur.getBoundingClientRect(); const off = r.bottom < 80 || r.top > innerHeight - 60; toCur.classList.toggle('hidden', !off); toCur.classList.toggle('up', r.bottom < 80); }
+    };
+    window.addEventListener('scroll', pathScroll, { passive: true });
+    if (toCur) toCur.onclick = () => { Sfx.play('tap'); cur && cur.scrollIntoView({ block: 'center', behavior: 'smooth' }); };
+    if (scrollToCurrent && cur) setTimeout(() => cur.scrollIntoView({ block: 'center', behavior: 'smooth' }), 60);
+    setTimeout(pathScroll, 700);
   }
   function lessonPop(btn) {
     const wrap = btn.closest('.node-wrap');
@@ -416,7 +450,7 @@
   }
 
   // ======================= OTHER PAGES =======================
-  const questRow = (x) => `<div class="quest ${x.p >= x.n ? 'done' : ''}">${IMG(x.icon)}<div style="flex:1;min-width:0"><h4>${esc(x.label)}</h4><div class="bar"><i style="width:${(x.p / x.n) * 100}%"></i><b>${x.p} / ${x.n}</b></div></div><div class="reward">${x.p >= x.n ? IMG('gem') : chestSVG(false)}</div></div>`;
+  const questRow = (x) => `<div class="quest ${x.p >= x.n ? 'done' : ''}">${IMG(x.icon)}<div style="flex:1;min-width:0"><h4>${esc(x.label)}</h4><div class="qbar"><div class="bar"><i style="width:${(x.p / x.n) * 100}%"></i><b>${x.p} / ${x.n}</b></div><span class="qprize">${x.p >= x.n ? IMG('gem') : chestSVG(false)}</span></div></div></div>`;
   function questsView() {
     ensureQuests();
     const q = S.quests; const all = q.list.every((x) => x.p >= x.n);
@@ -478,12 +512,12 @@
         <div class="statbox">${IMG('books')}<div><b>${Object.keys(S.done).length} / ${FLAT.length}</b><small>Lessons</small></div></div>
         <div class="statbox">${IMG('target')}<div><b>${acc}%</b><small>Accuracy</small></div></div></div>
       <h2>Achievements</h2><div class="badges">${BADGES.map(badgeHTML).join('')}</div>
-      <h2>Settings</h2><div class="card">${switchRow('sound', 'Sound effects', 'Dings, pops and fanfares')}${switchRow('tts', 'Read aloud', 'Hear letters and words in Arabic')}
+      <h2>Settings</h2><div class="card"><div class="setting"><div><b>Appearance</b><small>Light, dark, or follow this device</small></div><div class="seg">${['auto', 'light', 'dark'].map((t) => `<button class="${S.settings.theme === t ? 'on' : ''}" data-theme-set="${t}">${t[0].toUpperCase() + t.slice(1)}</button>`).join('')}</div></div>${switchRow('sound', 'Sound effects', 'Dings, pops and fanfares')}${switchRow('tts', 'Read aloud', 'Hear letters and words in Arabic')}
       <div class="setting"><div><b>Teacher & parent corner</b><small>Class mode, unlock lessons, teacher guide</small></div><button class="btn btn-sm btn-violet" data-tab="more">Open</button></div></div></div>`;
   }
   const switchRow = (k, label, sub) => `<div class="setting"><div><b>${label}</b><small>${sub}</small></div><button class="switch ${S.settings[k] ? 'on' : ''}" data-set="${k}" aria-label="${label}"></button></div>`;
   function bindSwitches() { $app.querySelectorAll('[data-set]').forEach((b) => b.onclick = () => { const k = b.dataset.set; S.settings[k] = !S.settings[k]; save(); Sfx.play('select'); render(); }); }
-  function bindProfile() { bindSwitches(); document.getElementById('swapBuddy').onclick = () => { S.buddy = S.buddy === 'zaid' ? 'huda' : 'zaid'; save(); Sfx.play('pop'); render(); }; }
+  function bindProfile() { bindSwitches(); $app.querySelectorAll('[data-theme-set]').forEach((b) => b.onclick = () => { S.settings.theme = b.dataset.themeSet; save(); if (window.__applyTheme) window.__applyTheme(S.settings.theme); Sfx.play('select'); render(); }); document.getElementById('swapBuddy').onclick = () => { S.buddy = S.buddy === 'zaid' ? 'huda' : 'zaid'; save(); Sfx.play('pop'); render(); }; }
   function moreView() {
     return `<div class="page"><div class="page-hero c-violet">${M.kid(S.buddy === 'zaid' ? 'huda' : 'zaid', 'read')}<div><h1>Teacher & parent corner</h1><p>Tools for using Qalam with a class or at home.</p></div></div>
       <div class="card">${switchRow('classMode', 'Class mode: unlimited hearts', 'Mistakes never stop a lesson — good for class')}${switchRow('unlockAll', 'Unlock every lesson', 'Jump to any lesson to preview or teach it')}
