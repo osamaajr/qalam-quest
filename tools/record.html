@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qalam Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Noto+Naskh+Arabic:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --blue:#2B59FF; --blue-d:#1B3FD4; --red:#FF4B5C; --red-d:#D63345; --ink:#26233A; --muted:#8E8AA6; --line:#E7E5F0; --soft:#F7F6FB; --green:#12B886; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Nunito, system-ui, sans-serif; color: var(--ink); background: var(--soft); font-weight: 700; }
+  header { position: sticky; top: 0; z-index: 5; background: #fff; border-bottom: 2px solid var(--line); padding: 16px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  header h1 { margin: 0; font-size: 24px; font-weight: 900; }
+  header p { margin: 0; color: var(--muted); font-size: 14px; flex: 1; min-width: 260px; }
+  .prog { font-weight: 900; color: var(--green); }
+  main { max-width: 980px; margin: 0 auto; padding: 20px 20px 80px; }
+  h2 { font-size: 15px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin: 26px 0 10px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+  .item { background: #fff; border: 2px solid var(--line); border-radius: 18px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 3px 0 var(--line); }
+  .item.human { border-color: var(--green); box-shadow: 0 3px 0 var(--green); }
+  .item.rec { border-color: var(--red); box-shadow: 0 3px 0 var(--red); }
+  .top { display: flex; justify-content: space-between; align-items: center; }
+  .ar { font-family: 'Noto Naskh Arabic', serif; font-size: 40px; line-height: 1.5; direction: rtl; }
+  .hint { font-size: 13px; color: var(--muted); }
+  .chip { font-size: 11px; letter-spacing: .6px; text-transform: uppercase; padding: 3px 8px; border-radius: 99px; background: var(--soft); color: var(--muted); white-space: nowrap; }
+  .chip.human { background: #DFF7EE; color: #0B8A63; } .chip.silent { background: #FFE6E8; color: var(--red-d); }
+  .btns { display: flex; gap: 8px; }
+  button { font: inherit; font-weight: 900; border: 0; border-radius: 12px; padding: 9px 12px; cursor: pointer; color: #fff; background: var(--blue); box-shadow: 0 3px 0 var(--blue-d); font-size: 13px; letter-spacing: .5px; text-transform: uppercase; }
+  button:active { transform: translateY(3px); box-shadow: none; }
+  button.ghost { background: #fff; color: var(--blue); border: 2px solid var(--line); box-shadow: 0 3px 0 var(--line); }
+  button.rec { background: var(--red); box-shadow: 0 3px 0 var(--red-d); }
+  button.save { background: var(--green); box-shadow: 0 3px 0 #0B8A63; }
+  button[disabled] { opacity: .4; cursor: default; }
+  .meter { height: 6px; border-radius: 6px; background: var(--line); overflow: hidden; } .meter i { display: block; height: 100%; width: 0; background: var(--red); transition: width .05s; }
+  .err { color: var(--red-d); font-size: 13px; }
+  .note { background: #FFF6D9; border-radius: 14px; padding: 12px 16px; font-size: 14px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<header><h1>🎙️ Qalam Studio</h1><p>Record a real voice for any sound in the game. Tap <b>Record</b>, say it clearly, tap <b>Stop</b>, listen, then <b>Save</b>. Saved recordings replace the computer voice straight away.</p><span class="prog" id="prog"></span></header>
+<main>
+  <div class="note">Tips: use a quiet room, hold the phone or laptop about a hand-span away, and say each sound once, clearly and slowly — the way you would to a child. Letter names are said as names (Jeem = <span class="ar" style="font-size:20px">جِيم</span>); syllables are just the sound (<span class="ar" style="font-size:20px">جَ</span> = “ja”).</div>
+  <div id="sections"></div>
+</main>
+<script src="../js/content.js"></script>
+<script src="../js/audio-manifest.js"></script>
+<script>
+const C = window.QQ_CONTENT, AUDIO = window.QQ_AUDIO || {};
+const key = (t) => t.normalize('NFC').trim();
+const VOW = { 'َ': 'a', 'ِ': 'i', 'ُ': 'u', 'ً': 'an', 'ٍ': 'in', 'ٌ': 'un' };
+function hint(t) {
+  const L = C.L; const base = t.replace(/[ً-ٟ]/g, ''); const first = L[base[0]];
+  if (!first) return '';
+  const v = [...t].map((c) => VOW[c]).filter(Boolean)[0] || '';
+  const long = base.length === 2 ? { 'ا': 'aa', 'ي': 'ee', 'ى': 'aa', 'و': 'oo' }[base[1]] : '';
+  return `“${first.c}${long || v}”`;
+}
+let human = {}, silent = [];
+async function boot() {
+  try { human = await (await fetch('/api/human')).json(); } catch (e) { document.querySelector('header p').innerHTML = '<span class="err">Start the studio server first: <b>python3 tools/record_server.py</b>, then reload this page.</span>'; }
+  try { silent = await (await fetch('audio-silent.json', { cache: 'no-store' })).json(); } catch (e) {}
+  const names = Object.entries(C.L).map(([k, v]) => ({ t: v.ar, label: v.n }));
+  names.push({ t: 'هَمْزَة', label: 'Hamza' });
+  const syl = Object.keys(AUDIO).concat(silent).filter((t) => !t.includes(' ') && t.replace(/[ً-ٰٟ]/g, '').length <= 2);
+  const sections = [
+    ['Fix first: Jeem', [{ t: 'جِيم', label: 'Jeem (letter name)' }, { t: 'جَ', label: hint('جَ') }, { t: 'جِ', label: hint('جِ') }, { t: 'جُ', label: hint('جُ') }]],
+    ['Silent in the game right now', silent.map((t) => ({ t, label: hint(t) }))],
+    ['Letter names', names],
+    ['Syllables', [...new Set(syl)].sort().map((t) => ({ t, label: hint(t) }))],
+    ['Words', Object.keys(AUDIO).filter((t) => !syl.includes(t) && !names.some((n) => key(n.t) === key(t))).sort().map((t) => ({ t, label: '' }))],
+  ];
+  document.getElementById('sections').innerHTML = sections.map(([h, items]) => `<h2>${h} · ${items.length}</h2><div class="grid">${items.map(card).join('')}</div>`).join('');
+  bind(); progress();
+}
+function status(t) { t = key(t); return human[t] ? 'human' : AUDIO[t] ? 'computer' : 'silent'; }
+function card(it) {
+  const s = status(it.t), id = AUDIO[key(it.t)] || human[key(it.t)];
+  return `<div class="item ${s === 'human' ? 'human' : ''}" data-t="${it.t}"><div class="top"><span class="ar">${it.t}</span><span class="chip ${s}">${s === 'human' ? 'Your voice ✓' : s === 'silent' ? 'Silent' : 'Computer voice'}</span></div>
+    <div class="hint">${it.label || '&nbsp;'}</div><div class="meter"><i></i></div>
+    <div class="btns"><button class="ghost" data-act="play" ${id ? '' : 'disabled'} data-src="${id ? '../assets/audio/' + id + '.mp3' : ''}">▶ Now</button><button class="rec" data-act="rec">● Record</button><button class="save" data-act="save" hidden>Save</button></div><div class="err"></div></div>`;
+}
+let stream, mr, chunks, cur, audioCtx, raf;
+function bind() {
+  document.querySelectorAll('[data-act=play]').forEach((b) => b.onclick = () => { if (cur) cur.pause(); cur = new Audio(b.dataset.src + '?' + Date.now()); cur.play(); });
+  document.querySelectorAll('[data-act=rec]').forEach((b) => b.onclick = () => toggle(b.closest('.item')));
+  document.querySelectorAll('[data-act=save]').forEach((b) => b.onclick = () => save(b.closest('.item')));
+}
+async function toggle(item) {
+  const btn = item.querySelector('[data-act=rec]'), err = item.querySelector('.err');
+  if (mr && mr.state === 'recording') { mr.stop(); return; }
+  err.textContent = '';
+  try { stream = stream || await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); }
+  catch (e) { err.textContent = 'Microphone blocked — allow it in the browser’s address bar.'; return; }
+  chunks = []; mr = new MediaRecorder(stream);
+  mr.ondataavailable = (e) => chunks.push(e.data);
+  mr.onstop = () => {
+    cancelAnimationFrame(raf); item.classList.remove('rec'); btn.textContent = '● Redo'; item.querySelector('.meter i').style.width = '0';
+    item._blob = new Blob(chunks, { type: mr.mimeType || 'audio/webm' });
+    const url = URL.createObjectURL(item._blob); if (cur) cur.pause(); cur = new Audio(url); cur.play();
+    item.querySelector('[data-act=save]').hidden = false;
+  };
+  mr.start(); item.classList.add('rec'); btn.textContent = '■ Stop';
+  // live level meter
+  audioCtx = audioCtx || new AudioContext(); const an = audioCtx.createAnalyser(); audioCtx.createMediaStreamSource(stream).connect(an);
+  const buf = new Uint8Array(an.fftSize); const bar = item.querySelector('.meter i');
+  (function tick() { an.getByteTimeDomainData(buf); let m = 0; for (const v of buf) m = Math.max(m, Math.abs(v - 128)); bar.style.width = Math.min(100, m * 1.6) + '%'; raf = requestAnimationFrame(tick); })();
+  setTimeout(() => { if (mr.state === 'recording') mr.stop(); }, 4000);
+}
+async function save(item) {
+  const t = item.dataset.t, err = item.querySelector('.err'), sb = item.querySelector('[data-act=save]');
+  sb.disabled = true; sb.textContent = 'Saving…';
+  try {
+    const r = await fetch('/api/record?text=' + encodeURIComponent(t), { method: 'POST', body: item._blob });
+    const j = await r.json(); if (!r.ok) throw new Error(j.error || 'save failed');
+    human[key(t)] = j.id; AUDIO[key(t)] = j.id;
+    item.classList.add('human'); const chip = item.querySelector('.chip'); chip.className = 'chip human'; chip.textContent = 'Your voice ✓';
+    const p = item.querySelector('[data-act=play]'); p.disabled = false; p.dataset.src = '../' + j.file;
+    sb.hidden = true; progress();
+  } catch (e) { err.textContent = e.message; }
+  sb.disabled = false; sb.textContent = 'Save';
+}
+function progress() { document.getElementById('prog').textContent = `${Object.keys(human).length} recorded in your voice`; }
+boot();
+</script>
+</body>
+</html>

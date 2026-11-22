@@ -78,6 +78,7 @@ RESEARCH.md       why it's built this way (pedagogy, tajwīd sources, Duolingo r
 - **Run locally:** `python3 -m http.server` and open http://localhost:8000. Double-clicking `index.html` also works.
 - **Verify the Qur'an text:** `node tools/verify.js`
 - **Re-record audio after changing content:** `pip install edge-tts praat-parselmouth`, then `node tools/make-audio.js`. Every clip is trimmed and loudness-levelled. Each short syllable is recorded in four candidate versions (two voices, two speeds), and a vowel check (`tools/vowel_check.py`) keeps one that measures correctly; if none does, the game stays silent rather than teach a wrong sound.
+- **Record real voices (Qalam Studio):** run `python3 tools/record_server.py` and open http://localhost:8765/tools/record.html. Record any letter name, syllable or word; saved recordings replace the computer voice immediately and are protected from `make-audio.js`. Commit `assets/audio`, `js/audio-manifest.js` and `tools/human-recorded.json` to publish them.
 - **Full automated QA:** open `tools/qa.html` while serving the project. It plays all 31 lessons and tests hearts, placement tests, every page, the theme toggle, chests, the shop, the tour and onboarding, then reports any errors.
 - **Add a lesson:** add an entry to a unit in `js/content.js`, using the helpers `T` (teach), `MCQ`, `LISTEN`, `MATCH`, `SORT`, `TAP` and `BUILD`. For any Qur'an text, add the verse to `AYAH` and run the verifier.
 

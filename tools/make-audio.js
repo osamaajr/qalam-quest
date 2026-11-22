@@ -41,6 +41,9 @@ for (let run = 0; run < 120; run++) for (const u of C.UNITS) for (const l of u.l
 }
 // Engine: Microsoft neural voice via edge-tts (natural, human-sounding). Run with
 // PYTHONPATH pointing at an edge-tts install if it isn't installed globally.
+// Human recordings made in tools/record.html are never replaced by the computer voice.
+const HUMAN = fs.existsSync(path.join(__dirname, 'human-recorded.json')) ? JSON.parse(fs.readFileSync(path.join(__dirname, 'human-recorded.json'))) : {};
+Object.keys(HUMAN).forEach((t) => texts.add(key(t)));
 const manifest = {}; const jobs = {};
 for (const t of [...texts].sort()) {
   const id = crypto.createHash('sha1').update(t).digest('hex').slice(0, 10);
@@ -51,11 +54,14 @@ const jobsFile = path.join(OUT, '_jobs.json');
 fs.writeFileSync(jobsFile, JSON.stringify(jobs));
 if (Object.keys(jobs).length) execFileSync('python3', [path.join(__dirname, 'tts_edge.py'), jobsFile, OUT], { stdio: 'inherit' });
 fs.unlinkSync(jobsFile);
-// drop anything the voice couldn't say (e.g. a bare vowel mark on its own)
+// drop anything the voice couldn't say (e.g. a bare vowel mark on its own); remember them for the studio
+const silent = [];
 for (const [t, id] of Object.entries(manifest)) {
+  if (HUMAN[t]) continue;
   const f = path.join(OUT, id + '.mp3');
-  if (!fs.existsSync(f) || fs.statSync(f).size < 2000) { if (fs.existsSync(f)) fs.unlinkSync(f); delete manifest[t]; }
+  if (!fs.existsSync(f) || fs.statSync(f).size < 2000) { if (fs.existsSync(f)) fs.unlinkSync(f); delete manifest[t]; silent.push(t); }
 }
+fs.writeFileSync(path.join(__dirname, 'audio-silent.json'), JSON.stringify(silent, null, 1));
 // remove clips nothing uses any more
 const used = new Set(Object.values(manifest));
 for (const f of fs.readdirSync(OUT)) if (f.endsWith('.mp3') && !used.has(f.slice(0, -4))) fs.unlinkSync(path.join(OUT, f));
