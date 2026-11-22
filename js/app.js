@@ -186,27 +186,40 @@
     const id = 'ch' + (++uid);
     const gold = `url(#${id}g)`;
     const frame = (y0, h) => `<rect x="12" y="${y0}" width="10" height="${h}" rx="2" fill="${gold}"/><rect x="78" y="${y0}" width="10" height="${h}" rx="2" fill="${gold}"/>`;
-    const lid = open
-      ? `<g><path d="M18 6 H82 L88 18 H12 Z" fill="#7A3E12"/><rect x="12" y="-14" width="76" height="22" rx="3" fill="#C47630"/><rect x="12" y="-14" width="76" height="6" rx="3" fill="#DD8F45"/>${frame(-14, 22)}<rect x="10" y="4" width="80" height="6" rx="2" fill="${gold}"/></g>`
-      : `<g><path d="M17 20 H83 L88 30 H12 Z" fill="#DD8F45"/><rect x="12" y="29" width="76" height="17" rx="2" fill="#C47630"/>${frame(20, 26)}<rect x="10" y="17" width="80" height="6" rx="2.5" fill="${gold}"/></g>`;
+    const spark = (x, y, r) => `<path d="M${x} ${y - r}Q${x} ${y} ${x + r} ${y}Q${x} ${y} ${x} ${y + r}Q${x} ${y} ${x - r} ${y}Q${x} ${y} ${x} ${y - r}Z" fill="#FFF6C8"/>`;
+    // open: the lid swings back on its hinge, resting on the back rim of the box (no gap)
+    const openLid = `<g>
+        <path d="M12 46 L19 4 H81 L88 46 Z" fill="#7A3E12"/>
+        <path d="M21 10 H79 L84 40 H16 Z" fill="#5E2D0B"/>
+        <path d="M18.5 22 H81.5 M17 31 H83" stroke="#4A2207" stroke-width="2"/>
+        <path d="M12 46 L19 4 H28 L22 46 Z" fill="${gold}"/><path d="M88 46 L81 4 H72 L78 46 Z" fill="${gold}"/>
+        <path d="M17 2 H83 L84.5 9 H15.5 Z" fill="${gold}"/>
+      </g>`;
+    const treasure = `<g>
+        <path d="M15 48 Q20 33 34 31 Q42 25 52 28 Q64 26 70 32 Q82 34 85 48 Z" fill="#F0A000"/>
+        <path d="M19 46 Q24 36 35 34 Q43 29 52 31 Q63 29 69 35 Q79 37 81 46 Z" fill="${gold}"/>
+        ${[[28, 38], [40, 33], [54, 34], [66, 38], [35, 43], [60, 43], [47, 40], [73, 43]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="5.2" ry="2.6" fill="#FFD84A" stroke="#D88A00" stroke-width="1"/>`).join('')}
+        <path d="M44 22 L50 16 L56 22 L50 31 Z" fill="#3DB2FF"/><path d="M44 22 L50 16 L50 31 Z" fill="#8FD6FF"/><path d="M44 22 H56" stroke="#1E8FE0" stroke-width="1"/>
+        <circle cx="65" cy="29" r="4.4" fill="#FF6FA5"/><circle cx="63.6" cy="27.6" r="1.4" fill="#FFD0E2"/>
+        ${spark(30, 24, 4)}${spark(74, 20, 3)}
+      </g>`;
+    const closedLid = `<g><path d="M17 20 H83 L88 30 H12 Z" fill="#DD8F45"/><rect x="12" y="29" width="76" height="17" rx="2" fill="#C47630"/>${frame(20, 26)}<rect x="10" y="17" width="80" height="6" rx="2.5" fill="${gold}"/></g>`;
     return `<svg class="chest ${cls}" viewBox="0 -16 100 112" aria-hidden="true">
       <defs>
         <linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE45C"/><stop offset=".55" stop-color="#FFC21A"/><stop offset="1" stop-color="#F0A000"/></linearGradient>
-        <radialGradient id="${id}r" cx=".5" cy=".55" r=".55"><stop offset="0" stop-color="#FFF7C4"/><stop offset="1" stop-color="#FFC21A" stop-opacity="0"/></radialGradient>
-        <clipPath id="${id}c"><rect x="10" y="-16" width="80" height="102"/></clipPath>
+        <clipPath id="${id}c"><rect x="12" y="16" width="76" height="70" rx="3"/></clipPath>
       </defs>
       <rect x="6" y="80" width="88" height="12" rx="6" fill="rgba(40,24,60,.16)"/>
-      ${open ? `<ellipse cx="50" cy="30" rx="48" ry="36" fill="url(#${id}r)"/>` : ''}
+      ${open ? openLid + treasure : ''}
       <rect x="12" y="44" width="76" height="42" rx="3" fill="#A65F22"/>
       <rect x="22" y="50" width="56" height="13" fill="#8A4A17"/>
       <rect x="22" y="66" width="56" height="13" fill="#8A4A17"/>
-      ${open ? `<rect x="14" y="30" width="72" height="16" fill="#5A2A08"/><path d="M26 44 l7 -10 7 10z" fill="#3DB2FF"/><path d="M43 44 l8 -13 8 13z" fill="#FFD23F"/><path d="M61 44 l7 -10 7 10z" fill="#FF6FA5"/><circle cx="36" cy="30" r="2" fill="#fff"/><circle cx="64" cy="26" r="1.6" fill="#fff"/>` : ''}
       ${frame(44, 42)}
       <rect x="10" y="44" width="80" height="7" rx="2.5" fill="${gold}"/>
       <rect x="10" y="80" width="80" height="6" rx="2.5" fill="${gold}"/>
-      ${lid}
-      ${open ? '' : `<rect x="41" y="38" width="18" height="18" rx="4" fill="${gold}" stroke="#D08A00" stroke-width="1.6"/><circle cx="50" cy="45" r="2.8" fill="#8A4A17"/><path d="M48.6 46.5 h2.8 l.7 5 h-4.2z" fill="#8A4A17"/>`}
-      <g clip-path="url(#${id}c)" opacity=".32"><path d="M30 ${open ? -16 : 16} L46 ${open ? -16 : 16} L20 96 L4 96Z" fill="#fff"/><path d="M52 ${open ? -16 : 16} L58 ${open ? -16 : 16} L32 96 L26 96Z" fill="#fff"/></g>
+      ${open ? `<rect x="43" y="47" width="14" height="12" rx="3" fill="${gold}" stroke="#D08A00" stroke-width="1.4"/>` : closedLid}
+      ${open ? '' : `<rect x="41" y="38" width="18" height="18" rx="4" fill="${gold}" stroke="#D08A00" stroke-width="1.6"/><circle cx="50" cy="45" r="2.8" fill="#8A4A17"/><path d="M48.6 46.5 h2.8 l.7 5 h-4.2z" fill="#8A4A17"/>
+      <g clip-path="url(#${id}c)" opacity=".32"><path d="M30 16 L46 16 L20 96 L4 96Z" fill="#fff"/><path d="M52 16 L58 16 L32 96 L26 96Z" fill="#fff"/></g>`}
     </svg>`;
   }
   function logoSVG(write, cls = '') {
@@ -1020,6 +1033,6 @@
     if (s && s.type === 'frozen') setTimeout(() => modal(`<div style="align-self:center">${IMG('snowflake').replace('class="ico', 'style="width:96px;height:96px" class="ico')}</div><h2>Streak saved!</h2><p>A streak freeze protected your ${S.streak}-day streak while you were away. Welcome back!</p><button class="btn btn-sky" data-x>Yay!</button>`, (m, c) => (m.querySelector('[data-x]').onclick = c)), 400);
     if (s && s.type === 'reset' && s.lost >= 2) setTimeout(() => modal(`${M.kid(S.buddy, 'wave')}<h2>Welcome back!</h2><p>Your ${s.lost}-day streak took a rest. Every day is a fresh start — let’s begin a new one!</p><button class="btn" data-x>Let’s go</button>`, (m, c) => (m.querySelector('[data-x]').onclick = c)), 400);
   }
-  window.QQ_APP = { get state() { return S; }, render, tour };
+  window.QQ_APP = { get state() { return S; }, render, tour, chestSVG };
   boot();
 })();
