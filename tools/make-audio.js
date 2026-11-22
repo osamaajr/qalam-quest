@@ -51,7 +51,7 @@ for (const t of [...texts].sort()) {
   if (!fs.existsSync(path.join(OUT, id + '.mp3'))) jobs[id] = forVoice(t);
 }
 const jobsFile = path.join(OUT, '_jobs.json');
-fs.writeFileSync(jobsFile, JSON.stringify(jobs));
+fs.writeFileSync(jobsFile, JSON.stringify({ jobs, names: Object.values(NAMES).map(key) }));
 if (Object.keys(jobs).length) execFileSync('python3', [path.join(__dirname, 'tts_edge.py'), jobsFile, OUT], { stdio: 'inherit' });
 fs.unlinkSync(jobsFile);
 // drop anything the voice couldn't say (e.g. a bare vowel mark on its own); remember them for the studio
