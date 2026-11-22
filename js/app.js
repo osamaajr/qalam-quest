@@ -138,9 +138,23 @@
   let arVoice = null, curAudio = null;
   function loadVoices() { if (!window.speechSynthesis) return; arVoice = speechSynthesis.getVoices().find((v) => /^ar/i.test(v.lang)) || null; }
   if (window.speechSynthesis) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
-  const canSpeak = (t) => S.settings.tts && !!t && (!!AUDIO[audioKey(t)] || !!arVoice);
+  // A lone letter is spoken by its name (ت → تَاء), which is how children learn it.
+  // What the voice should actually say for a piece of on-screen text, or null if nothing sensible:
+  // a lone letter → its name (ت → تَاء); spaced root letters (ك ت ب) → their names; mixed English or
+  // a bare ending (ـهُ) → nothing. Must match sayable() in tools/make-audio.js.
+  const NAMES = Object.assign({ 'ء': 'هَمْزَة' }, ...Object.entries(C.L).map(([k, v]) => ({ [k]: v.ar })));
+  const sayable = (t) => {
+    const k = String(t || '').trim();
+    if (!k || /[A-Za-z]/.test(k) || k.startsWith('ـ')) return null;
+    if (NAMES[k]) return NAMES[k];
+    const parts = k.split(/\s+/);
+    if (parts.length > 1 && parts.every((p) => NAMES[p])) return parts.map((p) => NAMES[p]).join(' ');
+    return k;
+  };
+  const canSpeak = (t) => S.settings.tts && !!sayable(t) && !!AUDIO[audioKey(sayable(t))];
   function speak(text, slow, btn) {
     if (!S.settings.tts || !text) return;
+    text = sayable(text); if (!text) return;
     const id = AUDIO[audioKey(text)];
     if (curAudio) { curAudio.pause(); curAudio = null; }
     if (id) {
