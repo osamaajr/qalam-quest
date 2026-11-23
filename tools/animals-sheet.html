@@ -1,0 +1,56 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Animal sheet</title>
+<link rel="stylesheet" href="../css/animals.css">
+<style>
+  body { margin: 0; font-family: ui-rounded, "SF Pro Rounded", system-ui, sans-serif; color: #3B2A4A; }
+  section { padding: 14px 16px 18px; }
+  section.cream { background: #FBF3E6; }
+  section.dark { background: #131A2B; color: #F3ECFF; }
+  h2 { margin: 0 0 10px; font-size: 15px; letter-spacing: .02em; }
+  .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .card { border-radius: 16px; padding: 8px 8px 6px; background: rgba(255, 255, 255, .55); }
+  .dark .card { background: rgba(255, 255, 255, .05); }
+  .card h3 { margin: 0; font-size: 12.5px; display: flex; justify-content: space-between; gap: 6px; }
+  .card h3 .ar { font-family: "Amiri", "Geeza Pro", serif; font-size: 15px; font-weight: 400; }
+  .row { display: flex; align-items: flex-end; justify-content: space-between; }
+  .cell { text-align: center; font-size: 10px; opacity: .85; }
+  .cell .animal { width: 98px; display: block; }
+  .cell.sm .animal { width: 56px; }
+  .zoom { display: flex; flex-wrap: wrap; gap: 12px; }
+  .zoom .animal { width: var(--z, 320px); }
+  .zoom .cell .animal { width: var(--z, 110px); }
+</style>
+<div id="root"></div>
+<script src="../js/animals.js"></script>
+<script>
+  const A = window.QQ_ANIMALS, q = new URLSearchParams(location.search);
+  const root = document.getElementById('root');
+  if (q.get('strip')) {
+    // e.g. ?strip=all&times=0,1000,2000,3000&size=110&bg=dark — one row per animal,
+    // each column frozen at a different moment of the idle activity.
+    const keys = q.get('strip') === 'all' ? A.LIST.map(a => a.key) : q.get('strip').split(',');
+    const times = (q.get('times') || '0,800,1600,2400,3200,4000,4800,5600').split(',').map(Number);
+    const bg = q.get('bg') === 'dark' ? 'dark' : 'cream';
+    root.innerHTML = `<section class="${bg}" style="--z:${q.get('size') || 110}px">` + keys.map(k =>
+      `<div class="zoom" style="align-items:flex-end">` + times.map(t =>
+        `<div class="cell" data-t="${t}">${A.svg(k, { state: q.get('state') || 'idle' })}${(t / 1000).toFixed(1)}s</div>`).join('') + `</div>`).join('') + `</section>`;
+    requestAnimationFrame(() => document.querySelectorAll('[data-t]').forEach(c =>
+      c.getAnimations({ subtree: true }).forEach(an => { an.pause(); an.currentTime = +c.dataset.t; })));
+  } else if (q.get('zoom')) {
+    // e.g. ?zoom=bee&state=happy&size=400 or ?zoom=all
+    const keys = q.get('zoom') === 'all' ? A.LIST.map(a => a.key) : q.get('zoom').split(',');
+    const bg = q.get('bg') === 'dark' ? 'dark' : 'cream';
+    root.innerHTML = `<section class="${bg}" style="--z:${q.get('size') || 320}px"><div class="zoom">` +
+      keys.map(k => A.svg(k, { state: q.get('state') || 'idle' })).join('') + `</div></section>`;
+  } else {
+    const card = a => `<div class="card"><h3><span>${a.name} · ${a.ref}</span><span class="ar">${a.ar}</span></h3><div class="row">` +
+      ['idle', 'happy', 'look'].map(s => `<div class="cell">${A.svg(a.key, { state: s })}${s}</div>`).join('') +
+      `<div class="cell sm">${A.svg(a.key)}small</div></div></div>`;
+    const sec = (cls, title) => `<section class="${cls}"><h2>${title}</h2><div class="grid">${A.LIST.map(card).join('')}</div></section>`;
+    root.innerHTML = sec('cream', 'Qalam animals — on cream') + sec('dark', 'On dark');
+  }
+  // ?t=2400 freezes every animation at that moment (handy for screenshots).
+  if (q.get('t') != null) requestAnimationFrame(() => document.getAnimations().forEach(an => { an.pause(); an.currentTime = +q.get('t'); }));
+</script>

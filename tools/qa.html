@@ -51,6 +51,8 @@ async function playLesson(id, wrongAt) {
     for (const [i, id] of ids.entries()) { const r = await playLesson(id, i % 3 === 0 ? 2 : -1); if (!r.startsWith('ok')) { bad++; log('✗ ' + id + ' ' + r); } }
     log(`lessons: ${ids.length - bad}/${ids.length} completed`);
     const S = W.QQ_APP.state;
+    log('daily quests now: ' + S.quests.list.map((q) => `${q.label} [Lv ${q.tier || 1}, ${q.p}/${q.n}]`).join(' | '));
+    log('ladders: ' + JSON.stringify(S.ladders) + ' gems=' + S.gems);
     log(`state after run: xp=${S.xp} done=${Object.keys(S.done).length} badges=${S.badges.length} streak=${S.streak}`);
 
     // 2. hearts: run out with class mode off
@@ -82,6 +84,18 @@ async function playLesson(id, wrongAt) {
     for (const go of ['buddy', 'name', 'level', 'goal', 'done']) { await until(() => q(`[data-go=${go}]`)); q(`[data-go=${go}]`).click(); await sleep(200); }
     await sleep(1500); log('onboarding → home: ' + !!q('#ubanner') + ', tour shown: ' + !!Dc.querySelector('.tour-card'));
   } catch (e) { log('HARNESS ERROR: ' + e.message + '\n' + e.stack); }
+  // audio: every clip in the manifest loads and can play in this browser
+  try {
+    const A = W.QQ_AUDIO || {}; const ids = [...new Set(Object.values(A))]; let ok = 0, bad = [];
+    const one = (id) => new Promise((res) => {
+      const a = new Audio('../assets/audio/' + id + '.mp3'); a.preload = 'auto';
+      const t = setTimeout(() => { bad.push(id + ' (timeout)'); res(); }, 20000);
+      a.oncanplaythrough = () => { clearTimeout(t); if (a.duration > .2) ok++; else bad.push(id + ' (empty)'); res(); };
+      a.onerror = () => { clearTimeout(t); bad.push(id + ' (error)'); res(); };
+    });
+    for (let i = 0; i < ids.length; i += 8) await Promise.all(ids.slice(i, i + 8).map(one));
+    log(`audio: ${ok}/${ids.length} clips load and play` + (bad.length ? ' — FAILED: ' + bad.slice(0, 5).join(', ') : ''));
+  } catch (e) { log('audio check error ' + e.message); }
   log(errors.length ? 'JS ERRORS:\n' + [...new Set(errors)].join('\n') : 'JS errors: none');
   log('DONE');
 })();

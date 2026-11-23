@@ -64,12 +64,18 @@
     { id: 'lessons3', icon: 'rocket', label: 'Complete 3 lessons', n: 3, m: 'lessons' },
   ];
   function ensureQuests() {
+    if (!S.ladders) { S.ladders = {}; bumpLadders(); }       // existing players: credit rungs already earned (rewards included)
     if (S.quests && S.quests.day === today()) return;
     const seed = today().split('-').reduce((a, b) => a * 31 + +b, 7);
     const pool = QUEST_POOL.slice(); const picks = [];
-    let x = seed; while (picks.length < 2) { x = (x * 9301 + 49297) % 233280; picks.push(pool.splice(x % pool.length, 1)[0]); }
+    let x = seed; while (picks.length < 2) { x = (x * 9301 + 49297) % 233280; const q = pool.splice(x % pool.length, 1)[0]; if (!picks.some((p) => p.m === q.m)) picks.push(q); }
     S.quests = { day: today(), claimedChest: false, list: [{ id: 'goal', icon: 'glowing-star', label: `Earn ${S.dailyGoal} XP`, n: S.dailyGoal, m: 'xp', p: 0 }, ...picks.map((q) => ({ ...q, p: 0 }))] };
   }
+  // Daily quests roll on: finishing one immediately replaces it with a harder follow-up for the rest of
+  // the day (2 → 4 → 6 lessons, 5 → 8 → 12 in a row …), each worth more gems.
+  const STEP = { lessons: (n) => n + 2, xp: (n) => n * 2, combo: (n) => Math.min(n + 4, 25), acc90: (n) => n + 1, perfect: (n) => n + 1 };
+  const LABEL = { lessons: (n) => `Complete ${n} lessons`, xp: (n) => `Earn ${n} XP`, combo: (n) => `Get ${n} answers in a row`, acc90: (n) => n === 1 ? 'Score 90% or more in a lesson' : `Score 90%+ in ${n} lessons`, perfect: (n) => n === 1 ? 'Finish a lesson with no mistakes' : `Finish ${n} lessons with no mistakes` };
+  const questGems = (q) => 10 + 5 * ((q.tier || 1) - 1);
   function bumpQuests(r) {
     ensureQuests(); const done = [];
     S.quests.list.forEach((q) => {
@@ -79,9 +85,43 @@
       if (q.m === 'combo') q.p = Math.max(q.p, r.bestCombo);
       if (q.m === 'acc90' && r.acc >= 90) q.p += 1;
       if (q.m === 'perfect' && r.mistakes === 0) q.p += 1;
-      q.p = Math.min(q.p, q.n);
-      if (q.p >= q.n) { done.push(q); S.gems += 10; }
+      if (q.p < q.n) return;
+      const gems = questGems(q); S.gems += gems;
+      done.push({ icon: q.icon, label: q.label, gems });
+      q.cleared = (q.cleared || 0) + 1;
+      // roll on to the follow-up (lessons and XP keep their progress; the others start fresh)
+      const keep = q.m === 'lessons' || q.m === 'xp' ? q.p : 0;
+      q.tier = (q.tier || 1) + 1; q.n = STEP[q.m](q.n); q.label = LABEL[q.m](q.n); q.p = Math.min(keep, q.n - 1);
     });
+    return done;
+  }
+  const dailyCleared = () => S.quests.list.every((q) => (q.cleared || 0) >= 1);
+
+  // Quest ladders: long-term goals that never run out. Each rung pays more; the next appears at once.
+  const LADDERS = [
+    { id: 'lessons', icon: 'books', name: 'Lesson Ladder', unit: 'lessons', tiers: [5, 10, 20, 35, 50, 75, 100, 150, 200], val: () => S.stats.lessons },
+    { id: 'xp', icon: 'glowing-star', name: 'XP Climber', unit: 'XP', tiers: [100, 250, 500, 1000, 2000, 3500, 5000, 7500, 10000], val: () => S.xp },
+    { id: 'perfect', icon: 'hundred', name: 'Perfect Path', unit: 'perfect lessons', tiers: [1, 3, 5, 10, 20, 35, 50], val: () => S.stats.perfect },
+    { id: 'streak', icon: 'fire', name: 'Streak Keeper', unit: 'day streak', tiers: [3, 7, 14, 30, 60, 100, 200, 365], val: () => S.bestStreak },
+    { id: 'combo', icon: 'bolt', name: 'Combo Master', unit: 'in a row', tiers: [5, 10, 15, 20, 30], val: () => S.stats.bestCombo },
+    { id: 'units', icon: 'trophy', name: 'Unit Explorer', unit: 'units finished', tiers: [1, 2, 3, 4, 5, 6, 7], val: () => C.UNITS.filter((u) => u.lessons.every((l) => S.done[l.id])).length },
+  ];
+  const ladderGems = (i) => 15 + 10 * i;
+  function ladderState(L) {
+    S.ladders = S.ladders || {};
+    const i = S.ladders[L.id] || 0; const v = L.val();
+    return { i, v, max: i >= L.tiers.length, target: L.tiers[Math.min(i, L.tiers.length - 1)], prev: i ? L.tiers[i - 1] : 0 };
+  }
+  function bumpLadders() {
+    const done = [];
+    for (const L of LADDERS) {
+      let st = ladderState(L);
+      while (!st.max && st.v >= st.target) {
+        const gems = ladderGems(st.i); S.gems += gems;
+        done.push({ icon: L.icon, label: `${L.name}: ${st.target} ${L.unit}`, gems, ladder: true });
+        S.ladders[L.id] = st.i + 1; st = ladderState(L);
+      }
+    }
     return done;
   }
   const UNIT_BADGE = [['books', 'Letter Legend'], ['notes', 'Vowel Voyager'], ['thread', 'Stretch Star'], ['stop', 'Stop & Double'], ['sun', 'Sun & Moon'], ['nose', 'Tajwīd Hero'], ['magnifier', 'Word Detective']];
@@ -306,7 +346,7 @@
   function sidenavHTML() {
     return `<aside class="sidenav"><a class="logo-link" href="#" data-tab="learn" aria-label="Qalam home">${logoSVG(false)}<img class="logo-mini" src="icons/icon-192.png" alt=""></a>
       ${NAV.map((n) => `<button class="nav-item ${tab === n.id ? 'on' : ''}" data-tab="${n.id}">${n.avatar ? avatarHTML(34) : IMG(n.icon)}<span>${n.label}</span></button>`).join('')}
-      <div class="side-promo">${M.kid(S.buddy === 'zaid' ? 'huda' : 'zaid', 'read')}<b>Teaching a class?</b><p>Every lesson, answer and Qur’an reference in one place.</p><button class="link-btn" data-tab="more">Teacher corner</button></div></aside>`;
+      <div class="side-promo">${M.kid(S.buddy === 'zaid' ? 'huda' : 'zaid', 'dates')}<b>Teaching a class?</b><p>Every lesson, answer and Qur’an reference in one place.</p><button class="link-btn" data-tab="more">Teacher corner</button></div></aside>`;
   }
   function mtabsHTML() {
     return `<nav class="mtabs">${NAV.filter((n) => !n.desktopOnly).map((n) => `<button class="mtab ${tab === n.id ? 'on' : ''}" data-tab="${n.id}" aria-label="${n.label}">${n.avatar ? avatarHTML(34) : IMG(n.icon)}</button>`).join('')}</nav>`;
@@ -330,8 +370,6 @@
     $app.querySelectorAll('[data-tab]').forEach((b) => b.onclick = (e) => { e.preventDefault(); Sfx.play('tap'); tab = b.dataset.tab; render(tab === 'learn'); window.scrollTo(0, 0); });
     $app.querySelectorAll('[data-pop]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); Sfx.play('tap'); statPopup(b); });
     $app.querySelectorAll('[data-theme-toggle]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); setTheme(isDark() ? 'light' : 'dark', b); });
-    $app.querySelectorAll('.side-card .kid, .page-hero .kid, .wip .kid').forEach((k) => M.liven(k, ['read', 'idle', 'think', 'wave'], 3600));
-    $app.querySelectorAll('.side-promo .kid').forEach((k) => M.liven(k, ['read', 'cheeky', 'read', 'wave'], 4200));
     ({ learn: bindPath, quests: bindQuests, shop: bindShop, profile: bindProfile, more: bindMore, practice: bindPractice, leaderboards: () => {} })[tab](scrollToCurrent);
   }
 
@@ -371,6 +409,8 @@
 
   // ======================= LEARN: THE PATH =======================
   const OFFS = [0, 44, 70, 44, 0, -44, -70, -44];
+  // each unit's kid does its own constant activity (no two alike on the path)
+  const UNIT_ACT = ['reading', 'writing', 'watering', 'quran', 'painting', 'listening', 'detective'];
   const DECO = [['huda', ['read', 'idle', 'cheeky', 'wave']], ['zaid', ['dance', 'idle', 'happy', 'cheeky']], ['huda', ['think', 'idle', 'wave', 'dance']], ['zaid', ['read', 'idle', 'think', 'cheeky']], ['huda', ['dance', 'cheeky', 'idle', 'read']], ['zaid', ['wave', 'idle', 'think', 'happy']], ['huda', ['read', 'think', 'cheeky', 'dance']]];
   const KIND = new Map(); // lesson id -> icon type, worked out once from its exercises
   function lessonKind(l) {
@@ -393,13 +433,19 @@
       const decoBuddy = deco[0] === S.buddy ? (S.buddy === 'zaid' ? 'huda' : 'zaid') : deco[0];
       // keep the decorative kid well away from the guide standing by the current lesson
       const curK = cur && cur.ui === ui ? items.findIndex((it) => it.kind === 'lesson' && it.l.id === cur.l.id) : -1;
-      let decoAt = ui % 2 ? 6 : 2;
+      let decoAt = Math.min(ui % 2 ? 6 : 2, items.length - 2);
       if (curK >= 0 && Math.abs(decoAt - curK) < 3) decoAt = curK + 4 < items.length ? curK + 4 : curK - 4;
+      // this section's Qur'an animal, a few steps away from the kid and the guide
+      const animal = window.QQ_ANIMALS && QQ_ANIMALS.LIST[ui % QQ_ANIMALS.LIST.length];
+      let aniAt = decoAt + 3 < items.length ? decoAt + 3 : Math.max(0, decoAt - 3);
+      if (curK >= 0 && Math.abs(aniAt - curK) < 2) aniAt = Math.min(items.length - 1, curK + 2 === decoAt ? curK + 3 : curK + 2);
+      const lockedAt = (i) => { const h = items[i]; return h && (h.kind === 'chest' ? !(S.done[h.after] || S.settings.unlockAll) : !isUnlocked(h.l.id)); };
       const nodes = items.map((it, k) => {
         const x = OFFS[k % OFFS.length];
         const here = items[decoAt];
         const decoLocked = here && (here.kind === 'chest' ? !(S.done[here.after] || S.settings.unlockAll) : !isUnlocked(here.l.id));
-        const decoHTML = k === decoAt ? `<div class="deco-buddy ${decoLocked ? 'locked' : ''}" style="${x > 0 ? 'right' : 'left'}:calc(100% + 64px);top:-86px" data-moods="${deco[1].join(',')}">${M.kid(decoBuddy, deco[1][0])}</div>` : '';
+        const aniHTML = animal && k === aniAt ? `<button class="deco-animal ${lockedAt(k) ? 'locked' : ''}" style="${x > 0 ? 'right' : 'left'}:calc(100% + 48px);top:-34px" data-animal-info="${animal.key}" aria-label="${esc(animal.name)}">${QQ_ANIMALS.svg(animal.key, { state: 'idle' })}</button>` : '';
+        const decoHTML = (k === aniAt ? aniHTML : '') + (k !== decoAt ? '' : `<div class="deco-buddy ${decoLocked ? 'locked' : ''}" style="${x > 0 ? 'right' : 'left'}:calc(100% + 64px);top:-86px" >${M.kid(decoBuddy, UNIT_ACT[ui % UNIT_ACT.length])}</div>`);
         if (it.kind === 'chest') {
           const opened = S.chests.includes(it.id); const open = S.done[it.after] || S.settings.unlockAll;
           return `<div class="node-wrap" style="transform:translateX(${x}px)">${decoHTML}<button class="chest-node ${opened ? 'opened' : open ? 'ready' : 'locked'}" data-chest="${it.id}" data-open="${open ? 1 : 0}" aria-label="Treasure chest">${chestSVG(opened)}</button></div>`;
@@ -409,7 +455,7 @@
         const stars = done ? `<div class="node-stars">${[1, 2, 3].map((n) => IMG('star', n <= done.stars ? '' : 'off')).join('')}</div>` : '';
         const ring = isCur ? `<svg class="node-ring" viewBox="0 0 108 96"><ellipse cx="54" cy="48" rx="49" ry="43" stroke="var(--line)"/><path d="M54 5 A49 43 0 1 1 53.9 5" pathLength="100" stroke="var(--c)" stroke-dasharray="100" stroke-dashoffset="${100 - 100 * Math.max(.06, it.li / u.lessons.length)}" stroke-linecap="round"/></svg>` : '';
         const bubble = isCur ? '<div class="start-bubble">START</div>' : '';
-        const buddy = isCur ? `<div class="path-buddy walk-in" id="guide" style="${x >= 0 ? 'right:calc(100% + 34px)' : 'left:calc(100% + 34px)'};top:-80px;--from:${x >= 0 ? '-120px' : '120px'}">${M.kid(S.buddy, 'walk', x >= 0 ? '' : 'flip')}</div>` : '';
+        const buddy = isCur ? `<div class="path-buddy walk-in" id="guide" style="${x >= 0 ? 'right:calc(100% + 34px)' : 'left:calc(100% + 34px)'};top:-80px;--from:${x >= 0 ? '-120px' : '120px'}">${M.kid(S.buddy, 'pointing', x >= 0 ? '' : 'flip')}</div>` : '';
         return `<div class="node-wrap" style="transform:translateX(${x}px)" ${isCur ? 'id="current"' : ''}>${decoHTML}${bubble}${buddy}<div class="node-box">${ring}<button class="node ${unlocked ? '' : 'locked'} ${isCur ? 'cur' : ''}" data-lesson="${it.l.id}" aria-label="${esc(it.l.title)}">${icon}</button></div>${stars}</div>`;
       }).join('');
       const jump = ui > 0 && !unitStarted(ui) ? `<div class="jump-row"><button class="jump-btn" data-jump="${ui}">${IMG('key')} Jump here?</button></div>` : '';
@@ -417,7 +463,7 @@
       return `<section class="unit c-${u.color}" data-ui="${ui}">${divider}${jump}<div class="path">${nodes}</div></section>`;
     }).join('');
     return `<div class="learn">${bannerHTML(curUnit() > 0 && !cur ? curUnit() : 0)}${units}
-      <div class="wip" style="padding-top:0">${M.kid(S.buddy, 'think')}<p>More units are on the way, in shā’ Allāh!</p></div>
+      <div class="wip" style="padding-top:0">${M.kid(S.buddy, 'napping')}<p>More units are on the way, in shā’ Allāh!</p></div>
       <button class="to-current hidden" id="toCur" aria-label="Back to my lesson"><svg viewBox="0 0 24 24"><path d="M12 4v15M5 12l7 7 7-7" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`;
   }
   let pathScroll = null;
@@ -432,9 +478,11 @@
     const bindGuide = () => $app.querySelectorAll('[data-guide]').forEach((b) => b.onclick = () => { Sfx.play('tap'); guidebook(C.UNITS.find((u) => u.id === b.dataset.guide)); });
     bindGuide();
     $app.querySelectorAll('[data-jump]').forEach((b) => b.onclick = () => { Sfx.play('tap'); jumpPrompt(+b.dataset.jump); });
-    $app.querySelectorAll('.deco-buddy').forEach((d) => M.liven(d.querySelector('.kid'), d.dataset.moods.split(','), 3800));
+    $app.querySelectorAll('[data-animal-info]').forEach((b) => {
+      b.onclick = (e) => { e.stopPropagation(); animalPopup(b.dataset.animalInfo); };
+    });
     const g = document.getElementById('guide');
-    if (g) { const k = g.querySelector('.kid'); setTimeout(() => { k.setAttribute('data-mood', 'wave'); M.liven(k, ['wave', 'idle', 'point', 'cheeky', 'happy', 'idle', 'think', 'dance', 'read', 'idle'], 3200); }, 1400); }
+    // the guide at your lesson: a calm, constant point at START (no jumping around)
     // the one sticky banner always shows the unit you are looking at; the arrow button brings you back to your lesson
     const banner = document.getElementById('ubanner'), toCur = document.getElementById('toCur'), cur = document.getElementById('current');
     if (pathScroll) window.removeEventListener('scroll', pathScroll);
@@ -467,13 +515,22 @@
     pop.onclick = (e) => e.stopPropagation();
     pop.querySelector('.btn').onclick = () => { if (!unlocked) return; Sfx.play('tap'); startLesson(f); };
   }
+  function animalCard(a) {
+    return `<div class="animal-card">${QQ_ANIMALS.svg(a.key, { state: 'happy' })}<div><span class="ac-name">${esc(a.name)} · <span class="ar">${esc(a.ar)}</span></span><p>${esc(a.fact)}</p><small>Qur’an ${esc(C.ref(a.ref))}</small></div></div>`;
+  }
+  function animalPopup(key) {
+    const a = QQ_ANIMALS.LIST.find((x) => x.key === key); if (!a) return;
+    Sfx.play('pop');
+    modal(`${animalCard(a)}<button class="btn" data-x>Lovely!</button>`, (m, close) => { m.querySelector('[data-x]').onclick = () => { Sfx.play('tap'); close(); }; });
+  }
   function guidebook(u) {
-    modal(`${M.kid(S.buddy, 'talk')}<h2>${esc(u.title)}</h2><p>${esc(u.blurb)}</p>
+    const ui = C.UNITS.indexOf(u); const a = window.QQ_ANIMALS && QQ_ANIMALS.LIST[ui % QQ_ANIMALS.LIST.length];
+    modal(`${M.kid(S.buddy, 'talk')}<h2>${esc(u.title)}</h2><p>${esc(u.blurb)}</p>${a ? `<p class="ac-intro">Your animal friend in this unit:</p>${animalCard(a)}` : ''}
       <ul>${u.guide.map((g) => `<li>${rich(g)}</li>`).join('')}</ul><button class="btn" data-x>Got it!</button>`, (m, close) => { m.querySelector('[data-x]').onclick = () => { Sfx.play('tap'); close(); }; setTimeout(() => M.setMood(m, 'idle'), 2500); });
   }
   function jumpPrompt(ui) {
     const u = C.UNITS[ui];
-    modal(`${M.kid(S.buddy, 'think')}<h2>Jump to Unit ${ui + 1}?</h2><p>Pass a short test on everything before <b>${esc(u.title)}</b> and you can skip ahead. You get 3 lives — have a go!</p>
+    modal(`${M.kid(S.buddy, 'thinking')}<h2>Jump to Unit ${ui + 1}?</h2><p>Pass a short test on everything before <b>${esc(u.title)}</b> and you can skip ahead. You get 3 lives — have a go!</p>
       <button class="btn btn-violet" data-y>Start the test</button><button class="link-btn" data-x>Maybe later</button>`, (m, close) => {
       m.querySelector('[data-x]').onclick = close;
       m.querySelector('[data-y]').onclick = () => { close(); startTest(ui); };
@@ -481,14 +538,25 @@
   }
 
   // ======================= OTHER PAGES =======================
-  const questRow = (x) => `<div class="quest ${x.p >= x.n ? 'done' : ''}">${IMG(x.icon)}<div style="flex:1;min-width:0"><h4>${esc(x.label)}</h4><div class="qbar"><div class="bar"><i style="width:${(x.p / x.n) * 100}%"></i><b>${x.p} / ${x.n}</b></div><span class="qprize">${x.p >= x.n ? IMG('gem') : chestSVG(false)}</span></div></div></div>`;
+  function ladderRow(L) {
+    const st = ladderState(L); const lo = st.prev, hi = st.target;
+    const pct = st.max ? 100 : Math.max(0, Math.min(100, ((st.v - lo) / (hi - lo)) * 100));
+    const dots = L.tiers.map((_, j) => `<i class="${j < st.i ? 'on' : ''}"></i>`).join('');
+    return `<div class="quest ladder ${st.max ? 'done' : ''}">${IMG(L.icon)}<div style="flex:1;min-width:0"><h4>${esc(L.name)} <span class="lvl">Level ${st.i + 1}</span></h4>
+      <p class="lsub">${st.max ? 'Ladder complete — mashā’Allāh!' : `Reach ${hi} ${L.unit}`}</p>
+      <div class="qbar"><div class="bar"><i style="width:${pct}%"></i><b>${st.max ? 'Done' : `${Math.min(st.v, hi)} / ${hi}`}</b></div><span class="qprize">${st.max ? IMG('trophy') : `<span class="lgem">${IMG('gem')}${ladderGems(st.i)}</span>`}</span></div>
+      <div class="ldots">${dots}</div></div></div>`;
+  }
+  const questRow = (x) => `<div class="quest ${x.p >= x.n ? 'done' : ''}">${IMG(x.icon)}<div style="flex:1;min-width:0"><h4>${esc(x.label)}${x.tier > 1 ? ` <span class="lvl">Lv ${x.tier}</span>` : ''}</h4><div class="qbar"><div class="bar"><i style="width:${(x.p / x.n) * 100}%"></i><b>${x.p} / ${x.n}</b></div><span class="qprize">${x.p >= x.n ? IMG('gem') : chestSVG(false)}</span></div></div></div>`;
   function questsView() {
     ensureQuests();
-    const q = S.quests; const all = q.list.every((x) => x.p >= x.n);
+    const q = S.quests; const all = dailyCleared();
     const xpToday = S.history[today()] || 0;
-    return `<div class="page"><div class="page-hero c-violet">${M.kid(S.buddy, all ? 'happy' : 'read')}<div><h1>Daily quests</h1><p>${all ? 'All quests done! Open your daily chest!' : 'Finish all 3 quests today to win a daily chest. New quests every day!'}</p></div></div>
+    return `<div class="page"><div class="page-hero c-violet">${M.kid(S.buddy, all ? 'happy' : 'thinking')}<div><h1>Daily quests</h1><p>${all ? 'All 3 quests cleared — open your daily chest! Your quests keep levelling up, so keep going!' : 'Clear all 3 quests today to win a daily chest. Each one levels up when you finish it!'}</p></div></div>
       <div class="card">${q.list.map(questRow).join('')}</div>
-      <div style="margin-top:16px">${all && !q.claimedChest ? '<button class="btn btn-gold" id="dailyChest">Open daily chest</button>' : all ? '<p class="muted" style="text-align:center">Daily chest opened. New quests tomorrow!</p>' : ''}</div>
+      <div style="margin-top:16px">${all && !q.claimedChest ? '<button class="btn btn-gold" id="dailyChest">Open daily chest</button>' : all ? '<p class="muted" style="text-align:center">Daily chest opened. Keep levelling up your quests!</p>' : ''}</div>
+      <h2>Quest ladders</h2><p class="muted" style="margin:-6px 0 12px">Big goals that never run out. Every rung you climb earns more gems.</p>
+      <div class="card">${LADDERS.map(ladderRow).join('')}</div>
       <h2>Today</h2><div class="statgrid"><div class="statbox">${IMG('glowing-star')}<div><b>${xpToday} XP</b><small>Goal: ${S.dailyGoal} XP</small></div></div>
       <div class="statbox">${IMG('fire')}<div><b>${S.streak}</b><small>day streak</small></div></div></div>
       <h2>Achievements</h2><div class="badges">${BADGES.map(badgeHTML).join('')}</div></div>`;
@@ -509,18 +577,18 @@
   }
   function practiceView() {
     const done = FLAT.filter((x) => S.done[x.l.id]);
-    return `<div class="page"><div class="page-hero c-orange">${M.kid(S.buddy, 'dance')}<div><h1>Practice</h1><p>Keep your skills sharp and win your hearts back.</p></div></div>
+    return `<div class="page"><div class="page-hero c-orange">${M.kid(S.buddy, 'ball')}<div><h1>Practice</h1><p>Keep your skills sharp and win your hearts back.</p></div></div>
       <div class="card"><div class="setting"><div class="row">${IMG('practice')}<div><b>Quick practice</b><small>${done.length ? '6 questions from lessons you’ve finished · refills hearts · +5 XP' : 'Finish your first lesson to unlock practice'}</small></div></div><button class="btn btn-sm" id="quickPractice" ${done.length ? '' : 'disabled'}>Start</button></div>
       <div class="setting"><div class="row">${IMG('target')}<div><b>Mistakes review</b><small>Practise the questions you got wrong</small></div></div><span class="test-tag">Coming soon</span></div>
       <div class="setting"><div class="row">${IMG('speaker')}<div><b>Listening practice</b><small>Hear a sound, tap the letter</small></div></div><span class="test-tag">Coming soon</span></div></div></div>`;
   }
   function bindPractice() { const b = document.getElementById('quickPractice'); if (b) b.onclick = () => { const done = FLAT.filter((x) => S.done[x.l.id]); startLesson(C.pick(done), { practice: true }); }; }
   function leaderView() {
-    return `<div class="page"><div class="wip">${M.kid(S.buddy, 'think')}<span class="tag">${IMG('construction')} Work in progress</span><h1>Leaderboards</h1>
+    return `<div class="page"><div class="wip">${M.kid(S.buddy, 'stretching')}<span class="tag">${IMG('construction')} Work in progress</span><h1>Leaderboards</h1>
       <p>Soon you’ll be able to compete with your class each week — a friendly race to learn the most!</p>${IMG('trophy').replace('class="ico', 'style="width:90px;height:90px" class="ico')}</div></div>`;
   }
   function shopView() {
-    return `<div class="page"><div class="page-hero c-sky">${M.kid(S.buddy, 'happy')}<div><h1>Shop</h1><p>You have ${IMG('gem')} <b>${S.gems}</b> gems to spend.</p></div></div>
+    return `<div class="page"><div class="page-hero c-sky">${M.kid(S.buddy, 'bubbles')}<div><h1>Shop</h1><p>You have ${IMG('gem')} <b>${S.gems}</b> gems to spend.</p></div></div>
       <h2>Power-ups</h2><div class="card">
       <div class="setting"><div class="row">${IMG('snowflake')}<div><b>Streak freeze</b><small>Protects your streak for 1 missed day · you have ${S.freezes}/${MAX_FREEZES}</small></div></div><button class="btn btn-sm btn-sky" id="buyFreeze" ${S.freezes >= MAX_FREEZES ? 'disabled' : ''}>${IMG('gem')} ${FREEZE_COST}</button></div>
       <div class="setting"><div class="row">${IMG('heart')}<div><b>Refill hearts</b><small>Get all ${MAX_HEARTS} hearts back</small></div></div><button class="btn btn-sm btn-sky" id="buyHearts" ${S.hearts >= MAX_HEARTS || S.settings.classMode ? 'disabled' : ''}>${IMG('gem')} ${REFILL_COST}</button></div></div>
@@ -550,7 +618,7 @@
   function bindSwitches() { $app.querySelectorAll('[data-set]').forEach((b) => b.onclick = () => { const k = b.dataset.set; S.settings[k] = !S.settings[k]; save(); Sfx.play('select'); render(); }); }
   function bindProfile() { bindSwitches(); $app.querySelectorAll('[data-theme-set]').forEach((b) => b.onclick = () => setTheme(b.dataset.themeSet, b)); document.getElementById('swapBuddy').onclick = () => { S.buddy = S.buddy === 'zaid' ? 'huda' : 'zaid'; save(); Sfx.play('pop'); render(); }; }
   function moreView() {
-    return `<div class="page"><div class="page-hero c-violet">${M.kid(S.buddy === 'zaid' ? 'huda' : 'zaid', 'read')}<div><h1>Teacher & parent corner</h1><p>Tools for using Qalam with a class or at home.</p></div></div>
+    return `<div class="page"><div class="page-hero c-violet">${M.kid(S.buddy === 'zaid' ? 'huda' : 'zaid', 'quran')}<div><h1>Teacher & parent corner</h1><p>Tools for using Qalam with a class or at home.</p></div></div>
       <div class="card">${switchRow('classMode', 'Class mode: unlimited hearts', 'Mistakes never stop a lesson — good for class')}${switchRow('unlockAll', 'Unlock every lesson', 'Jump to any lesson to preview or teach it')}
         <div class="setting"><div class="row">${IMG('book')}<div><b>Teacher guide</b><small>Every lesson, answer and Qur’an reference on one printable page</small></div></div><a class="btn btn-sm btn-violet" href="teacher.html">Open</a></div>
         <div class="setting"><div class="row">${IMG('bulb')}<div><b>Show the tour again</b><small>A quick walk-through of the app</small></div></div><button class="btn btn-sm btn-ghost" id="retour">Show</button></div>
@@ -789,7 +857,7 @@
     } else if (/^[1-9]$/.test(e.key) && EX && EX.key) EX.key(+e.key);
   }
   function outOfHearts(f, before) {
-    modal(`${M.kid(S.buddy, 'think')}<h2>Out of hearts!</h2><p>Every mistake helps you learn. Win your hearts back with a quick practice — or use gems.</p>
+    modal(`${M.kid(S.buddy, 'thinking')}<h2>Out of hearts!</h2><p>Every mistake helps you learn. Win your hearts back with a quick practice — or use gems.</p>
       <button class="btn" data-p>Practise to refill ❤️</button><button class="btn btn-sky" data-g ${S.gems < REFILL_COST ? 'disabled' : ''}>Refill · ${REFILL_COST} gems</button><button class="link-btn" data-x>${before ? 'Not now' : 'End lesson'}</button>`,
       (m, close) => {
         m.querySelector('[data-p]').onclick = () => { close(); endRun(); const done = FLAT.filter((x) => S.done[x.l.id]); startLesson(done.length ? C.pick(done) : f, { practice: true }); };
@@ -980,7 +1048,7 @@
       if (S.streak % 7 === 0 && S.freezes < MAX_FREEZES) { S.freezes++; streakUp.freeze = true; }
       if ([3, 7, 14, 30, 50, 100].includes(S.streak)) { const g = S.streak >= 30 ? 50 : 20; S.gems += g; streakUp.gems = g; }
     }
-    const quests = bumpQuests(r);
+    const quests = bumpQuests(r).concat(bumpLadders());
     const badges = newBadges();
     save(); endRun();
     const screens = [(n) => resultScreen(r, practice, n)];
@@ -1016,7 +1084,7 @@
     Sfx.play('streak'); buzz([30, 30, 60]);
   }
   function questScreen(qs, next) {
-    shellScreen(`${M.kid(S.buddy, 'dance')}<h1 style="color:var(--violet)">Quest complete!</h1><div class="card" style="width:100%;text-align:left">${qs.map((q) => `<div class="quest done">${IMG(q.icon)}<div style="flex:1"><h4>${esc(q.label)}</h4><div class="bar"><i style="width:100%"></i></div></div><b style="color:var(--sky);display:flex;align-items:center;gap:4px">${IMG('gem')}+10</b></div>`).join('')}</div>`, 'Continue', next);
+    shellScreen(`${M.kid(S.buddy, 'dance')}<h1 style="color:var(--violet)">Quest complete!</h1><div class="card" style="width:100%;text-align:left">${qs.map((q) => `<div class="quest done">${IMG(q.icon)}<div style="flex:1"><h4>${esc(q.label)}</h4><div class="bar"><i style="width:100%"></i></div></div><b style="color:var(--sky);display:flex;align-items:center;gap:4px">${IMG('gem')}+${q.gems}</b></div>`).join('')}</div><p class="muted" style="margin:0">${qs.some((q) => !q.ladder) ? 'A harder follow-up quest is waiting for you!' : 'The next rung of the ladder is ready!'}</p>`, 'Continue', next);
     Sfx.play('chest');
   }
   function badgeScreen(b, next) {

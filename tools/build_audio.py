@@ -29,8 +29,15 @@ HUMAN_DIR = os.path.join(HERE, 'human-audio')
 # Measured on the game's own words/syllables: Brian with an exclamation ("كِتَاب!") at a gentle pace was
 # both the liveliest (pitch variety 4.45 st vs 1.87 for the old Arabic voice) and the most accurate.
 # A name ending in _x means the text is said with "!" for a warm, encouraging tone.
-WARM = [('brian_x', 'en-US-BrianMultilingualNeural', '-5%'), ('brian', 'en-US-BrianMultilingualNeural', '-5%'),
-        ('andrew_x', 'en-US-AndrewMultilingualNeural', '-5%'), ('emma_x', 'en-US-EmmaMultilingualNeural', '-5%')]
+# ONE teacher voice for everything a child hears (letters, syllables, words): Brian, said with
+# encouragement. Several deliveries of the same voice are tried (pace, exclamation) and the first that
+# passes the accuracy check is kept, so the voice stays consistent while accuracy is preserved.
+WARM = [('brian_x', 'en-US-BrianMultilingualNeural', '-5%'), ('brian_xs', 'en-US-BrianMultilingualNeural', '-15%'),
+        ('brian_xf', 'en-US-BrianMultilingualNeural', '+5%'), ('brian', 'en-US-BrianMultilingualNeural', '-5%'),
+        ('brian_s', 'en-US-BrianMultilingualNeural', '-20%')]
+# For the deep Arabic sounds an English-native voice cannot make (ح ع غ ض ظ ث …): a native Arabic male
+# teacher, also said with energy — same kind of voice, correct pronunciation. Same checks apply.
+NATIVE = [('hamed_x', 'ar-SA-HamedNeural', '+0%'), ('hamed_xs', 'ar-SA-HamedNeural', '-10%'), ('zariyah_x', 'ar-SA-ZariyahNeural', '+0%')]
 VOWEL_REF = {'brian': 'ar-SA-HamedNeural', 'andrew': 'ar-SA-HamedNeural', 'hamed': 'ar-SA-HamedNeural'}   # others use Zariyah's
 def vref(voice): return VOWEL_REF.get(voice[0].split('_')[0], 'ar-SA-ZariyahNeural')
 VOICES = [('zariyah', 'ar-SA-ZariyahNeural', '-10%'), ('zariyah_slow', 'ar-SA-ZariyahNeural', '-30%'),
@@ -57,10 +64,22 @@ def finish(src, dst):
     peak = float(np.abs(pcm(src)).max() or 1e-6)
     ffmpeg('-i', src, '-af', f'volume={-2 - 20 * np.log10(peak):.2f}dB', '-ac', '1', '-b:a', '96k', dst)
 
+def join_clips(files, dst, gap=.35):
+    """Decode every piece, bring them to one format, and join them with short pauses."""
+    args, chains, labels = [], [], []
+    for i, f in enumerate(files):
+        args += ['-i', f]
+        chains.append(f'[{i}:a]aresample=24000,aformat=sample_fmts=fltp:channel_layouts=mono[a{i}]')
+        labels.append(f'[a{i}]')
+        if i < len(files) - 1:
+            chains.append(f'anullsrc=r=24000:cl=mono,atrim=0:{gap},aformat=sample_fmts=fltp[g{i}]'); labels.append(f'[g{i}]')
+    graph = ';'.join(chains) + ';' + ''.join(labels) + f'concat=n={len(labels)}:v=0:a=1[out]'
+    ffmpeg(*args, '-filter_complex', graph, '-map', '[out]', '-ac', '1', '-b:a', '96k', dst)
+
 # ---------- candidates ----------
 async def tts(text, voice):
     name, vid, rate = voice
-    if name.endswith('_x'): text = text + '!'
+    if '_x' in name: text = text + '!'
     f = os.path.join(CACHE, f'{name}_{cid(text)}.mp3')
     if os.path.exists(f) and os.path.getsize(f) > 1500: return f
     for attempt in range(4):
@@ -164,40 +183,36 @@ async def main(job):
                 req = urllib.request.Request('https://audio.qurancdn.com/' + q['audio'], headers={'User-Agent': 'QalamQuest/1.0'})
                 open(f, 'wb').write(urllib.request.urlopen(req).read())
             keep(t, f, f"qari {q['key']}:{q['pos']}"); continue
-        hf, hl = human_source(t, say_name)
-        # 2. letter name -> a warm take heard as exactly that name; else the human alphabet; else older voices
+        # 2. letter name -> the teacher voice, heard as exactly that name (spelling variants too)
         if t in names:
-            for voice in WARM:
-                f = await tts(t, voice)
-                if f and name_heard(f, t): keep(t, f, f'{voice[0]} (warm, verified)'); break
-            if t in chosen: continue
-            if hf: keep(t, hf, hl); continue
-            for variant in name_variants(t):
-                for voice in VOICES:
-                    f = await tts(variant, voice)
-                    if f and name_heard(f, t): keep(t, f, f'{voice[0]} "{variant}" (verified)'); break
+            for voices in (WARM, NATIVE):
+                for variant in name_variants(t):
+                    for voice in voices:
+                        f = await tts(variant, voice)
+                        if f and name_heard(f, t): keep(t, f, f'{voice[0]} "{variant}" (teacher, verified)'); break
+                    if t in chosen: break
                 if t in chosen: break
-            if t not in chosen: silent.append(t)
+            if t not in chosen:
+                hf, hl = human_source(t, say_name)
+                if hf: keep(t, hf, hl)
+                else: silent.append(t)
             continue
-        # 3. short syllable -> vowel (and ج) must measure right: warm voices first
+        # 3. short syllable -> the teacher voice; vowel (and ج) must measure right
         if len(letters(t)) <= 2 and expected(t):
-            for voice in WARM + VOICES[:3]:
+            for voice in WARM + NATIVE:
                 f = await tts(t, voice)
-                if f and vowel_ok(f, t, vref(voice)) and consonant_ok(f, t):
-                    keep(t, f, voice[0] + (' (warm, vowel verified)' if voice in WARM else ' (vowel verified)')); break
-                if voice is WARM[-1] and hf: keep(t, hf, hl); break      # fall back to the human alphabet
+                if f and vowel_ok(f, t, vref(voice)) and consonant_ok(f, t): keep(t, f, voice[0] + ' (teacher, vowel verified)'); break
             if t not in chosen: silent.append(t)
             continue
-        if hf: keep(t, hf, hl); continue
-        # 4. word -> the first warm take that is clearly understood; else the best take overall
+        # 4. word -> the teacher voice, clearly understood
         best = (0, None, None)
-        for voice in WARM + [VOICES[0], VOICES[2], VOICES[3]]:
+        for voice in WARM + NATIVE:
             f = await tts(t, voice)
             if not f: continue
             sc = difflib.SequenceMatcher(None, plain(t), plain(hear(f))).ratio()
             if sc > best[0]: best = (sc, f, voice[0])
-            if voice in WARM and sc >= 0.75: break
-        if best[0] >= 0.6: keep(t, best[1], f'{best[2]} (heard {best[0]:.2f})')
+            if sc >= 0.75: break
+        if best[0] >= 0.6: keep(t, best[1], f'{best[2]} (teacher, heard {best[0]:.2f})')
         else: silent.append(t)
 
     # 5. spelled/syllable groups -> join verified pieces
@@ -206,12 +221,7 @@ async def main(job):
         parts = t.split()
         if all(p in chosen for p in parts) and all(p in names or len(letters(p)) <= 2 for p in parts):
             # prefer groups made only of human pieces; computer-voice pieces are still verified ones
-            lst = os.path.join(CACHE, 'concat.txt'); gap = os.path.join(CACHE, 'gap.mp3')
-            if not os.path.exists(gap): ffmpeg('-f', 'lavfi', '-i', 'anullsrc=r=24000:cl=mono', '-t', '0.35', gap)
-            seq = []
-            for i, p in enumerate(parts): seq += ([gap] if i else []) + [os.path.join(OUT, chosen[p] + '.mp3')]
-            open(lst, 'w').write(''.join(f"file '{x}'\n" for x in seq))
-            tmp = os.path.join(CACHE, 'joined.mp3'); ffmpeg('-f', 'concat', '-safe', '0', '-i', lst, '-ar', '24000', '-ac', '1', tmp)
+            tmp = os.path.join(CACHE, 'joined.mp3'); join_clips([os.path.join(OUT, chosen[p] + '.mp3') for p in parts], tmp)
             keep(t, tmp, 'joined from verified pieces')
         else:
             silent.append(t)   # Qur'an phrases whose tajwīd links words can't be built from separate words
