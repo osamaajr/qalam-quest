@@ -564,7 +564,6 @@ img { -webkit-user-drag: none; user-select: none; }
 :root[data-theme="dark"] .bucket.fil { border-color: #7A4E1E; box-shadow: 0 5px 0 #7A4E1E; }
 :root[data-theme="dark"] .bucket.harf { border-color: #7A2C5A; box-shadow: 0 5px 0 #7A2C5A; }
 :root[data-theme="dark"] .logo text { filter: brightness(1.35); }
-:root[data-theme="dark"] .kid .k-shadow { fill: rgba(0,0,0,.35); }
 
 /* =================== v3 polish: Duolingo-level detail =================== */
 :root { --platform: rgba(38, 35, 70, .13); }
