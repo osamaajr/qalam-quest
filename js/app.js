@@ -222,16 +222,17 @@
       <g clip-path="url(#${id}c)" opacity=".32"><path d="M30 16 L46 16 L20 96 L4 96Z" fill="#fff"/><path d="M52 16 L58 16 L32 96 L26 96Z" fill="#fff"/></g>`}
     </svg>`;
   }
+  // The wordmark (vector, traced from the design in tools/ref/logo-ref.png). With `write`, the word is
+  // written left to right, then the gold swoosh flows out of the q into the pen nib.
   function logoSVG(write, cls = '') {
-    const id = 'lg' + (++uid);
-    return `<svg class="logo ${write ? 'write' : ''} ${cls}" viewBox="0 0 236 92" role="img" aria-label="Qalam">
+    const id = 'lg' + (++uid); const L = window.QQ_LOGO || { word: '', swoosh: '' };
+    return `<svg class="logo ${write ? 'write' : ''} ${cls}" viewBox="40 7 616 314" role="img" aria-label="Qalam">
       <defs>
-        <linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2B59FF"/><stop offset="1" stop-color="#8B3DFF"/></linearGradient>
-        <clipPath id="${id}c"><rect class="lg-reveal" x="0" y="-20" width="236" height="130"/></clipPath>
+        <clipPath id="${id}w"><rect class="lg-reveal" x="40" y="0" width="616" height="330"/></clipPath>
+        <clipPath id="${id}s"><rect class="lg-reveal-s" x="40" y="180" width="616" height="150"/></clipPath>
       </defs>
-      <g class="lg-word" clip-path="url(#${id}c)"><text x="4" y="60" font-size="62" fill="url(#${id}g)" stroke="url(#${id}g)">qalam</text></g>
-      <path class="lg-swoosh" d="M14 78 Q90 68 160 74" stroke="#FFB800" stroke-width="4.8" fill="none" stroke-linecap="round"/>
-      <image class="lg-pen" href="assets/icons/pen.png" x="146" y="6" width="68" height="68"/>
+      <g clip-path="url(#${id}s)"><path class="lg-swoosh" d="${L.swoosh}" fill-rule="evenodd"/></g>
+      <g clip-path="url(#${id}w)"><path class="lg-word" d="${L.word}" fill-rule="evenodd"/></g>
     </svg>`;
   }
 

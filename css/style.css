@@ -65,16 +65,14 @@ img { -webkit-user-drag: none; user-select: none; }
 
 /* ---------- logo (handwritten, written by a pen) ---------- */
 .logo { display: block; overflow: visible; }
-.logo text { font-family: var(--hand); font-weight: 700; stroke-width: 1.6px; stroke-linejoin: round; paint-order: stroke; }
-.logo .lg-reveal { transform-box: fill-box; transform-origin: left center; }
+.logo .lg-word { fill: #551BC2; } .logo .lg-swoosh { fill: #F5C445; }
+:root[data-theme="dark"] .logo .lg-word { fill: #9C7BFF; }
+.logo .lg-reveal, .logo .lg-reveal-s { transform-box: fill-box; transform-origin: left center; }
+.logo.write .lg-reveal-s { animation: lgWrite .7s cubic-bezier(.3,.1,.3,1) 1.45s backwards; }
+@keyframes lgNib { 0% { scale: 1; } 40% { scale: 1.12; } 100% { scale: 1; } }
+.logo.write .lg-swoosh { transform-box: fill-box; transform-origin: 92% 80%; animation: lgNib .4s ease-out 2.1s; }
 .logo.write .lg-reveal { animation: lgWrite 1.5s cubic-bezier(.45,.05,.4,1) .2s backwards; }
-.logo.write .lg-pen { animation: lgPen 1.5s cubic-bezier(.45,.05,.4,1) .2s backwards, lgWiggle .18s ease-in-out .2s 8; }
-.logo .lg-pen { transform-box: fill-box; transform-origin: 20% 90%; }
-.logo.write .lg-swoosh { stroke-dasharray: 200; animation: lgSwoosh .6s ease-out 1.5s backwards; }
 @keyframes lgWrite { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-@keyframes lgPen { from { translate: -150px 6px; } to { translate: 0 0; } }
-@keyframes lgWiggle { 50% { rotate: -8deg; } }
-@keyframes lgSwoosh { from { stroke-dashoffset: 200; } to { stroke-dashoffset: 0; } }
 
 /* ---------- app shell: Duolingo-style three columns ---------- */
 .app { display: flex; justify-content: center; min-height: 100vh; }
@@ -563,8 +561,7 @@ img { -webkit-user-drag: none; user-select: none; }
 :root[data-theme="dark"] .bucket.moon { border-color: #5B3FA0; box-shadow: 0 5px 0 #5B3FA0; }
 :root[data-theme="dark"] .bucket.fil { border-color: #7A4E1E; box-shadow: 0 5px 0 #7A4E1E; }
 :root[data-theme="dark"] .bucket.harf { border-color: #7A2C5A; box-shadow: 0 5px 0 #7A2C5A; }
-:root[data-theme="dark"] .logo text { filter: brightness(1.35); }
-
+:root[data-theme="dark"] 
 /* =================== v3 polish: Duolingo-level detail =================== */
 :root { --platform: rgba(38, 35, 70, .13); }
 :root[data-theme="dark"] { --platform: rgba(0, 0, 0, .38); }
