@@ -49,7 +49,7 @@ A Duolingo-style game that teaches children (about 5–12) to read the Arabic of
 
 A short guided tour runs on first visit.
 
-**Read aloud:** Qur'an words play a qāriʾ's word-by-word recitation (audio from [Quran.com](https://quran.com)); all 28 letter names and the fatḥa syllables are a native speaker reciting the alphabet (see `tools/human-audio/CREDITS.md`). Other syllables and practice words use a computer voice, but only takes that pass an automatic check are kept; anything unverifiable stays silent rather than teach a wrong sound. Where each clip came from is listed in `tools/audio-sources.json`. The browser's built-in voice is never used.
+**Read aloud:** Qur'an words play a qāriʾ's word-by-word recitation (audio from [Quran.com](https://quran.com)); letter names, syllables and practice words use a warm, expressive teacher voice (Microsoft's multilingual "Brian", said with encouragement — chosen because it measured both the liveliest and the most accurate), and only takes that pass an automatic check are kept, falling back to a native-speaker alphabet recording (`tools/human-audio/CREDITS.md`); anything unverifiable stays silent rather than teach a wrong sound. Where each clip came from is listed in `tools/audio-sources.json`. The browser's built-in voice is never used.
 
 **Teacher & parent corner** (in the game: Teachers in the sidebar, or Profile → Teacher & parent corner):
 

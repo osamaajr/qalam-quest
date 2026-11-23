@@ -25,6 +25,14 @@ sys.path.insert(0, HERE)
 from vowel_check import expected, vowel_ok, consonant_ok, vowel_onset   # noqa: E402
 HUMAN_DIR = os.path.join(HERE, 'human-audio')
 
+# Warm, expressive "teacher" voices (tried first): Microsoft's multilingual conversational voices.
+# Measured on the game's own words/syllables: Brian with an exclamation ("كِتَاب!") at a gentle pace was
+# both the liveliest (pitch variety 4.45 st vs 1.87 for the old Arabic voice) and the most accurate.
+# A name ending in _x means the text is said with "!" for a warm, encouraging tone.
+WARM = [('brian_x', 'en-US-BrianMultilingualNeural', '-5%'), ('brian', 'en-US-BrianMultilingualNeural', '-5%'),
+        ('andrew_x', 'en-US-AndrewMultilingualNeural', '-5%'), ('emma_x', 'en-US-EmmaMultilingualNeural', '-5%')]
+VOWEL_REF = {'brian': 'ar-SA-HamedNeural', 'andrew': 'ar-SA-HamedNeural', 'hamed': 'ar-SA-HamedNeural'}   # others use Zariyah's
+def vref(voice): return VOWEL_REF.get(voice[0].split('_')[0], 'ar-SA-ZariyahNeural')
 VOICES = [('zariyah', 'ar-SA-ZariyahNeural', '-10%'), ('zariyah_slow', 'ar-SA-ZariyahNeural', '-30%'),
           ('hamed', 'ar-SA-HamedNeural', '-10%'), ('google', None, None)]
 CHAPTERS = [1] + list(range(78, 115))
@@ -52,6 +60,7 @@ def finish(src, dst):
 # ---------- candidates ----------
 async def tts(text, voice):
     name, vid, rate = voice
+    if name.endswith('_x'): text = text + '!'
     f = os.path.join(CACHE, f'{name}_{cid(text)}.mp3')
     if os.path.exists(f) and os.path.getsize(f) > 1500: return f
     for attempt in range(4):
@@ -147,10 +156,7 @@ async def main(job):
     singles = [t for t in texts if ' ' not in t]
     for t in singles:
         if t in human: chosen[t] = human[t]; how[t] = 'your recording'; continue
-        # 0. a real person's recording
-        hf, hl = human_source(t, say_name)
-        if hf: keep(t, hf, hl); continue
-        # 1. Qur'an word -> qāriʾ recitation
+        # 1. Qur'an word -> the qāriʾ's recitation (authentic tartīl)
         q = qidx.get(qkey(t))
         if q:
             f = os.path.join(CACHE, 'q_' + os.path.basename(q['audio']))
@@ -158,8 +164,14 @@ async def main(job):
                 req = urllib.request.Request('https://audio.qurancdn.com/' + q['audio'], headers={'User-Agent': 'QalamQuest/1.0'})
                 open(f, 'wb').write(urllib.request.urlopen(req).read())
             keep(t, f, f"qari {q['key']}:{q['pos']}"); continue
-        # 2. letter name -> a take that is heard as exactly that name
+        hf, hl = human_source(t, say_name)
+        # 2. letter name -> a warm take heard as exactly that name; else the human alphabet; else older voices
         if t in names:
+            for voice in WARM:
+                f = await tts(t, voice)
+                if f and name_heard(f, t): keep(t, f, f'{voice[0]} (warm, verified)'); break
+            if t in chosen: continue
+            if hf: keep(t, hf, hl); continue
             for variant in name_variants(t):
                 for voice in VOICES:
                     f = await tts(variant, voice)
@@ -167,21 +179,24 @@ async def main(job):
                 if t in chosen: break
             if t not in chosen: silent.append(t)
             continue
-        # 3. short syllable -> vowel (and ج) must measure right
+        # 3. short syllable -> vowel (and ج) must measure right: warm voices first
         if len(letters(t)) <= 2 and expected(t):
-            for voice in VOICES[:3]:
+            for voice in WARM + VOICES[:3]:
                 f = await tts(t, voice)
-                vname = 'ar-SA-ZariyahNeural' if voice[0].startswith('zariyah') else 'ar-SA-HamedNeural'
-                if f and vowel_ok(f, t, vname) and consonant_ok(f, t): keep(t, f, voice[0] + ' (vowel verified)'); break
+                if f and vowel_ok(f, t, vref(voice)) and consonant_ok(f, t):
+                    keep(t, f, voice[0] + (' (warm, vowel verified)' if voice in WARM else ' (vowel verified)')); break
+                if voice is WARM[-1] and hf: keep(t, hf, hl); break      # fall back to the human alphabet
             if t not in chosen: silent.append(t)
             continue
-        # 4. word -> the take recognised best
+        if hf: keep(t, hf, hl); continue
+        # 4. word -> the first warm take that is clearly understood; else the best take overall
         best = (0, None, None)
-        for voice in (VOICES[0], VOICES[2], VOICES[3]):
+        for voice in WARM + [VOICES[0], VOICES[2], VOICES[3]]:
             f = await tts(t, voice)
-            if f:
-                sc = difflib.SequenceMatcher(None, plain(t), plain(hear(f))).ratio()
-                if sc > best[0]: best = (sc, f, voice[0])
+            if not f: continue
+            sc = difflib.SequenceMatcher(None, plain(t), plain(hear(f))).ratio()
+            if sc > best[0]: best = (sc, f, voice[0])
+            if voice in WARM and sc >= 0.75: break
         if best[0] >= 0.6: keep(t, best[1], f'{best[2]} (heard {best[0]:.2f})')
         else: silent.append(t)
 
