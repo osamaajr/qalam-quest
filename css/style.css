@@ -195,7 +195,7 @@ img { -webkit-user-drag: none; user-select: none; }
 .chest-node { width: 96px; height: 88px; position: relative; display: grid; place-items: center; transition: transform .1s; }
 .chest-node:hover { transform: scale(1.05) rotate(-2deg); }
 .chest-node .chest { width: 92px; }
-.chest-node.locked .chest { filter: grayscale(.85) opacity(.55); }
+.chest-node.locked .chest { filter: grayscale(1) opacity(.5); }
 .chest-node.ready .chest { animation: chestReady 2.4s ease-in-out infinite; }
 @keyframes chestReady { 0%, 70%, 100% { transform: rotate(0); } 76% { transform: rotate(-6deg); } 82% { transform: rotate(6deg); } 88% { transform: rotate(-3deg); } }
 .path-buddy { position: absolute; width: 120px; pointer-events: none; z-index: 2; }
@@ -561,7 +561,6 @@ img { -webkit-user-drag: none; user-select: none; }
 :root[data-theme="dark"] .bucket.moon { border-color: #5B3FA0; box-shadow: 0 5px 0 #5B3FA0; }
 :root[data-theme="dark"] .bucket.fil { border-color: #7A4E1E; box-shadow: 0 5px 0 #7A4E1E; }
 :root[data-theme="dark"] .bucket.harf { border-color: #7A2C5A; box-shadow: 0 5px 0 #7A2C5A; }
-:root[data-theme="dark"] 
 /* =================== v3 polish: Duolingo-level detail =================== */
 :root { --platform: rgba(38, 35, 70, .13); }
 :root[data-theme="dark"] { --platform: rgba(0, 0, 0, .38); }
@@ -697,3 +696,7 @@ img { -webkit-user-drag: none; user-select: none; }
 @keyframes nbPop { from { transform: scale(.4) translateY(8px); opacity: 0; } }
 @keyframes nbShine { to { left: 130%; } }
 @keyframes nbTwinkle { 0%, 100% { transform: scale(1) rotate(0); } 50% { transform: scale(1.25) rotate(18deg); } }
+
+/* kids standing beside locked lessons are greyed out like the path around them */
+.deco-buddy.locked .kid { filter: grayscale(1) opacity(.5); }
+:root[data-theme="dark"] .deco-buddy.locked .kid, :root[data-theme="dark"] .chest-node.locked .chest { filter: grayscale(1) brightness(.75) opacity(.55); }

@@ -397,7 +397,9 @@
       if (curK >= 0 && Math.abs(decoAt - curK) < 3) decoAt = curK + 4 < items.length ? curK + 4 : curK - 4;
       const nodes = items.map((it, k) => {
         const x = OFFS[k % OFFS.length];
-        const decoHTML = k === decoAt ? `<div class="deco-buddy" style="${x > 0 ? 'right' : 'left'}:calc(100% + 64px);top:-86px" data-moods="${deco[1].join(',')}">${M.kid(decoBuddy, deco[1][0])}</div>` : '';
+        const here = items[decoAt];
+        const decoLocked = here && (here.kind === 'chest' ? !(S.done[here.after] || S.settings.unlockAll) : !isUnlocked(here.l.id));
+        const decoHTML = k === decoAt ? `<div class="deco-buddy ${decoLocked ? 'locked' : ''}" style="${x > 0 ? 'right' : 'left'}:calc(100% + 64px);top:-86px" data-moods="${deco[1].join(',')}">${M.kid(decoBuddy, deco[1][0])}</div>` : '';
         if (it.kind === 'chest') {
           const opened = S.chests.includes(it.id); const open = S.done[it.after] || S.settings.unlockAll;
           return `<div class="node-wrap" style="transform:translateX(${x}px)">${decoHTML}<button class="chest-node ${opened ? 'opened' : open ? 'ready' : 'locked'}" data-chest="${it.id}" data-open="${open ? 1 : 0}" aria-label="Treasure chest">${chestSVG(opened)}</button></div>`;
@@ -759,7 +761,7 @@
     if (r.explain) msg += `${msg ? '<br>' : ''}${rich(r.explain)}`;
     if (!graded && r.mistakes) msg = `${r.mistakes} slip${r.mistakes > 1 ? 's' : ''} — keep practising!`;
     sheet.className = `sheet ${ok ? 'ok' : 'bad'}`;
-    sheet.querySelector('.sheet-in').innerHTML = `<div class="sheet-head">${M.kid(S.buddy, ok ? 'happy' : 'sad')}<div><h3>${title}</h3>${msg ? `<p>${msg}</p>` : ''}</div></div><button class="btn ${ok ? '' : 'btn-red'}" id="cont">Continue</button>`;
+    sheet.querySelector('.sheet-in').innerHTML = `<div class="sheet-head">${M.kid(S.buddy, ok ? C.pick(['happy', 'celebrate', 'clap', 'nod', 'happy']) : C.pick(['sad', 'shrug', 'shake']))}<div><h3>${title}</h3>${msg ? `<p>${msg}</p>` : ''}</div></div><button class="btn ${ok ? '' : 'btn-red'}" id="cont">Continue</button>`;
     requestAnimationFrame(() => sheet.classList.add('show'));
     document.getElementById('foot').classList.add('hidden');
     const cont = document.getElementById('cont');
