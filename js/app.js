@@ -407,7 +407,7 @@
         const done = S.done[it.l.id]; const unlocked = isUnlocked(it.l.id); const isCur = cur && cur.l.id === it.l.id;
         const icon = done && !it.l.review ? V.check : V[lessonKind(it.l)];
         const stars = done ? `<div class="node-stars">${[1, 2, 3].map((n) => IMG('star', n <= done.stars ? '' : 'off')).join('')}</div>` : '';
-        const ring = isCur ? `<svg class="node-ring" viewBox="0 0 102 96"><ellipse cx="51" cy="48" rx="46" ry="43" stroke="var(--line)"/><path d="M51 5 A46 43 0 1 1 50.9 5" pathLength="100" stroke="var(--c)" stroke-dasharray="100" stroke-dashoffset="${100 - 100 * Math.max(.06, it.li / u.lessons.length)}" stroke-linecap="round"/></svg>` : '';
+        const ring = isCur ? `<svg class="node-ring" viewBox="0 0 108 96"><ellipse cx="54" cy="48" rx="49" ry="43" stroke="var(--line)"/><path d="M54 5 A49 43 0 1 1 53.9 5" pathLength="100" stroke="var(--c)" stroke-dasharray="100" stroke-dashoffset="${100 - 100 * Math.max(.06, it.li / u.lessons.length)}" stroke-linecap="round"/></svg>` : '';
         const bubble = isCur ? '<div class="start-bubble">START</div>' : '';
         const buddy = isCur ? `<div class="path-buddy walk-in" id="guide" style="${x >= 0 ? 'right:calc(100% + 34px)' : 'left:calc(100% + 34px)'};top:-80px;--from:${x >= 0 ? '-120px' : '120px'}">${M.kid(S.buddy, 'walk', x >= 0 ? '' : 'flip')}</div>` : '';
         return `<div class="node-wrap" style="transform:translateX(${x}px)" ${isCur ? 'id="current"' : ''}>${decoHTML}${bubble}${buddy}<div class="node-box">${ring}<button class="node ${unlocked ? '' : 'locked'} ${isCur ? 'cur' : ''}" data-lesson="${it.l.id}" aria-label="${esc(it.l.title)}">${icon}</button></div>${stars}</div>`;

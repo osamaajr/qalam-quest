@@ -700,3 +700,21 @@ img { -webkit-user-drag: none; user-select: none; }
 /* kids standing beside locked lessons are greyed out like the path around them */
 .deco-buddy.locked .kid { filter: grayscale(1) opacity(.5); }
 :root[data-theme="dark"] .deco-buddy.locked .kid, :root[data-theme="dark"] .chest-node.locked .chest { filter: grayscale(1) brightness(.75) opacity(.55); }
+
+/* =================== path buttons: the reference disc (tools/ref/node-ref.png) ===================
+   An oval top face (1.23 : 1) on a deep 3D edge (~9 % of the width, the unit's darker shade). Two
+   rounded, pill-shaped highlights lean up-right inside the face: a broad one upper-left and a narrower
+   one through the middle; a chunky white check about a third of the disc wide. Colours come from the
+   unit (--c / --cd); locked = grey. */
+.node-box { width: 74px; height: 68px; }
+.node { width: 74px; height: 60px; border-radius: 50%; overflow: hidden; background: var(--c); box-shadow: 0 8px 0 var(--cd); --hl: rgba(255,255,255,.19); }
+.node::before, .node::after { content: ''; position: absolute; border-radius: 999px; background: var(--hl); transform: rotate(42deg); inset: auto; box-shadow: none; opacity: 1; }
+.node::before { width: 28px; height: 70px; left: calc(50% - 14px - 16px); top: calc(50% - 35px - 10px); }
+.node::after { width: 15px; height: 58px; left: calc(50% - 7.5px + 4px); top: calc(50% - 29px + 5px); }
+.node svg { width: 30px; height: 30px; position: relative; z-index: 1; filter: none; }
+.node svg:has(path[d^="M7 17"]) { width: 40px; height: 40px; }
+.node .ico { width: 32px; height: 32px; position: relative; z-index: 1; }
+.node:active { transform: translateY(6px); box-shadow: 0 2px 0 var(--cd); }
+.node.locked { --hl: rgba(255,255,255,.35); }
+:root[data-theme="dark"] .node.locked { --hl: rgba(255,255,255,.07); }
+.node-ring { width: 108px; height: 96px; left: -17px; top: -14px; transform: none; }
