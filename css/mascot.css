@@ -14,7 +14,7 @@
 .kid .k-leg-r { transform-origin: 116px 200px; }
 .kid .k-eyes { transform-origin: 100px 100px; transition: translate .45s var(--ease); }
 .kid .k-brows path { transform-box: fill-box; transform-origin: center; transition: transform .4s var(--spring); }
-.kid .k-eyes-happy, .kid .k-eyes-shut, .kid .m, .kid .k-spark, .kid .k-book { display: none; }
+.kid .k-eyes-happy, .kid .k-eyes-shut, .kid .m, .kid .k-spark, .kid .k-book, .kid .k-q, .kid .k-rays, .kid .k-wink, .kid .k-thumb { display: none; }
 .kid[data-buddy="zaid"] .m-open, .kid[data-buddy="huda"] .m-grin { display: block; }
 .kid .k-spark { transform-box: fill-box; transform-origin: center; }
 
@@ -37,7 +37,7 @@
 @keyframes k-wave { 0%, 100% { transform: rotate(-128deg); } 50% { transform: rotate(-104deg); } }
 @keyframes k-spark { 0%, 100% { opacity: 0; transform: scale(.6); } 40%, 70% { opacity: 1; transform: scale(1); } }
 .kid[data-mood="wave"] .k-arm-r { animation: k-raiseR .45s var(--spring) forwards, k-wave .9s var(--ease) .45s infinite; }
-.kid[data-mood="wave"] .k-spark, .kid[data-mood="happy"] .k-spark { display: block; animation: k-spark .9s var(--ease) .3s infinite; opacity: 0; }
+.kid[data-mood="wave"] .k-spark-off, .kid[data-mood="happy"] .k-spark-off { display: block; animation: k-spark .9s var(--ease) .3s infinite; opacity: 0; }
 .kid[data-mood="wave"] .k-head { transform: rotate(5deg); }
 .kid[data-mood="wave"] .k-brow-r { transform: translateY(-3px) rotate(-6deg); }
 
@@ -102,15 +102,22 @@
 .kid[data-mood="think"] .k-arm-r { transform: rotate(98deg); }
 .kid[data-mood="think"] .k-brow-r { transform: translateY(-6px) rotate(-10deg); }
 
-/* cheeky: the reference expression — one brow up, sly grin, hand on hip */
-.kid[data-mood="cheeky"] .k-brow-r { transform: translateY(-7px) rotate(-16deg); }
-.kid[data-mood="cheeky"] .k-brow-l { transform: translateY(2px) rotate(6deg); }
+/* cheeky (from the sheet): a wink and a thumbs-up beside the face */
+.kid[data-mood="cheeky"] .k-eye-r { display: none; }
+.kid[data-mood="cheeky"] .k-wink, .kid[data-mood="cheeky"] .k-thumb { display: block; }
+.kid[data-mood="cheeky"] .k-thumb { transform-origin: 151px 209px; transform: rotate(122deg); }
+.kid[data-mood="cheeky"] .k-arm-r { transform: rotate(-122deg); }
+.kid[data-mood="cheeky"] .k-brow-r { transform: translateY(2px) rotate(6deg); }
+.kid[data-mood="cheeky"] .k-brow-l { transform: translateY(-4px) rotate(-6deg); }
 .kid[data-mood="cheeky"] .k-head { transform: rotate(-5deg); }
-.kid[data-mood="cheeky"] .k-arm-r { transform: rotate(-28deg); }
-.kid[data-mood="cheeky"] .k-arm-l { transform: rotate(20deg); }
-.kid[data-mood="cheeky"] .m-open, .kid[data-mood="cheeky"] .m-grin { display: none; }
-.kid[data-mood="cheeky"] .m-smirk { display: block; }
-.kid[data-mood="cheeky"] .k-eyes { translate: 2px 0; }
+.kid[data-mood="cheeky"] .m-open { display: none; }
+.kid[data-mood="cheeky"] .m-grin { display: block; }
+
+/* accents from the sheet: "?" bobbing while thinking, spark rays when excited */
+@keyframes k-qbob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-4px) rotate(8deg); } }
+@keyframes k-rays { 0%, 100% { opacity: .2; transform: scale(.8); } 40%, 70% { opacity: 1; transform: scale(1); } }
+.kid[data-mood="think"] .k-q { display: block; transform-box: fill-box; transform-origin: center bottom; animation: k-qbob 1.6s var(--ease) infinite; }
+.kid[data-mood="happy"] .k-rays, .kid[data-mood="wave"] .k-rays { display: block; transform-box: fill-box; transform-origin: left bottom; animation: k-rays 1s var(--ease) infinite; }
 
 /* dance: hips sway, arms take turns, feet step */
 @keyframes k-sway { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }

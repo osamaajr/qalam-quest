@@ -1,4 +1,4 @@
-/* Qalam — Zaid & Huda, v4.
+/* Qalam — Zaid & Huda, v4.1 (matched to tools/ref/sami-maryam-sheet.webp).
  * PERSPECTIVE RULE: always a straight front view. The face is centred on x = 100, the body
  * is symmetrical, and both feet are planted. Every pose is made by moving rig parts, never
  * by turning the character. Drawn from the reference art (tools/ref/reference.png).
@@ -11,15 +11,15 @@
   const P = {
     zaid: {
       name: 'Zaid', line: 'I love spotting patterns!',
-      skin: '#E68544', skinShade: '#C9682E', hair: '#331C1F', hairHi: '#4E2C31',
-      top: '#1747D6', topShade: '#0B2FA8', topHi: '#3D67F0', pants: '#2C294A', cargo: '#433F63',
-      shoe: '#FFB703', shoeShade: '#E08E00', sole: '#F6E7CF', mouth: '#7E1C2D', tongue: '#FE776C', teeth: '#FFF7E6',
+      skin: '#E8924C', skinShade: '#C97436', hair: '#3A2320', hairHi: '#55352F',
+      top: '#1442D2', topShade: '#0B2EA3', topHi: '#3A64EC', pants: '#2A2846', cargo: '#3E3B63',
+      shoe: '#FFC20E', shoeShade: '#E39A00', sole: '#F6E7CF', mouth: '#7E1C2D', tongue: '#FE776C', teeth: '#FFF7E6',
     },
     huda: {
       name: 'Huda', line: 'Every letter is a little friend!',
-      skin: '#E68544', skinShade: '#C9682E', hijab: '#7B1F5C', hijabShade: '#5C1444', hijabHi: '#9C3A7B',
-      top: '#6ECB95', topShade: '#48A974', topHi: '#93DDB1', pants: '#372B3F', cargo: '#4A3D55',
-      shoe: '#66C591', shoeShade: '#3F9F6D', sole: '#F6E7CF', mouth: '#7E1C2D', tongue: '#FE776C', teeth: '#FFF7E6',
+      skin: '#E8924C', skinShade: '#C97436', hijab: '#7D1E5F', hijabShade: '#5C1245', hijabHi: '#9B3A7C',
+      top: '#68D2A2', topShade: '#45AE7E', topHi: '#93E2BD', pants: '#45203F', cargo: '',
+      shoe: '#7D1E5F', shoeShade: '#5C1245', sole: '#F6E7CF', mouth: '#7E1C2D', tongue: '#FE776C', teeth: '#FFF7E6',
     },
   };
   const MIRROR = 'matrix(-1 0 0 1 200 0)';
@@ -27,8 +27,8 @@
   // Left leg (viewer's left); the right leg is its mirror image, so the pose is symmetrical.
   function leg(c) {
     return `
-      <path d="M72 198 H97 L96 256 Q95 263 88 263 H79 Q72 263 71 256 Z" fill="${c.pants}"/>
-      <rect x="67" y="218" width="12" height="20" rx="4.5" fill="${c.cargo}" transform="rotate(-5 73 228)"/>
+      <path d="M69 198 H99 L98.5 256 Q98 263 91 263 H77 Q70 263 69 256 Z" fill="${c.pants}"/>
+      ${c.cargo ? `<rect x="64" y="216" width="13" height="21" rx="4.5" fill="${c.cargo}" transform="rotate(-4 70 226)"/>` : ''}
       <g transform="translate(0 12)">
         <path d="M104 252 Q104 237 88 237 H80 Q62 237 57 250 L56 254 Q56 262 64 262 H98 Q104 262 104 256 Z" fill="${c.shoe}"/>
         <path d="M62 242 Q68 238 78 238" stroke="${c.shoeShade}" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".5"/>
@@ -60,9 +60,10 @@
   function face(c, y) {
     return `
       <g class="k-eyes" fill="${INK}">
-        <ellipse cx="83" cy="${y}" rx="6.6" ry="9.6"/><ellipse cx="117" cy="${y}" rx="6.6" ry="9.6"/>
-        <circle cx="85.4" cy="${y - 4}" r="2.3" fill="#fff" opacity=".9"/><circle cx="119.4" cy="${y - 4}" r="2.3" fill="#fff" opacity=".9"/>
+        <g class="k-eye-l"><ellipse cx="83" cy="${y}" rx="6.6" ry="9.6"/><circle cx="85.4" cy="${y - 4}" r="2.3" fill="#fff" opacity=".9"/></g>
+        <g class="k-eye-r"><ellipse cx="117" cy="${y}" rx="6.6" ry="9.6"/><circle cx="119.4" cy="${y - 4}" r="2.3" fill="#fff" opacity=".9"/></g>
       </g>
+      <path class="k-wink" d="M109 ${y + 2} Q117 ${y - 7} 125 ${y + 2}" fill="none" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>
       <g class="k-eyes-happy" fill="none" stroke="${INK}" stroke-width="5" stroke-linecap="round">
         <path d="M75 ${y + 2} Q83 ${y - 8} 91 ${y + 2}"/><path d="M109 ${y + 2} Q117 ${y - 8} 125 ${y + 2}"/>
       </g>
@@ -88,16 +89,16 @@
   function headZaid(c) {
     return `
       <g fill="${c.hair}">
-        <circle cx="50" cy="74" r="22"/><circle cx="56" cy="47" r="22"/><circle cx="78" cy="30" r="25"/><circle cx="100" cy="25" r="25"/>
-        <circle cx="122" cy="30" r="25"/><circle cx="144" cy="47" r="22"/><circle cx="150" cy="74" r="22"/>
-        <circle cx="48" cy="96" r="13"/><circle cx="152" cy="96" r="13"/>
+        <circle cx="56" cy="74" r="19"/><circle cx="62" cy="50" r="19"/><circle cx="80" cy="34" r="21"/><circle cx="102" cy="29" r="22"/>
+        <circle cx="123" cy="34" r="20"/><circle cx="140" cy="50" r="18"/><circle cx="145" cy="73" r="17"/>
+        <circle cx="54" cy="94" r="11"/><circle cx="147" cy="93" r="10"/>
       </g>
-      <path d="M44 66 Q48 56 58 52 M142 52 Q152 56 156 66 M70 32 Q84 25 98 26" stroke="${c.hairHi}" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M62 44 Q70 36 80 36 M112 30 Q124 30 132 38" stroke="${c.hairHi}" stroke-width="3.5" fill="none" stroke-linecap="round"/>
       <circle cx="54" cy="106" r="13" fill="${c.skin}"/><circle cx="146" cy="106" r="13" fill="${c.skin}"/>
       <path d="M51 102 Q56 100 58 107 M149 102 Q144 100 142 107" stroke="${c.skinShade}" stroke-width="3" fill="none" stroke-linecap="round"/>
       <path d="M56 98 C56 62 76 46 100 46 C124 46 144 62 144 98 C144 130 124 152 100 152 C76 152 56 130 56 98Z" fill="${c.skin}"/>
-      <path d="M53 93 C46 55 70 31 100 31 C130 31 154 55 147 93 C142 74 130 62 116 60 C108 70 92 75 74 73 C65 77 58 84 53 93Z" fill="${c.hair}"/>
-      <path d="M76 42 Q90 36 102 38 M116 39 Q130 42 138 52" stroke="${c.hairHi}" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M54 94 C48 58 72 34 100 34 C130 34 152 56 146 92 Q145 80 137 76 Q134 67 124 68 Q118 59 108 65 Q100 57 90 65 Q80 60 74 69 Q64 70 62 80 Q56 84 54 94Z" fill="${c.hair}"/>
+      <path d="M80 48 Q92 42 104 44" stroke="${c.hairHi}" stroke-width="3.5" fill="none" stroke-linecap="round"/>
       ${face(c, 101)}`;
   }
   function headHuda(c) {
@@ -108,7 +109,6 @@
       <ellipse cx="100" cy="99" rx="44" ry="47" fill="${c.skin}"/>
       <path d="M55 90 C56 61 75 47 100 47 C125 47 144 61 145 90 C137 67 120 57 100 57 C80 57 63 67 55 90Z" fill="${c.hijab}"/>
       <path d="M64 40 Q82 30 102 31" stroke="${c.hijabHi}" stroke-width="5" fill="none" stroke-linecap="round" opacity=".85"/>
-      <circle cx="140" cy="152" r="4.5" fill="#FFD23F"/>
       ${face(c, 103)}`;
   }
 
@@ -136,9 +136,13 @@
         <g class="k-leg k-leg-r"><g transform="${MIRROR}">${leg(c)}</g></g>
         <g class="k-upper">
           ${torso}
-          <g class="k-head">${isHuda ? headHuda(c) : headZaid(c)}</g>
+          <g class="k-head">${isHuda ? headHuda(c) : headZaid(c)}
+            <g class="k-q"><path d="M150 26 Q150 13 162 13 Q174 13 174 24 Q174 32 164 36 L164 42" fill="none" stroke="#1E44D2" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="164" cy="53" r="4.5" fill="#1E44D2"/></g>
+            <g class="k-rays" stroke="#FFC20E" stroke-width="6.5" stroke-linecap="round"><path d="M146 22 L152 9"/><path d="M160 34 L172 25"/><path d="M166 51 L180 49"/></g>
+          </g>
           <g class="k-arm k-arm-l">${arm(c)}</g>
-          <g class="k-arm k-arm-r"><g transform="${MIRROR}">${arm(c, book + sparks)}</g></g>
+          <g class="k-arm k-arm-r"><g transform="${MIRROR}">${arm(c, book + sparks)}</g>
+            <g class="k-thumb"><rect x="146" y="190" width="10" height="19" rx="5" fill="${c.skin}"/><path d="M148.5 196 h5" stroke="${c.skinShade}" stroke-width="1.6" stroke-linecap="round"/></g></g>
         </g>
       </g>
     </svg>`;
