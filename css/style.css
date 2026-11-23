@@ -564,6 +564,7 @@ img { -webkit-user-drag: none; user-select: none; }
 :root[data-theme="dark"] .bucket.fil { border-color: #7A4E1E; box-shadow: 0 5px 0 #7A4E1E; }
 :root[data-theme="dark"] .bucket.harf { border-color: #7A2C5A; box-shadow: 0 5px 0 #7A2C5A; }
 :root[data-theme="dark"] .logo text { filter: brightness(1.35); }
+:root[data-theme="dark"] .kid .k-shadow { fill: rgba(0,0,0,.35); }
 
 /* =================== v3 polish: Duolingo-level detail =================== */
 :root { --platform: rgba(38, 35, 70, .13); }
@@ -640,7 +641,7 @@ img { -webkit-user-drag: none; user-select: none; }
 .node-stars { margin-top: 12px; }
 
 /* mascots and chests stand on soft platforms */
-.path .kid .k-shadow { transform: scale(1.18, 1.6); }
+.path .kid .k-shadow { fill: var(--platform); transform: scale(1.18, 1.9); }
 .chest-node { width: 92px; height: 86px; }
 .chest-node::before { content: ''; position: absolute; left: 6px; right: 6px; bottom: 2px; height: 18px; border-radius: 12px; background: var(--platform); }
 .chest-node .chest { position: relative; width: 86px; }
