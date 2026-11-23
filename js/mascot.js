@@ -1,148 +1,161 @@
-/* Qalam — Zaid & Huda, v4.1 (matched to tools/ref/sami-maryam-sheet.webp).
- * PERSPECTIVE RULE: always a straight front view. The face is centred on x = 100, the body
- * is symmetrical, and both feet are planted. Every pose is made by moving rig parts, never
- * by turning the character. Drawn from the reference art (tools/ref/reference.png).
- * Rig: k-leg-l · k-leg-r · k-upper { torso · k-head · k-arm-l · k-arm-r }
+/* Qalam — Zaid & Huda, v6: traced from the character board (tools/ref/sami-maryam-sheet.webp).
+ *
+ * Every shape is drawn in the board's own coordinates (the front-view crops, 350 x 660, centred on
+ * x = 175) and scaled into the game's 200 x 292 viewBox by T, so proportions match the board.
+ * PERSPECTIVE RULE: straight front view, face centred, symmetrical, feet planted. Poses only move
+ * rig parts. Style: flat colour with a soft hint of shade — never heavy 3D (see project memory).
+ *
+ * Rig (viewBox units): k-all { k-leg-l · k-leg-r · k-upper { torso · k-head · k-arm-l · k-arm-r } }
+ *   shoulders 60.4|139.6,142.8 · hips 82.4|117.6,196 · neck 100,132 · waist 100,200
  * Moods: idle · wave · happy · talk · sad · think · cheeky · dance · walk · read · point · sit · sleep
+ * Life (random blinks, glances, individual timing) is driven by the loop at the bottom.
  */
 (function () {
   'use strict';
-  const INK = '#241418';
+  const INK = '#24150F';
   const P = {
     zaid: {
       name: 'Zaid', line: 'I love spotting patterns!',
-      skin: '#E8924C', skinShade: '#C97436', hair: '#3A2320', hairHi: '#55352F',
-      top: '#1442D2', topShade: '#0B2EA3', topHi: '#3A64EC', pants: '#2A2846', cargo: '#3E3B63',
-      shoe: '#FFC20E', shoeShade: '#E39A00', sole: '#F6E7CF', mouth: '#7E1C2D', tongue: '#FE776C', teeth: '#FFF7E6',
+      skin: '#EC9548', skinLo: '#D27C35', hair: '#3E2522', hairLo: '#311C1A',
+      top: '#0F46D6', topLo: '#0A35AE', topHi: '#2A5FE6', pocket: '#0A33A6',
+      pants: '#2A2A5C', pantsLo: '#222150', cargo: '#3D3D72',
+      shoe: '#F8B500', shoeLo: '#E09E00', stripe: '#FFFFFF', sole: '#F6E9D2',
+      mouth: '#8C1D2F', tongue: '#F98A92', teeth: '#FFFFFF', brow: '#3E2522',
     },
     huda: {
       name: 'Huda', line: 'Every letter is a little friend!',
-      skin: '#E8924C', skinShade: '#C97436', hijab: '#7D1E5F', hijabShade: '#5C1245', hijabHi: '#9B3A7C',
-      top: '#68D2A2', topShade: '#45AE7E', topHi: '#93E2BD', pants: '#45203F', cargo: '',
-      shoe: '#7D1E5F', shoeShade: '#5C1245', sole: '#F6E7CF', mouth: '#7E1C2D', tongue: '#FE776C', teeth: '#FFF7E6',
+      skin: '#EC9548', skinLo: '#D27C35', hijab: '#7E1A5E', hijabLo: '#661149', hijabHi: '#8E2A6E',
+      top: '#6CD4A6', topLo: '#55BE90', topHi: '#86E0B8',
+      pants: '#4B1F4F', pantsLo: '#3E1842', cargo: '',
+      shoe: '#7C1D5C', shoeLo: '#64134A', stripe: '#FFFFFF', sole: '#F6E9D2',
+      mouth: '#8C1D2F', tongue: '#F98A92', teeth: '#FFFFFF', brow: INK,
     },
   };
-  const MIRROR = 'matrix(-1 0 0 1 200 0)';
+  const T = 'matrix(0.44 0 0 0.44 23 -0.2)';            // board coordinates -> viewBox
+  const W = (s) => `<g transform="${T}">${s}</g>`;
+  const WM = (s) => `<g transform="${T}"><g transform="matrix(-1 0 0 1 350 0)">${s}</g></g>`;  // mirrored
 
-  // Left leg (viewer's left); the right leg is its mirror image, so the pose is symmetrical.
+  // ---------- legs (viewer's left; the right leg is the mirror) ----------
   function leg(c) {
     return `
-      <path d="M69 198 H99 L98.5 256 Q98 263 91 263 H77 Q70 263 69 256 Z" fill="${c.pants}"/>
-      ${c.cargo ? `<rect x="64" y="216" width="13" height="21" rx="4.5" fill="${c.cargo}" transform="rotate(-4 70 226)"/>` : ''}
-      <g transform="translate(0 12)">
-        <path d="M104 252 Q104 237 88 237 H80 Q62 237 57 250 L56 254 Q56 262 64 262 H98 Q104 262 104 256 Z" fill="${c.shoe}"/>
-        <path d="M62 242 Q68 238 78 238" stroke="${c.shoeShade}" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".5"/>
-        <path d="M55 255 H105 Q105 265 97 265 H64 Q55 265 55 258 Z" fill="${c.sole}"/>
-        <path d="M74 243 l11 -1.5 M73 249 l12 -1.5" stroke="${c.sole}" stroke-width="3.6" stroke-linecap="round"/>
+      <path d="M80 438 H186 L184 500 Q182 520 175 532 L172 590 Q171 600 160 600 H92 Q80 600 80 588 Z" fill="${c.pants}"/>
+      ${c.cargo ? `<rect x="80" y="476" width="50" height="46" rx="12" fill="${c.cargo}" transform="rotate(-6 105 499)"/>` : ''}
+      <g class="k-foot">
+        <path d="M46 604 Q46 570 84 568 H136 Q168 570 168 602 L168 614 H46 Z" fill="${c.shoe}"/>
+        <path d="M150 576 Q166 584 167 604" stroke="${c.shoeLo}" stroke-width="7" fill="none" opacity=".55" stroke-linecap="round"/>
+        ${c.cargo ? `<path d="M66 590 L98 584 M70 603 L104 597" stroke="${c.stripe}" stroke-width="9" stroke-linecap="round"/>` : `<path d="M72 592 L108 586" stroke="${c.stripe}" stroke-width="15" stroke-linecap="round"/>`}
+        <rect x="42" y="608" width="130" height="24" rx="12" fill="${c.sole}"/>
       </g>`;
   }
+
+  // ---------- arms: chunky sleeve + round hand ----------
   function arm(c, extra) {
     return `
       ${extra || ''}
-      <path d="M60 152 Q47 156 45 172 L41 196 Q40 205 50 206 Q59 207 61 198 L67 172 Z" fill="${c.top}"/>
-      <path d="M49 162 Q45 178 43 194" stroke="${c.topHi}" stroke-width="3.2" fill="none" stroke-linecap="round" opacity=".5"/>
-      <path d="M40 193 Q50 197 62 195 L61 200 Q59 208 50 207 Q40 206 40 199Z" fill="${c.topShade}"/>
-      <path d="M39 204 Q36 216 46 220 Q57 223 61 213 Q63 205 56 201 Q45 198 39 204Z" fill="${c.skin}"/>
-      <ellipse cx="60" cy="207" rx="4.2" ry="5.2" fill="${c.skin}"/>
-      <path d="M44 215 Q49 218 54 217" stroke="${c.skinShade}" stroke-width="1.8" fill="none" stroke-linecap="round" opacity=".6"/>`;
+      <path d="M92 312 Q56 314 46 350 L34 418 Q31 442 60 444 Q86 446 88 424 L102 352 Q104 320 92 312Z" fill="${c.top}"/>
+      <path d="M58 340 Q48 380 44 418" stroke="${c.topHi}" stroke-width="7" fill="none" stroke-linecap="round" opacity=".55"/>
+      <path d="M84 344 Q82 390 80 424" stroke="${c.topLo}" stroke-width="7" fill="none" stroke-linecap="round" opacity=".5"/>
+      <circle cx="60" cy="446" r="${c.cargo ? 27 : 31}" fill="${c.skin}"/>
+      <path d="M44 456 Q58 470 76 458" stroke="${c.skinLo}" stroke-width="5" fill="none" stroke-linecap="round" opacity=".5"/>`;
   }
   const book = `<g class="k-book">
-      <rect x="22" y="170" width="38" height="46" rx="6" fill="#FC856B"/>
-      <path d="M22 176 Q22 170 28 170 H56 Q60 170 60 174" fill="none" stroke="#FFB4A2" stroke-width="2.5" stroke-linecap="round"/>
-      <rect x="22" y="170" width="38" height="46" rx="6" fill="none" stroke="#DE5C3B" stroke-width="2.2"/>
-      <rect x="29" y="178" width="24" height="6" rx="3" fill="#FFF3E8" opacity=".6"/>
-      <path d="M21 178 h8 M21 188 h8 M21 198 h8" stroke="#FFF3E8" stroke-width="3.6" stroke-linecap="round"/>
+      <rect x="-6" y="378" width="70" height="90" rx="10" fill="#FF7A6B"/>
+      <rect x="-6" y="378" width="12" height="90" rx="6" fill="#E85F50"/>
+      <path d="M16 396 h34 M16 410 h26" stroke="#FFE7DF" stroke-width="7" stroke-linecap="round"/>
     </g>`;
-  const sparks = `<g class="k-spark" stroke="#FFB703" stroke-width="6" stroke-linecap="round">
-      <path d="M30 236 L22 250"/><path d="M48 242 L48 258"/><path d="M14 224 L2 230"/></g>`;
 
-  // Face, centred on x = 100 and mirror-symmetrical.
-  function face(c, y) {
+  // ---------- face (shared shapes; positions differ slightly per buddy) ----------
+  function face(c, f) {
+    const { lx, rx, ey, by, my, mw } = f;
+    const ov = (x) => `<ellipse cx="${x}" cy="${ey}" rx="7.5" ry="13.5"/>`;
     return `
-      <g class="k-eyes" fill="${INK}">
-        <g class="k-eye-l"><ellipse cx="83" cy="${y}" rx="6.6" ry="9.6"/><circle cx="85.4" cy="${y - 4}" r="2.3" fill="#fff" opacity=".9"/></g>
-        <g class="k-eye-r"><ellipse cx="117" cy="${y}" rx="6.6" ry="9.6"/><circle cx="119.4" cy="${y - 4}" r="2.3" fill="#fff" opacity=".9"/></g>
+      <g class="k-eyes" fill="${INK}"><g class="k-eye-l">${ov(lx)}</g><g class="k-eye-r">${ov(rx)}</g></g>
+      <path class="k-wink" d="M${rx - 14} ${ey + 3} Q${rx} ${ey - 13} ${rx + 14} ${ey + 3}" fill="none" stroke="${INK}" stroke-width="8" stroke-linecap="round"/>
+      <g class="k-eyes-happy" fill="none" stroke="${INK}" stroke-width="8" stroke-linecap="round">
+        <path d="M${lx - 14} ${ey + 3} Q${lx} ${ey - 13} ${lx + 14} ${ey + 3}"/><path d="M${rx - 14} ${ey + 3} Q${rx} ${ey - 13} ${rx + 14} ${ey + 3}"/></g>
+      <g class="k-eyes-shut" fill="none" stroke="${INK}" stroke-width="7" stroke-linecap="round">
+        <path d="M${lx - 13} ${ey} Q${lx} ${ey + 10} ${lx + 13} ${ey}"/><path d="M${rx - 13} ${ey} Q${rx} ${ey + 10} ${rx + 13} ${ey}"/></g>
+      <g class="k-brows" fill="none" stroke="${c.brow}" stroke-width="${c.hair ? 10 : 8}" stroke-linecap="round">
+        <path class="k-brow k-brow-l" d="M${lx - 17} ${by + 6} Q${lx} ${by - 6} ${lx + 15} ${by + 3}"/>
+        <path class="k-brow k-brow-r" d="M${rx - 15} ${by + 3} Q${rx} ${by - 6} ${rx + 17} ${by + 6}"/>
       </g>
-      <path class="k-wink" d="M109 ${y + 2} Q117 ${y - 7} 125 ${y + 2}" fill="none" stroke="${INK}" stroke-width="5" stroke-linecap="round"/>
-      <g class="k-eyes-happy" fill="none" stroke="${INK}" stroke-width="5" stroke-linecap="round">
-        <path d="M75 ${y + 2} Q83 ${y - 8} 91 ${y + 2}"/><path d="M109 ${y + 2} Q117 ${y - 8} 125 ${y + 2}"/>
-      </g>
-      <g class="k-eyes-shut" fill="none" stroke="${INK}" stroke-width="4" stroke-linecap="round">
-        <path d="M75 ${y} Q83 ${y + 6} 91 ${y}"/><path d="M109 ${y} Q117 ${y + 6} 125 ${y}"/>
-      </g>
-      <g class="k-brows" fill="none" stroke="${INK}" stroke-width="6.5" stroke-linecap="round">
-        <path class="k-brow k-brow-l" d="M73 ${y - 17} Q82 ${y - 24} 92 ${y - 19}"/>
-        <path class="k-brow k-brow-r" d="M108 ${y - 19} Q118 ${y - 24} 127 ${y - 17}"/>
-      </g>
-      <ellipse cx="70" cy="${y + 20}" rx="8" ry="5" fill="#F0604A" opacity=".3"/>
-      <ellipse cx="130" cy="${y + 20}" rx="8" ry="5" fill="#F0604A" opacity=".3"/>
       <g class="k-mouths">
-        <g class="m m-open"><path d="M82 ${y + 17} Q100 ${y + 15} 118 ${y + 17} Q116 ${y + 39} 100 ${y + 39} Q84 ${y + 39} 82 ${y + 17}Z" fill="${c.mouth}"/><path d="M88 ${y + 31} Q100 ${y + 22} 112 ${y + 31} Q108 ${y + 38} 100 ${y + 38} Q92 ${y + 38} 88 ${y + 31}Z" fill="${c.tongue}"/></g>
-        <g class="m m-grin"><path d="M81 ${y + 16} Q100 ${y + 15} 119 ${y + 16} Q117 ${y + 38} 100 ${y + 38} Q83 ${y + 38} 81 ${y + 16}Z" fill="${c.mouth}"/><path d="M82 ${y + 17} Q100 ${y + 16} 118 ${y + 17} Q116 ${y + 24} 100 ${y + 25} Q84 ${y + 24} 82 ${y + 17}Z" fill="${c.teeth}"/></g>
-        <path class="m m-smile" d="M86 ${y + 21} Q100 ${y + 33} 114 ${y + 21}" stroke="${INK}" stroke-width="5" fill="none" stroke-linecap="round"/>
-        <ellipse class="m m-o" cx="100" cy="${y + 26}" rx="6.5" ry="8" fill="${c.mouth}"/>
-        <path class="m m-sad" d="M87 ${y + 31} Q100 ${y + 21} 113 ${y + 31}" stroke="${INK}" stroke-width="5" fill="none" stroke-linecap="round"/>
-        <path class="m m-smirk" d="M87 ${y + 24} Q101 ${y + 30} 115 ${y + 18}" stroke="${INK}" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <g class="m m-open"><path d="M${175 - mw} ${my} Q175 ${my + 4} ${175 + mw} ${my} Q${173 + mw} ${my + 56} 175 ${my + 56} Q${177 - mw} ${my + 56} ${175 - mw} ${my}Z" fill="${c.mouth}"/>
+          <path d="M${175 - mw * .65} ${my + 38} Q175 ${my + 22} ${175 + mw * .65} ${my + 38} Q${175 + mw * .45} ${my + 54} 175 ${my + 54} Q${175 - mw * .45} ${my + 54} ${175 - mw * .65} ${my + 38}Z" fill="${c.tongue}"/></g>
+        <g class="m m-grin"><path d="M${175 - mw} ${my} Q175 ${my + 4} ${175 + mw} ${my} Q${173 + mw} ${my + 50} 175 ${my + 50} Q${177 - mw} ${my + 50} ${175 - mw} ${my}Z" fill="${c.mouth}"/>
+          <path d="M${177 - mw} ${my + 2} Q175 ${my + 6} ${173 + mw} ${my + 2} Q${170 + mw} ${my + 15} 175 ${my + 16} Q${180 - mw} ${my + 15} ${177 - mw} ${my + 2}Z" fill="${c.teeth}"/>
+          <path d="M${175 - mw * .5} ${my + 38} Q175 ${my + 28} ${175 + mw * .5} ${my + 38} Q${175 + mw * .35} ${my + 48} 175 ${my + 48} Q${175 - mw * .35} ${my + 48} ${175 - mw * .5} ${my + 38}Z" fill="${c.tongue}"/></g>
+        <path class="m m-smile" d="M${178 - mw} ${my + 10} Q175 ${my + 40} ${172 + mw} ${my + 10}" stroke="${INK}" stroke-width="9" fill="none" stroke-linecap="round"/>
+        <g class="m m-o"><ellipse cx="175" cy="${my + 24}" rx="13" ry="17" fill="${c.mouth}"/><ellipse cx="175" cy="${my + 33}" rx="8" ry="6" fill="${c.tongue}"/></g>
+        <path class="m m-sad" d="M${180 - mw} ${my + 34} Q175 ${my + 12} ${170 + mw} ${my + 34}" stroke="${INK}" stroke-width="9" fill="none" stroke-linecap="round"/>
+        <path class="m m-smirk" d="M${180 - mw} ${my + 22} Q${178} ${my + 36} ${172 + mw} ${my + 8}" stroke="${INK}" stroke-width="9" fill="none" stroke-linecap="round"/>
       </g>`;
   }
 
+  // ---------- heads ----------
   function headZaid(c) {
-    return `
+    return W(`
       <g fill="${c.hair}">
-        <circle cx="56" cy="74" r="19"/><circle cx="62" cy="50" r="19"/><circle cx="80" cy="34" r="21"/><circle cx="102" cy="29" r="22"/>
-        <circle cx="123" cy="34" r="20"/><circle cx="140" cy="50" r="18"/><circle cx="145" cy="73" r="17"/>
-        <circle cx="54" cy="94" r="11"/><circle cx="147" cy="93" r="10"/>
+        <circle cx="112" cy="96" r="62"/><circle cx="216" cy="90" r="62"/><circle cx="164" cy="84" r="50"/>
+        <circle cx="62" cy="140" r="46"/><circle cx="280" cy="136" r="43"/><circle cx="50" cy="192" r="28"/><circle cx="298" cy="190" r="26"/>
       </g>
-      <path d="M62 44 Q70 36 80 36 M112 30 Q124 30 132 38" stroke="${c.hairHi}" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-      <circle cx="54" cy="106" r="13" fill="${c.skin}"/><circle cx="146" cy="106" r="13" fill="${c.skin}"/>
-      <path d="M51 102 Q56 100 58 107 M149 102 Q144 100 142 107" stroke="${c.skinShade}" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <path d="M56 98 C56 62 76 46 100 46 C124 46 144 62 144 98 C144 130 124 152 100 152 C76 152 56 130 56 98Z" fill="${c.skin}"/>
-      <path d="M54 94 C48 58 72 34 100 34 C130 34 152 56 146 92 Q145 80 137 76 Q134 67 124 68 Q118 59 108 65 Q100 57 90 65 Q80 60 74 69 Q64 70 62 80 Q56 84 54 94Z" fill="${c.hair}"/>
-      <path d="M80 48 Q92 42 104 44" stroke="${c.hairHi}" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-      ${face(c, 101)}`;
+      <path d="M30 196 Q20 150 44 116 M300 128 Q322 160 312 204" stroke="${c.hairLo}" stroke-width="10" fill="none" stroke-linecap="round" opacity=".55"/>
+      <circle cx="72" cy="238" r="27" fill="${c.skin}"/><circle cx="278" cy="238" r="27" fill="${c.skin}"/>
+      <path d="M175 124 C238 124 264 168 264 216 C264 270 228 302 175 302 C122 302 86 270 86 216 C86 168 112 124 175 124Z" fill="${c.skin}"/>
+      <path d="M248 190 C262 250 230 296 175 300 C226 290 252 250 248 190Z" fill="${c.skinLo}" opacity=".45"/>
+      <path d="M72 206 Q66 132 110 108 Q175 82 240 108 Q284 132 278 206 Q272 170 260 160 Q252 138 228 140 Q213 126 193 134 Q176 122 158 134 Q138 124 124 138 Q102 138 96 158 Q82 168 72 206Z" fill="${c.hair}"/>
+      ${face(c, { lx: 146, rx: 205, ey: 200, by: 160, my: 232, mw: 37 })}`);
   }
   function headHuda(c) {
-    return `
-      <path d="M100 24 C62 24 40 52 40 94 C40 120 46 138 42 158 C38 178 28 198 37 212 C46 222 64 216 71 202 L77 172 L124 172 C150 162 160 130 160 94 C160 52 138 24 100 24Z" fill="${c.hijab}"/>
-      <path d="M42 158 C38 178 28 198 37 212 C46 222 64 216 71 202 L75 178 C63 182 51 172 42 158Z" fill="${c.hijabShade}"/>
-      <path d="M58 140 Q100 172 142 140 L136 162 Q100 182 64 162Z" fill="${c.hijabShade}"/>
-      <ellipse cx="100" cy="99" rx="44" ry="47" fill="${c.skin}"/>
-      <path d="M55 90 C56 61 75 47 100 47 C125 47 144 61 145 90 C137 67 120 57 100 57 C80 57 63 67 55 90Z" fill="${c.hijab}"/>
-      <path d="M64 40 Q82 30 102 31" stroke="${c.hijabHi}" stroke-width="5" fill="none" stroke-linecap="round" opacity=".85"/>
-      ${face(c, 103)}`;
+    return W(`
+      <path d="M176 14 C96 14 30 68 30 160 C30 212 44 250 34 292 C26 328 8 360 18 382 C30 402 62 398 74 374 L104 316 L256 316 C292 296 306 244 306 162 C306 72 250 14 176 14Z" fill="${c.hijab}"/>
+      <path d="M34 292 C26 328 8 360 18 382 C30 402 62 398 74 374 L96 326 C70 326 48 312 34 292Z" fill="${c.hijabLo}"/>
+      <path d="M282 120 C306 180 298 256 256 306" stroke="${c.hijabLo}" stroke-width="12" fill="none" opacity=".45" stroke-linecap="round"/>
+      <ellipse cx="177" cy="172" rx="93" ry="98" fill="${c.skin}"/>
+      <path d="M254 140 C278 220 246 268 177 270 C236 256 262 214 254 140Z" fill="${c.skinLo}" opacity=".45"/>
+      <path d="M62 250 Q177 336 292 250 L286 306 Q177 350 68 306Z" fill="${c.hijab}"/>
+      <path d="M76 292 Q177 348 280 292" stroke="${c.hijabLo}" stroke-width="8" fill="none" opacity=".6" stroke-linecap="round"/>
+      ${face(c, { lx: 140, rx: 212, ey: 153, by: 114, my: 186, mw: 34 })}`);
   }
 
+  // ---------- torsos ----------
+  function torsoZaid(c) {
+    return W(`
+      <path d="M95 304 Q175 288 255 304 Q286 318 288 352 L293 430 Q294 454 270 454 H80 Q56 454 57 430 L62 352 Q64 318 95 304Z" fill="${c.top}"/>
+      <path d="M262 312 Q290 330 291 380 L293 430 Q294 454 270 454 H246 Q272 440 272 400 Z" fill="${c.topLo}" opacity=".55"/>
+      <path d="M58 436 H292 Q294 454 270 454 H80 Q56 454 58 436Z" fill="${c.topLo}" opacity=".7"/>
+      <path d="M126 392 Q126 382 136 382 H214 Q224 382 224 392 L236 434 H114 Z" fill="${c.pocket}"/>
+      <path d="M104 298 Q175 266 246 298 Q256 320 238 334 Q175 356 112 334 Q94 320 104 298Z" fill="${c.top}"/>
+      <path d="M104 298 Q175 270 246 298" stroke="${c.topHi}" stroke-width="6" fill="none" opacity=".6" stroke-linecap="round"/><path d="M148 300 L175 326 L202 300 Q175 292 148 300Z" fill="${c.topLo}"/>
+      <rect x="148" y="326" width="13" height="48" rx="6.5" fill="#fff"/><rect x="189" y="326" width="13" height="48" rx="6.5" fill="#fff"/>`);
+  }
+  function torsoHuda(c) {
+    return W(`
+      <path d="M90 300 Q176 284 262 300 Q298 314 300 352 L305 452 Q306 470 290 470 H62 Q46 470 47 452 L52 352 Q54 314 90 300Z" fill="${c.top}"/>
+      <path d="M262 310 Q298 326 300 380 L305 452 Q306 470 290 470 H262 Q284 450 284 400 Z" fill="${c.topLo}" opacity=".6"/>
+      <path d="M236 340 Q250 400 248 460" stroke="${c.topLo}" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/>`);
+  }
+
+  // ---------- assemble ----------
   function kid(buddy, mood, cls, opts) {
     buddy = P[buddy] ? buddy : 'huda';
-    const c = P[buddy];
-    const o = opts || {};
-    const isHuda = buddy === 'huda';
-    const vb = o.headOnly ? '34 14 132 150' : '0 0 200 292';
-    const torso = isHuda
-      ? `<path d="M62 170 Q64 149 87 147 H113 Q136 149 138 170 L147 211 Q149 220 138 220 H62 Q51 220 53 211 Z" fill="${c.top}"/>
-         <path d="M120 156 Q132 176 136 206" stroke="${c.topHi}" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/>
-         <path d="M53 208 H147 L147 211 Q149 220 138 220 H62 Q51 220 53 211Z" fill="${c.topShade}" opacity=".7"/>`
-      : `<path d="M57 170 Q59 147 83 145 H117 Q141 147 143 170 L147 205 Q148 215 137 215 H63 Q52 215 53 205 Z" fill="${c.top}"/>
-         <path d="M53 202 H147 L147 206 Q148 215 137 215 H63 Q52 215 53 206 Z" fill="${c.topShade}" opacity=".75"/>
-         <path d="M74 184 Q74 179 79 179 H121 Q126 179 126 184 L129 201 H71 Z" fill="${c.topShade}"/>
-         <path d="M76 146 Q100 136 124 146 Q114 154 100 154 Q86 154 76 146Z" fill="${c.topShade}"/>
-         <path d="M87 146 L100 162 L113 146 Z" fill="${c.skinShade}"/>
-         <path d="M92 159 L90 177 M108 159 L110 177" stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round"/>
-         <path d="M66 160 Q62 176 61 196 M134 160 Q138 176 139 196" stroke="${c.topShade}" stroke-width="3.5" fill="none" stroke-linecap="round" opacity=".45"/>`;
+    const c = P[buddy]; const o = opts || {};
+    const huda = buddy === 'huda';
+    const vb = o.headOnly ? '28 6 144 132' : '0 0 200 292';
+    const armL = `<g class="k-arm k-arm-l">${W(arm(c))}</g>`;
+    const armR = `<g class="k-arm k-arm-r">${WM(arm(c, book))}
+        <g class="k-thumb"><rect x="146.5" y="176" width="10" height="19" rx="5" fill="${c.skin}"/></g></g>`;
+    const head = `<g class="k-head">${huda ? headHuda(c) : headZaid(c)}
+        <g class="k-q"><path d="M152 18 Q152 6 163 6 Q174 6 174 16 Q174 24 165 28 L165 33" fill="none" stroke="#1E44D2" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="165" cy="43" r="4.2" fill="#1E44D2"/></g>
+        <g class="k-rays" stroke="#FFC20E" stroke-width="6" stroke-linecap="round"><path d="M150 14 L156 3"/><path d="M164 25 L176 17"/><path d="M170 41 L184 40"/></g></g>`;
     return `<svg class="kid ${cls || ''}" data-buddy="${buddy}" data-mood="${mood || 'idle'}" viewBox="${vb}" role="img" aria-label="${c.name}">
-      <ellipse class="k-shadow" cx="100" cy="280" rx="54" ry="7"/>
+      <ellipse class="k-shadow" cx="100" cy="285" rx="60" ry="6"/>
       <g class="k-all">
-        <g class="k-leg k-leg-l">${leg(c)}</g>
-        <g class="k-leg k-leg-r"><g transform="${MIRROR}">${leg(c)}</g></g>
+        <g class="k-leg k-leg-l">${W(leg(c))}</g>
+        <g class="k-leg k-leg-r">${WM(leg(c))}</g>
         <g class="k-upper">
-          ${torso}
-          <g class="k-head">${isHuda ? headHuda(c) : headZaid(c)}
-            <g class="k-q"><path d="M150 26 Q150 13 162 13 Q174 13 174 24 Q174 32 164 36 L164 42" fill="none" stroke="#1E44D2" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="164" cy="53" r="4.5" fill="#1E44D2"/></g>
-            <g class="k-rays" stroke="#FFC20E" stroke-width="6.5" stroke-linecap="round"><path d="M146 22 L152 9"/><path d="M160 34 L172 25"/><path d="M166 51 L180 49"/></g>
-          </g>
-          <g class="k-arm k-arm-l">${arm(c)}</g>
-          <g class="k-arm k-arm-r"><g transform="${MIRROR}">${arm(c, book + sparks)}</g>
-            <g class="k-thumb"><rect x="146" y="190" width="10" height="19" rx="5" fill="${c.skin}"/><path d="M148.5 196 h5" stroke="${c.skinShade}" stroke-width="1.6" stroke-linecap="round"/></g></g>
+          ${huda ? torsoHuda(c) : torsoZaid(c)}
+          ${head + armL + armR}
         </g>
       </g>
     </svg>`;
@@ -156,16 +169,48 @@
     if (ms) el._moodT = setTimeout(() => el.setAttribute('data-mood', el.dataset.rest || 'idle'), ms);
   }
 
-  // Cycles a kid through moods so they never just stand there.
+  // Cycles a kid through moods; the timing wanders a little so two kids never move in lock-step.
   function liven(el, moods, every) {
     if (!el) return;
-    let i = 0;
-    clearInterval(el._liven);
-    el._liven = setInterval(() => {
-      if (!document.body.contains(el)) { clearInterval(el._liven); return; }
-      i = (i + 1) % moods.length; el.setAttribute('data-mood', moods[i]);
-    }, every || 3200);
+    let i = 0; const base = every || 3200;
+    clearTimeout(el._liven);
+    const next = () => {
+      el._liven = setTimeout(() => {
+        if (!document.body.contains(el)) return;
+        i = (i + 1) % moods.length; el.setAttribute('data-mood', moods[i]); next();
+      }, base * (0.8 + Math.random() * 0.45));
+    };
+    next();
   }
+
+  // ---------- life: random blinks, glances and individual timing for every kid on screen ----------
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const life = new WeakMap();
+  function tick() {
+    const now = performance.now();
+    document.querySelectorAll('svg.kid').forEach((k) => {
+      let s = life.get(k);
+      if (!s) {
+        s = { blink: now + 500 + Math.random() * 3000, look: now + 900 + Math.random() * 2500 };
+        k.style.setProperty('--ph', (-Math.random() * 6).toFixed(2) + 's');
+        k.style.setProperty('--sp', (0.92 + Math.random() * 0.16).toFixed(2));
+        life.set(k, s);
+      }
+      if (now > s.blink) {
+        k.classList.add('blink'); setTimeout(() => k.classList.remove('blink'), 120);
+        if (Math.random() < 0.18) setTimeout(() => { k.classList.add('blink'); setTimeout(() => k.classList.remove('blink'), 110); }, 240);
+        s.blink = now + 2200 + Math.random() * 4300;
+      }
+      if (now > s.look) {
+        const away = Math.random() < 0.5;
+        k.style.setProperty('--lx', away ? ((Math.random() * 2 - 1) * 2.2).toFixed(1) + 'px' : '0px');
+        k.style.setProperty('--ly', away ? ((Math.random() * 2 - 1) * 1.2).toFixed(1) + 'px' : '0px');
+        s.look = now + 1000 + Math.random() * 2800;
+      }
+    });
+    setTimeout(tick, 160);
+  }
+  if (!reduce) setTimeout(tick, 300);
 
   window.QQ_MASCOT = { BUDDIES: P, kid, setMood, liven };
 })();
