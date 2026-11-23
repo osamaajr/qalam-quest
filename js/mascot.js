@@ -21,7 +21,17 @@
     huda: { name: 'Huda', line: 'Every letter is a little friend!' },
   };
   const at = (p) => `transform-origin:${p[0]}px ${p[1]}px`;
-  const paths = (layers) => layers.map((l) => `<path d="${l.d}" fill="${l.fill}" stroke="${l.fill}" stroke-width=".35" stroke-linejoin="round" fill-rule="evenodd"/>`).join('');
+  const paths = (layers) => layers.map((l) => `<path d="${l.d}" fill="${l.fill}" fill-rule="evenodd"/>`).join('');
+  let uid = 0;
+  // A part = its smooth silhouette (underlay) + every colour region clipped to that silhouette, so the
+  // outline stays smooth and overlapping regions never leave specks or seams.
+  function part(p) {
+    if (Array.isArray(p)) return paths(p);
+    const id = 'kc' + (++uid);
+    const free = p.layers.filter((l) => l.noclip), rest = p.layers.filter((l) => !l.noclip);
+    const pills = (p.pills || []).map((q) => `<rect x="${q.cx - q.w / 2}" y="${q.cy - q.h / 2}" width="${q.w}" height="${q.h}" rx="${q.rx}" fill="${q.fill}" transform="rotate(${q.a} ${q.cx} ${q.cy})"/>`).join('');
+    return `${paths(free)}<clipPath id="${id}"><path d="${p.clip}" fill-rule="evenodd"/></clipPath><g clip-path="url(#${id})">${paths(rest)}${pills}</g>`;
+  }
 
   function face(f, col) {
     const ink = f.eyeFill; const [L, R] = f.eyes; const m = f.mouthBox;
@@ -29,7 +39,7 @@
     const arcUp = (e) => `M${e.cx - e.rx * 1.9} ${e.cy + e.ry * .35} Q${e.cx} ${e.cy - e.ry * 1.05} ${e.cx + e.rx * 1.9} ${e.cy + e.ry * .35}`;
     const arcDown = (e) => `M${e.cx - e.rx * 1.8} ${e.cy} Q${e.cx} ${e.cy + e.ry * .85} ${e.cx + e.rx * 1.8} ${e.cy}`;
     const sw = (L.rx * 1.05).toFixed(2);
-    const brows = f.brows.map((b, i) => `<g class="k-brow k-brow-${i ? 'r' : 'l'}">${paths([b])}</g>`).join('');
+    const brows = f.brows.map((b, i) => `<g class="k-brow k-brow-${i ? 'r' : 'l'}"><path d="${b.d}" fill="none" stroke="${b.stroke}" stroke-width="${b.w}" stroke-linecap="round"/></g>`).join('');
     const stroke = (cls, d) => `<path class="m ${cls}" d="${d}" fill="none" stroke="${ink}" stroke-width="${(m.ry * .32).toFixed(2)}" stroke-linecap="round"/>`;
     return `<g class="k-face">
       <g class="k-eyes">${eye(L, 'l')}${eye(R, 'r')}</g>
@@ -37,7 +47,7 @@
       <g class="k-eyes-happy" fill="none" stroke="${ink}" stroke-width="${sw}" stroke-linecap="round"><path d="${arcUp(L)}"/><path d="${arcUp(R)}"/></g>
       <g class="k-eyes-shut" fill="none" stroke="${ink}" stroke-width="${(L.rx * .9).toFixed(2)}" stroke-linecap="round"><path d="${arcDown(L)}"/><path d="${arcDown(R)}"/></g>
       ${brows}
-      <g class="m m-base" style="${at([m.cx, m.cy])}">${paths(f.mouth)}</g>
+      <g class="m m-base" style="${at([m.cx, m.cy])}">${part(f.mouth)}</g>
       ${stroke('m-smile', `M${m.cx - m.rx * .7} ${m.cy - m.ry * .25} Q${m.cx} ${m.cy + m.ry * .95} ${m.cx + m.rx * .7} ${m.cy - m.ry * .25}`)}
       ${stroke('m-sad', `M${m.cx - m.rx * .55} ${m.cy + m.ry * .55} Q${m.cx} ${m.cy - m.ry * .45} ${m.cx + m.rx * .55} ${m.cy + m.ry * .55}`)}
       ${stroke('m-smirk', `M${m.cx - m.rx * .65} ${m.cy + m.ry * .1} Q${m.cx + m.rx * .1} ${m.cy + m.ry * .75} ${m.cx + m.rx * .72} ${m.cy - m.ry * .45}`)}
@@ -54,20 +64,20 @@
     const [hx, hy] = J.handR;
     const book = `<g class="k-book" transform="rotate(-62 ${hx} ${hy})"><rect x="${hx - 26}" y="${hy - 30}" width="28" height="34" rx="3.5" fill="#FF7A6B"/><rect x="${hx - 26}" y="${hy - 30}" width="5" height="34" rx="2.5" fill="#E85F50"/><path d="M${hx - 17} ${hy - 22} h13 M${hx - 17} ${hy - 16} h9" stroke="#FFE7DF" stroke-width="2.4" stroke-linecap="round"/></g>`;
     const thumb = `<g class="k-thumb" style="${at([hx, hy])}"><rect x="${hx - 3.6}" y="${hy - 15}" width="7.2" height="13" rx="3.6" fill="${d.face.skin}"/></g>`;
-    const filler = (p) => `<circle cx="${p[0]}" cy="${p[1] + 3}" r="7.5" fill="${J.sleeve}"/>`;
+    const filler = (p) => `<circle cx="${p[0] + (p[0] < 100 ? 3 : -3)}" cy="${p[1] + 5}" r="5.5" fill="${J.sleeve}"/>`;   // hidden joint, tucked inside the body
     const extras = `<g class="k-q"><path d="M150 30 Q150 17 161 17 Q172 17 172 27 Q172 35 163 39 L163 45" fill="none" stroke="#1E44D2" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="163" cy="54" r="4.1" fill="#1E44D2"/></g>
       <g class="k-rays" stroke="#FFC20E" stroke-width="5.5" stroke-linecap="round"><path d="M148 22 L154 10"/><path d="M161 33 L172 25"/><path d="M166 48 L179 47"/></g>
       <g class="k-z" fill="#6E7BB8" font-family="Nunito, sans-serif" font-weight="900"><text x="146" y="40" font-size="18">z</text><text x="158" y="25" font-size="13">z</text></g>`;
     return `<svg class="kid ${cls || ''}" data-buddy="${buddy}" data-mood="${mood || 'idle'}" viewBox="${vb}" role="img" aria-label="${BUDDIES[buddy].name}">
       <ellipse class="k-shadow" cx="100" cy="285" rx="56" ry="6"/>
       <g class="k-all">
-        <g class="k-leg k-leg-l" style="${at(J.hipL)}">${paths(P.legL)}</g>
-        <g class="k-leg k-leg-r" style="${at(J.hipR)}">${paths(P.legR)}</g>
+        <g class="k-leg k-leg-l" style="${at(J.hipL)}">${part(P.legL)}</g>
+        <g class="k-leg k-leg-r" style="${at(J.hipR)}">${part(P.legR)}</g>
         <g class="k-upper" style="${at(J.waist)}">
-          <g class="k-torso">${paths(P.torso)}</g>
-          <g class="k-head" style="${at(J.neckP)}">${paths(P.head)}${face(d.face, d.colours)}${extras}</g>
-          <g class="k-arm k-arm-l" style="${at(J.shoulderL)}">${filler(J.shoulderL)}${paths(P.armL)}</g>
-          <g class="k-arm k-arm-r" style="${at(J.shoulderR)}">${filler(J.shoulderR)}${paths(P.armR)}${book}${thumb}</g>
+          <g class="k-torso">${part(P.torso)}</g>
+          <g class="k-head" style="${at(J.neckP)}">${part(P.head)}${face(d.face, d.colours)}${extras}</g>
+          <g class="k-arm k-arm-l" style="${at(J.shoulderL)}">${filler(J.shoulderL)}${part(P.armL)}</g>
+          <g class="k-arm k-arm-r" style="${at(J.shoulderR)}">${filler(J.shoulderR)}${part(P.armR)}${book}${thumb}</g>
         </g>
       </g>
     </svg>`;

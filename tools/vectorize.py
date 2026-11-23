@@ -28,9 +28,9 @@ def _smooth_path(pts, corner_deg=118):
     return ''.join(out) + 'Z'
 
 
-def trace(mask, scale=1.0, eps=1.2, min_area=30, offset=(0, 0), corner_deg=118, min_thick=0.0):
+def trace(mask, scale=1.0, eps=1.2, min_area=30, offset=(0, 0), corner_deg=118, min_thick=0.0, blur=1.2):
     """mask: uint8 (0/255) at the working resolution. Returns path data in output units (pixels / scale)."""
-    m = cv2.GaussianBlur(mask, (0, 0), 1.2)
+    m = cv2.GaussianBlur(mask, (0, 0), blur)
     _, m = cv2.threshold(m, 127, 255, cv2.THRESH_BINARY)
     cnts, _ = cv2.findContours(m, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
     parts = []

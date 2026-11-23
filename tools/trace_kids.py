@@ -29,7 +29,7 @@ RIG = {
                  face=(625, 160, 735, 248), head_colours='hair skin mouth tongue'),
     'huda': dict(box=(590, 565, 770, 905), neck=715, hip=805, midx=693, armL=652, armR=733,
                  shoulderL=(653, 728), shoulderR=(732, 728), hipL=(672, 808), hipR=(714, 808), neckP=(684, 712),
-                 face=(655, 610, 735, 700), head_colours='hijab skin mouth'),
+                 face=(645, 604, 742, 704), head_colours='hijab skin mouth'),
 }
 
 def flat_colours(kid, b):
@@ -57,6 +57,64 @@ def flat_colours(kid, b):
     for _ in range(2):
         L = np.where(alpha, cv2.medianBlur((L + 1).astype(np.uint8), 5).astype(int) - 1, -1)
     return L, cen
+
+def dissolve_thin(L, fig, kinds, r=7):
+    """Hairline regions (anti-aliased edges: dark rings, pale seams) -> their neighbours' colours.
+    Narrow features that ARE in the art (stripes, drawstrings, eyes, brows) use a gentler threshold."""
+    keep = np.zeros_like(fig)
+    for i in set(L[fig].ravel()) - {-1}:
+        rr = 3 if kinds[i] in ('white', 'cream', 'dark') else r
+        k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * rr + 1, 2 * rr + 1))
+        m = (L == i).astype(np.uint8)
+        keep |= cv2.morphologyEx(m, cv2.MORPH_OPEN, k).astype(bool) & (L == i)
+    gone = fig & ~keep
+    if gone.any() and keep.any():
+        _, (gy, gx) = nd.distance_transform_edt(~keep, return_indices=True)
+        L = L.copy(); L[gone] = L[gy[gone], gx[gone]]
+    return L
+
+def fit_pill(comp, to_vb, K, b, s):
+    """Rotated rounded rectangle fitted to a component (drawstrings, shoe stripes, cargo pockets)."""
+    ys, xs = np.where(comp)
+    (cx, cy), (w, h), ang = cv2.minAreaRect(np.c_[xs, ys].astype(np.float32))
+    if w < h: w, h, ang = h, w, ang + 90                         # long side along the angle
+    x, y = to_vb(cx / K + b[0], cy / K + b[1])
+    return {'cx': x, 'cy': y, 'w': round(w / K * s, 2), 'h': round(h / K * s, 2), 'a': round(float(ang), 1)}
+
+def fit_brow(comp, to_vb, K, b, s):
+    """A brow as one smooth stroked curve: quadratic fitted along its main axis, width = its thickness."""
+    ys, xs = np.where(comp); P = np.c_[xs, ys].astype(float); c = P.mean(0)
+    u, sv, vt = np.linalg.svd(P - c, full_matrices=False); ax, nx = vt[0], vt[1]
+    if ax[0] < 0: ax = -ax
+    t = (P - c) @ ax; v = (P - c) @ nx
+    co = np.polyfit(t, v, 2); t0, t1 = np.percentile(t, 2), np.percentile(t, 98)
+    thick = 2 * float(np.percentile(nd.distance_transform_edt(comp)[comp], 97)) * .95   # true stroke thickness
+    f = lambda tt: c + ax * tt + nx * np.polyval(co, tt)
+    df = 2 * co[0] * t0 + co[1]
+    p0, p2 = f(t0 + thick / 2), f(t1 - thick / 2)                 # pull the ends in by half a stroke (round caps)
+    tm = (t0 + t1) / 2; ctrl = c + ax * tm + nx * (np.polyval(co, t0) + (2 * co[0] * t0 + co[1]) * (tm - t0) * 0 + 0)
+    # control point of the quadratic Bezier that matches the fitted parabola between the ends
+    ta, tb = t0 + thick / 2, t1 - thick / 2; tmid = (ta + tb) / 2
+    va, vb_ = np.polyval(co, ta), np.polyval(co, tb); dva = 2 * co[0] * ta + co[1]
+    vc = va + dva * (tmid - ta)
+    ctrl = c + ax * tmid + nx * vc
+    V = lambda q: to_vb(q[0] / K + b[0], q[1] / K + b[1])
+    (x0, y0), (x1, y1), (x2, y2) = V(p0), V(ctrl), V(p2)
+    return {'d': f'M{x0} {y0}Q{x1} {y1} {x2} {y2}', 'w': round(thick / K * s, 2)}
+
+def despeckle(L, fig, min_area=700):
+    """Small isolated patches of any colour -> the colour around them."""
+    small = np.zeros_like(fig)
+    for i in set(L[fig].ravel()) - {-1}:
+        lab, n = nd.label(L == i)
+        if not n: continue
+        sizes = nd.sum(L == i, lab, range(1, n + 1))
+        small |= np.isin(lab, 1 + np.where(sizes < min_area)[0]) & (lab > 0)
+    if small.any():
+        good = fig & ~small
+        _, (gy, gx) = nd.distance_transform_edt(~good, return_indices=True)
+        L = L.copy(); L[small] = L[gy[small], gx[small]]
+    return L
 
 def hexc(c): return '#%02X%02X%02X' % tuple(int(v) for v in c)
 def sat(c): return float(max(c) - min(c))
@@ -95,7 +153,7 @@ def build(kid):
     edge = fig & ~nd.binary_erosion(fig, np.ones((3, 3)), iterations=3)
     for i, sl in enumerate(nd.find_objects(rim_lab), 1):
         comp = rim_lab == i
-        if (comp & edge).any() and (by[sl].min() < R['hip'] + 25):
+        if (comp & edge).any() and by[sl].mean() < (by[fig].max() - 22):   # keep only the shoe soles
             good = fig & ~pale
             _, (gy, gx) = nd.distance_transform_edt(~good, return_indices=True)
             L[comp] = L[gy[comp], gx[comp]]
@@ -106,7 +164,8 @@ def build(kid):
         for i in hij: L[L == i] = main
         junk = fig & np.isin(L, [i for i, k in enumerate(kinds) if k == 'other'])
         if junk.any():
-            good = fig & ~junk
+            dark_i = [i for i, k in enumerate(kinds) if k == 'dark']
+            good = fig & ~junk & ~(np.isin(L, dark_i) & (by < R['neck']))
             _, (gy, gx) = nd.distance_transform_edt(~good, return_indices=True)
             L[junk] = L[gy[junk], gx[junk]]
         L = np.where(fig, cv2.medianBlur((L + 1).astype(np.uint8), 7).astype(int) - 1, -1)
@@ -114,6 +173,15 @@ def build(kid):
         if hole.any():
             _, (gy, gx) = nd.distance_transform_edt(~(fig & (L >= 0)), return_indices=True)
             L[hole] = L[gy[hole], gx[hole]]
+    L0 = L.copy()                                                   # before clean-up: thin stripes still separate
+    L = dissolve_thin(L, fig, kinds, r=9)
+    # eye-dark specks below the neck (anti-aliased trouser/shoe edges) -> their neighbours
+    stray = fig & np.isin(L, [i for i, k in enumerate(kinds) if k == 'dark' and cen[i][0] > cen[i][2] + 8]) & (by > R['neck'] + 10)   # brown ink only, not navy/plum trousers
+    if stray.any():
+        good = fig & ~stray
+        _, (gy, gx) = nd.distance_transform_edt(~good, return_indices=True)
+        L[stray] = L[gy[stray], gx[stray]]
+    L = despeckle(L, fig)
     K_ = np.array(kinds + ['none'])[np.where(L >= 0, L, len(kinds))]
 
     # ---- face features (eyes, brows, mouth) ----
@@ -154,7 +222,7 @@ def build(kid):
         legs = fig & (part == '')
         part[legs] = np.where(bx[legs] < R['midx'], 'legL', 'legR')
     else:
-        part[fig & (K_ == 'hijab')] = 'head'
+        part[fig & (K_ == 'hijab') & (by < R['hip'])] = 'head'          # (her shoes are the same plum)
         part[fig & (by < R['neck']) & (part == '')] = 'head'
         hand = fig & np.isin(K_, ['skin', 'skinlo', 'tongue']) & (by >= R['hip'] - 40)
         part[hand] = np.where(bx[hand] < R['midx'], 'armL', 'armR')
@@ -171,30 +239,68 @@ def build(kid):
     s = 270 / (foot_b - top_b)
     to_vb = lambda X, Y: (round(100 + (X - cx_b) * s, 2), round(284 + (Y - foot_b) * s, 2))
     scale = K / s; offset = (100 + (b[0] - cx_b) * s, 284 + (b[1] - foot_b) * s)
-    T = lambda mask, **kw: trace((mask * 255).astype(np.uint8), scale=scale, offset=offset, eps=1.6, min_area=90, min_thick=4.5, **kw)
+    T = lambda mask, **kw: trace((mask * 255).astype(np.uint8), scale=scale, offset=offset, eps=1.8, min_area=90, min_thick=4.5, **kw)
 
     out = {'parts': {}, 'joints': {}, 'face': {}}
+    pills = {p: [] for p in ['legL', 'legR', 'torso', 'head', 'armL', 'armR']}
+    pill_kinds = ['white'] + (['other'] if kid == 'zaid' else [])
+    K0 = np.array(kinds + ['none'])[np.where(L0 >= 0, L0, len(kinds))]
+    lab_p, npill = nd.label(fig & (np.isin(K_, pill_kinds) | (K0 == 'white')) & ~np.isin(part, ['head', '']))
+    for i, sl in enumerate(nd.find_objects(lab_p), 1):
+        comp = lab_p == i
+        if comp.sum() < 250: continue
+        pp = part[comp][0]; col = np.bincount(L0[comp].ravel()).argmax()
+        pieces = [comp]
+        if kinds[col] == 'white' and pp.startswith('leg'):          # two stripes touching at a corner: split them
+            er = nd.binary_erosion(comp, np.ones((3, 3)), iterations=4); sl2, n2 = nd.label(er)
+            if n2 >= 2:
+                pieces = [nd.binary_dilation(sl2 == j, np.ones((3, 3)), iterations=4) & comp for j in range(1, n2 + 1) if (sl2 == j).sum() > 60]
+        for pc in pieces:
+            pl = fit_pill(pc, to_vb, K, b, s); pl['fill'] = hexc(cen[col])
+            if kinds[col] == 'white' and pp.startswith('leg'):
+                if pl['cy'] > 274: continue                          # sole highlight, not a stripe
+                if kid == 'zaid': pl['h'] = min(pl['h'], 4.4)       # his paired stripes (hers is one wide stripe)
+            pl['rx'] = round(min(pl['h'] / 2, pl['w'] / 2) * (1 if kinds[col] == 'white' else .45), 2)
+            pills[pp].append(pl)
+        # repaint what the pill covers with the colour around it, so the traced layer underneath is whole
+        ring = nd.binary_dilation(comp, np.ones((3, 3)), iterations=6) & ~nd.binary_dilation(comp, np.ones((3, 3)), iterations=2) & fig
+        if ring.any():
+            around = np.bincount(L[ring & (L != col)].ravel(), minlength=len(cen)).argmax()
+            L[nd.binary_dilation(comp, np.ones((3, 3)), iterations=2) & fig] = around
+    K_ = np.array(kinds + ['none'])[np.where(L >= 0, L, len(kinds))]
     for p in ['legL', 'legR', 'torso', 'head', 'armL', 'armR']:
         own = part == p
         mine = np.isin(L, list(set(L[own].ravel()) - {-1}))             # grow only into this part's own colours
         if p in ('torso', 'legL', 'legR'): mine &= ~np.isin(K_, ['skin', 'skinlo'])
         m = (nd.binary_dilation(own, np.ones((3, 3)), iterations=3) & fig & mine) | own
         layers = []
+        # the part's own smooth outline: underlay in its main colour, and the clip for every colour on top
+        sil = nd.binary_fill_holes(m)
+        if p in ('armL', 'armR'): sil = sil | (nd.binary_dilation(sil, np.ones((3, 3)), iterations=6) & nd.binary_dilation(part == 'torso', np.ones((3, 3)), iterations=2))   # overlap the torso only
+        edge_ring = sil & ~nd.binary_erosion(sil, np.ones((3, 3)), iterations=4) & own & (L >= 0)
+        main = np.bincount(L[edge_ring].ravel(), minlength=len(cen)).argmax()   # underlay = the colour along the part's edge
+        if p in ('armL', 'armR'):                                  # an arm's underlay is always its sleeve
+            cnt = np.bincount(L[own & (L >= 0)].ravel(), minlength=len(cen))
+            for i in np.argsort(-cnt):
+                if kinds[i] not in ('skin', 'skinlo', 'tongue'): main = i; break
+        clip = T(sil, blur=3.0)
+        layers.append({'fill': hexc(cen[main]), 'd': clip})
         if p == 'head':                                            # face skin goes under the features
             face_fill = nd.binary_fill_holes((np.isin(K_, ['skin', 'skinlo']) | feature_wide) & m)
             skin_i = max([i for i, k in enumerate(kinds) if k == 'skin'], key=lambda i: (L == i).sum())
-            layers.append({'fill': hexc(cen[skin_i]), 'd': T(face_fill & ~nd.binary_erosion(np.zeros_like(m)))})
-            m = m & ~feature_wide
+            layers.append({'fill': hexc(cen[skin_i]), 'd': T(face_fill, blur=2.5)})
+            m = m & ~feature_wide & ~(inface & np.isin(K_, ['dark', 'white']))
         if p == 'torso':                                           # a solid base so moving arms never open gaps
             base = cv2.convexHull(np.argwhere(m)[:, ::-1].astype(np.int32))
             hull = np.zeros((H, W), np.uint8); cv2.fillConvexPoly(hull, base, 1)
-            main = np.bincount(L[m].ravel(), minlength=len(cen)).argmax()
-            layers.append({'fill': hexc(cen[main]), 'd': T(hull.astype(bool) & ~(part == 'head'))})
-        idx = sorted(set(L[m].ravel()) - {-1}, key=lambda i: -(m & (L == i)).sum())
+            hull = nd.binary_dilation(hull.astype(bool), np.ones((3, 3)), iterations=5) & nd.binary_dilation(fig, np.ones((3, 3)), iterations=2)
+            layers.insert(0, {'fill': hexc(cen[main]), 'd': T(hull & ~(part == 'head'), blur=3.0), 'noclip': True})
+        idx = sorted(set(L[m].ravel()) - {-1, main}, key=lambda i: -(m & (L == i)).sum())
         for i in idx:
-            d = T(m & (L == i))
+            reg = nd.binary_dilation(m & (L == i), np.ones((3, 3)), iterations=2)   # overlap neighbours: no gaps
+            d = T(reg, blur=2.2)
             if d: layers.append({'fill': hexc(cen[i]), 'd': d})
-        out['parts'][p] = layers
+        out['parts'][p] = {'clip': clip, 'layers': layers, 'pills': pills[p]}
     # features
     def oval(c):
         ys_, xs_ = np.where(c); X = xs_.mean() / K + b[0]; Y = ys_.mean() / K + b[1]
@@ -203,12 +309,21 @@ def build(kid):
     out['face']['eyes'] = [oval(c) for c in eyes]
     eye_fill = hexc(cen[np.bincount(L[eyes[0]].ravel()).argmax()]) if eyes else '#24150F'
     out['face']['eyeFill'] = eye_fill
-    out['face']['brows'] = [{'fill': hexc(cen[np.bincount(L[c].ravel()).argmax()]), 'd': T(c), 'box': oval(c)} for c in brows]
-    mo = []
-    for i in sorted(set(L[mouth].ravel()) - {-1}, key=lambda i: -(mouth & (L == i)).sum()):
-        d = T(mouth & (L == i))
-        if d: mo.append({'fill': hexc(cen[i]), 'd': d})
-    out['face']['mouth'] = mo; out['face']['mouthBox'] = oval(mouth)
+    out['face']['brows'] = []
+    for c in brows:
+        br = fit_brow(c, to_vb, K, b, s); br['stroke'] = hexc(cen[np.bincount(L[c].ravel()).argmax()]); br['box'] = oval(c)
+        out['face']['brows'].append(br)
+    mclip = T(nd.binary_fill_holes(mouth), blur=3.0)
+    dark_m = np.bincount(L[mouth].ravel()).argmax()
+    for i in set(L[mouth].ravel()):                               # the mouth's darkest red is its base
+        if kinds[i] == 'mouth' and lum(cen[i]) < lum(cen[dark_m]): dark_m = i
+    mlayers = [{'fill': hexc(cen[dark_m]), 'd': mclip}]
+    for i in sorted(set(L[mouth].ravel()) - {-1, dark_m}, key=lambda i: -(mouth & (L == i)).sum()):
+        reg = nd.binary_opening(mouth & (L == i), np.ones((3, 3)), iterations=2)
+        reg = nd.binary_dilation(reg, np.ones((3, 3)), iterations=2)
+        d = T(reg, blur=2.5)
+        if d: mlayers.append({'fill': hexc(cen[i]), 'd': d})
+    out['face']['mouth'] = {'clip': mclip, 'layers': mlayers}; out['face']['mouthBox'] = oval(mouth)
     skin_i = max([i for i, k in enumerate(kinds) if k == 'skin'], key=lambda i: (L == i).sum())
     out['face']['skin'] = hexc(cen[skin_i])
     for j in ['shoulderL', 'shoulderR', 'hipL', 'hipR', 'neckP']:
@@ -232,8 +347,8 @@ def build(kid):
         c = [hexc(cen[i]) for i, k in enumerate(kinds) if k == kd]
         return c[0] if c else None
     out['colours'] = {'mouth': first('mouth') or '#7A2230', 'tongue': first('tongue') or '#F0907A', 'ink': eye_fill}
-    sizes = {p: sum(len(l['d']) for l in v) for p, v in out['parts'].items()}
-    print(kid, 'eyes', len(eyes), 'brows', len(brows), 'mouth layers', len(mo), 'path chars', sizes)
+    sizes = {p: sum(len(l['d']) for l in v['layers']) for p, v in out['parts'].items()}
+    print(kid, 'eyes', len(eyes), 'brows', len(brows), 'mouth layers', len(out['face']['mouth']['layers']), 'pills', {p: len(v) for p, v in pills.items() if v}, 'path chars', sizes)
     return out
 
 data = {k: build(k) for k in RIG}
