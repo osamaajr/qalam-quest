@@ -60,7 +60,7 @@
   // shoulder; for both arms "inward" = left negative / right positive) live here; the looping motion lives
   // in css/mascot.css. Props are placed from the traced joints so they sit exactly in the hands.
   const ACT = {
-    reading:   { L: -40, R: 40 },
+    reading:   { L: -26, R: 26 },
     quran:     { L: -24, R: 24 },
     writing:   { L: -46, R: 28 },
     thinking:  { L: 6, R: 104 },
@@ -100,13 +100,13 @@
     const top = d.head[1];                                       // top of the head
     switch (mood) {
       case 'reading': {
-        const mx = (HL[0] + HR[0]) / 2, my = Math.min(HL[1], HR[1]) - 12;
-        const hand = (x, y) => `<circle cx="${f1(x)}" cy="${f1(y)}" r="8.5" fill="${skin}"/>`;
+        const mx = (HL[0] + HR[0]) / 2, my = Math.min(HL[1], HR[1]) - 16;
+        const hand = (x, y) => `<circle cx="${f1(x)}" cy="${f1(y)}" r="${z ? 9.5 : 10.5}" fill="${skin}"/>`;
         out.bodyFront = `<g class="kp p-book" transform="translate(${f1(mx)} ${f1(my)}) scale(1.35)">
           <path d="M-30 -18 Q-15 -23 0 -17 Q15 -23 30 -18 L30 10 Q15 5 0 11 Q-15 5 -30 10Z" fill="#E2584A"/>
           <path d="M-27 -19 Q-13 -24 0 -18 V8 Q-13 3 -27 7Z" fill="#FFF6EC"/><path d="M27 -19 Q13 -24 0 -18 V8 Q13 3 27 7Z" fill="#F2E6D6"/>
           <path d="M-22 -12 h15 M-22 -7 h13 M-22 -2 h15 M7 -12 h15 M7 -7 h12 M7 -2 h14" stroke="#D9C6B2" stroke-width="1.6" stroke-linecap="round"/>
-          <g class="p-page"><path d="M0 -18 Q13 -24 27 -19 V7 Q13 3 0 8Z" fill="#FFFDF8"/></g></g>${hand(mx - 40, my + 6)}${hand(mx + 40, my + 6)}`;
+          <g class="p-page"><path d="M0 -18 Q13 -24 27 -19 V7 Q13 3 0 8Z" fill="#FFFDF8"/></g></g>${hand(HL[0] - 4, HL[1] - 4)}${hand(HR[0] + 4, HR[1] - 4)}`;
         break;
       }
       case 'quran': {
@@ -192,6 +192,23 @@
     return out;
   }
 
+  // Clean shoes in the board's style, measured from the traced right shoe and mirrored for the left.
+  function shoe(d, side, buddy) {
+    const R = d.shoes.R, w = R.x1 - R.x0, cx = side === 'R' ? (R.x0 + R.x1) / 2 : 200 - (R.x0 + R.x1) / 2;
+    const y0 = R.y0, y1 = 284, h = y1 - y0, sT = y1 - h * .34, x0 = cx - w / 2, x1 = cx + w / 2;
+    const out = side === 'R' ? 1 : -1;                               // which way is "outside"
+    const lo = buddy === 'zaid' ? '#E39A00' : '#5E1445', sole = '#F8E8D4', soleLo = '#E8D2B8';
+    const st = buddy === 'zaid'
+      ? [0, 1].map((k) => { const sx = cx + out * w * (.02 + .1 * k), sy = y0 + h * (.3 + .17 * k); return `<path d="M${f1(sx - out * w * .2)} ${f1(sy + 2)} L${f1(sx + out * w * .1)} ${f1(sy - 1.5)}" stroke="#FFFFFF" stroke-width="${f1(h * .13)}" stroke-linecap="round"/>`; }).join('')
+      : `<path d="M${f1(cx - out * w * .14)} ${f1(y0 + h * .38)} L${f1(cx + out * w * .2)} ${f1(y0 + h * .33)}" stroke="#FFFFFF" stroke-width="${f1(h * .2)}" stroke-linecap="round"/>`;
+    return `<g class="k-shoe">
+      <path d="M${f1(x0 + 1)} ${f1(sT + 2)} C${f1(x0 + 1)} ${f1(y0 + h * .05)} ${f1(cx - w * .2)} ${f1(y0)} ${f1(cx)} ${f1(y0)} C${f1(cx + w * .2)} ${f1(y0)} ${f1(x1 - 1)} ${f1(y0 + h * .05)} ${f1(x1 - 1)} ${f1(sT + 2)}Z" fill="${R.fill}"/>
+      <path d="M${f1(out > 0 ? x1 - 1 : x0 + 1)} ${f1(sT + 2)} C${f1(out > 0 ? x1 - 1 : x0 + 1)} ${f1(y0 + h * .15)} ${f1(cx + out * w * .32)} ${f1(y0 + h * .02)} ${f1(cx + out * w * .22)} ${f1(y0 + h * .02)} C${f1(cx + out * w * .36)} ${f1(y0 + h * .25)} ${f1(cx + out * w * .4)} ${f1(sT)} ${f1(cx + out * w * .36)} ${f1(sT + 2)}Z" fill="${lo}" opacity=".45"/>
+      ${st}
+      <rect x="${f1(x0 - 1.5)}" y="${f1(sT)}" width="${f1(w + 3)}" height="${f1(y1 - sT)}" rx="${f1((y1 - sT) / 2)}" fill="${sole}"/>
+      <rect x="${f1(x0 - 1.5)}" y="${f1(y1 - (y1 - sT) * .4)}" width="${f1(w + 3)}" height="${f1((y1 - sT) * .4)}" rx="${f1((y1 - sT) * .2)}" fill="${soleLo}" opacity=".6"/></g>`;
+  }
+
   function kid(buddy, mood, cls, opts) {
     buddy = BUDDIES[buddy] ? buddy : 'huda';
     const d = DATA[buddy]; const o = opts || {};
@@ -210,8 +227,9 @@
       <ellipse class="k-shadow" cx="100" cy="285" rx="56" ry="6"/>
       ${A.back}
       <g class="k-all">
-        <g class="k-leg k-leg-l" style="${at(J.hipL)}">${part(P.legL)}</g>
-        <g class="k-leg k-leg-r" style="${at(J.hipR)}">${part(P.legR)}</g>
+        <rect x="${f1(J.hipL[0] - 8)}" y="${f1(J.hipL[1] - 6)}" width="${f1(J.hipR[0] - J.hipL[0] + 16)}" height="26" rx="8" fill="${(P.legL.layers || P.legL)[0].fill}"/>
+        <g class="k-leg k-leg-l" style="${at(J.hipL)}">${part(P.legL)}${d.shoes ? shoe(d, 'L', buddy) : ''}</g>
+        <g class="k-leg k-leg-r" style="${at(J.hipR)}">${part(P.legR)}${d.shoes ? shoe(d, 'R', buddy) : ''}</g>
         <g class="k-upper" style="${at(J.waist)}">
           <g class="k-torso">${part(P.torso)}</g>
           <g class="k-head" style="${at(J.neckP)}">${part(P.head)}${face(d.face, d.colours)}${extras}${A.head}</g>

@@ -242,6 +242,19 @@ def build(kid):
     T = lambda mask, **kw: trace((mask * 255).astype(np.uint8), scale=scale, offset=offset, eps=1.8, min_area=90, min_thick=4.5, **kw)
 
     out = {'parts': {}, 'joints': {}, 'face': {}}
+    shoes = {}
+    shoe_kinds = ['shoe', 'shoelight'] if kid == 'zaid' else ['hijab']
+    for side in 'LR':
+        lm = (part == 'leg' + side) & fig
+        sh = lm & np.isin(K_, shoe_kinds) & (by > R['hip'] + 20)
+        ys_, xs_ = np.where(lm); ys2, xs2 = np.where(sh)
+        top = ys2.min(); bot = ys_.max()
+        x0 = np.percentile(xs_[ys_ > top], 1); x1 = np.percentile(xs_[ys_ > top], 99)
+        (X0, Y0), (X1, Y1) = to_vb(x0 / K + b[0], top / K + b[1]), to_vb(x1 / K + b[0], bot / K + b[1])
+        main = np.bincount(L[sh].ravel()).argmax()
+        shoes[side] = {'x0': X0, 'y0': Y0, 'x1': X1, 'y1': Y1, 'fill': hexc(cen[main])}
+        part[lm & (yy > top + 4 * K)] = ''                        # trousers stop just inside the shoe
+    out['shoes'] = shoes
     pills = {p: [] for p in ['legL', 'legR', 'torso', 'head', 'armL', 'armR']}
     pill_kinds = ['white'] + (['other'] if kid == 'zaid' else [])
     K0 = np.array(kinds + ['none'])[np.where(L0 >= 0, L0, len(kinds))]
@@ -250,6 +263,7 @@ def build(kid):
         comp = lab_p == i
         if comp.sum() < 250: continue
         pp = part[comp][0]; col = np.bincount(L0[comp].ravel()).argmax()
+        if pp == '' or (pp.startswith('leg') and kinds[col] == 'white'): continue   # shoe stripes are redrawn
         pieces = [comp]
         if kinds[col] == 'white' and pp.startswith('leg'):          # two stripes touching at a corner: split them
             er = nd.binary_erosion(comp, np.ones((3, 3)), iterations=4); sl2, n2 = nd.label(er)
@@ -283,7 +297,9 @@ def build(kid):
             cnt = np.bincount(L[own & (L >= 0)].ravel(), minlength=len(cen))
             for i in np.argsort(-cnt):
                 if kinds[i] not in ('skin', 'skinlo', 'tongue'): main = i; break
-        clip = T(sil, blur=3.0)
+        r_ = 4 if (p == 'head' and kid == 'huda') else 2               # the hijab's painted edge is rough: smooth it more
+        sil = nd.binary_opening(nd.binary_closing(sil, np.ones((5, 5)), iterations=r_), np.ones((5, 5)), iterations=r_ - 1)
+        clip = T(sil, blur=9.0 if r_ == 4 else 5.0)
         layers.append({'fill': hexc(cen[main]), 'd': clip})
         if p == 'head':                                            # face skin goes under the features
             face_fill = nd.binary_fill_holes((np.isin(K_, ['skin', 'skinlo']) | feature_wide) & m)
@@ -296,9 +312,12 @@ def build(kid):
             hull = nd.binary_dilation(hull.astype(bool), np.ones((3, 3)), iterations=5) & nd.binary_dilation(fig, np.ones((3, 3)), iterations=2)
             layers.insert(0, {'fill': hexc(cen[main]), 'd': T(hull & ~(part == 'head'), blur=3.0), 'noclip': True})
         idx = sorted(set(L[m].ravel()) - {-1, main}, key=lambda i: -(m & (L == i)).sum())
+        idx = [i for i in idx if kinds[i] not in ('white', 'cream', 'shoelight')]
+        if p.startswith('leg'): idx = [i for i in idx if kinds[i] not in ('mint', 'blue', 'skin', 'skinlo', 'tongue')]   # no top-colour specks on the trousers
         for i in idx:
             reg = nd.binary_dilation(m & (L == i), np.ones((3, 3)), iterations=2)   # overlap neighbours: no gaps
-            d = T(reg, blur=2.2)
+            reg = nd.binary_opening(reg, np.ones((3, 3)), iterations=2)
+            d = T(reg, blur=3.4)
             if d: layers.append({'fill': hexc(cen[i]), 'd': d})
         out['parts'][p] = {'clip': clip, 'layers': layers, 'pills': pills[p]}
     # features
