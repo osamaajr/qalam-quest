@@ -730,6 +730,7 @@
   }
   const PRAISE = ['Amazing!', 'Mashā’Allāh!', 'Brilliant!', 'Great job!', 'You got it!', 'Super!', 'Nailed it!'];
   function showFeedback(r, ex) {
+    if (!L) return; // the lesson already ended (quit or out of hearts) before a delayed result arrived
     const graded = !['match', 'sort'].includes(ex.type);
     L.graded++; S.stats.answered++;
     if (r.correct) { L.correct++; S.stats.correct++; L.combo++; L.bestCombo = Math.max(L.bestCombo, L.combo); }
