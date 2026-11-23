@@ -1,6 +1,6 @@
 // Offline support: always ask the network first (revalidating the HTTP cache so
 // updates show up straight away), and fall back to the saved copy when offline.
-const CACHE = 'qalam-v4';
+const CACHE = 'qalam-v5';
 const FILES = ['./', 'index.html', 'teacher.html', 'css/style.css', 'css/mascot.css', 'js/content.js', 'js/audio-manifest.js', 'js/mascot.js', 'js/app.js', 'manifest.webmanifest', 'icons/icon-192.png'];
 self.addEventListener('install', (e) => e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)).then(() => self.skipWaiting())));
 self.addEventListener('activate', (e) => e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())));
