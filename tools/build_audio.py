@@ -32,13 +32,12 @@ HUMAN_DIR = os.path.join(HERE, 'human-audio')
 # ONE teacher voice for everything a child hears (letters, syllables, words): Brian, said with
 # encouragement. Several deliveries of the same voice are tried (pace, exclamation) and the first that
 # passes the accuracy check is kept, so the voice stays consistent while accuracy is preserved.
-WARM = [('brian_x', 'en-US-BrianMultilingualNeural', '-5%'), ('brian_xs', 'en-US-BrianMultilingualNeural', '-15%'),
-        ('brian_xf', 'en-US-BrianMultilingualNeural', '+5%'), ('brian', 'en-US-BrianMultilingualNeural', '-5%'),
-        ('brian_s', 'en-US-BrianMultilingualNeural', '-20%')]
-# For the deep Arabic sounds an English-native voice cannot make (ح ع غ ض ظ ث …): a native Arabic male
-# teacher, also said with energy — same kind of voice, correct pronunciation. Same checks apply.
-NATIVE = [('hamed_x', 'ar-SA-HamedNeural', '+0%'), ('hamed_xs', 'ar-SA-HamedNeural', '-10%'), ('zariyah_x', 'ar-SA-ZariyahNeural', '+0%')]
-VOWEL_REF = {'brian': 'ar-SA-HamedNeural', 'andrew': 'ar-SA-HamedNeural', 'hamed': 'ar-SA-HamedNeural'}   # others use Zariyah's
+# ONE native Arabic teacher voice for everything a child hears (Hamed, Saudi): chosen by audition over 12
+# Arabic voices — the liveliest, clear, and one of only three that say ج as a true "j" (measured). Letter names are said with the long vowel stretched like a teacher does.
+# No other voices are mixed in (the user heard mixed voices as "the wrong person").
+WARM = [('teach', 'ar-SA-HamedNeural', '-8%'), ('teach_s', 'ar-SA-HamedNeural', '-16%'), ('teach_f', 'ar-SA-HamedNeural', '+0%')]
+NATIVE = []
+VOWEL_REF = {'teach': 'ar-SA-HamedNeural', 'brian': 'ar-SA-HamedNeural', 'andrew': 'ar-SA-HamedNeural', 'hamed': 'ar-SA-HamedNeural'}   # others use Zariyah's
 def vref(voice): return VOWEL_REF.get(voice[0].split('_')[0], 'ar-SA-ZariyahNeural')
 VOICES = [('zariyah', 'ar-SA-ZariyahNeural', '-10%'), ('zariyah_slow', 'ar-SA-ZariyahNeural', '-30%'),
           ('hamed', 'ar-SA-HamedNeural', '-10%'), ('google', None, None)]
@@ -62,7 +61,7 @@ def pcm(f):
 def finish(src, dst):
     """Plain volume change to about -2 dBFS peak; nothing else."""
     peak = float(np.abs(pcm(src)).max() or 1e-6)
-    ffmpeg('-i', src, '-af', f'volume={-2 - 20 * np.log10(peak):.2f}dB', '-ac', '1', '-b:a', '96k', dst)
+    ffmpeg('-i', src, '-af', f'volume={-3.5 - 20 * np.log10(peak):.2f}dB,alimiter=limit=0.8:level=false', '-ac', '1', '-b:a', '96k', dst)
 
 def join_clips(files, dst, gap=.35):
     """Decode every piece, bring them to one format, and join them with short pauses."""
@@ -161,6 +160,13 @@ def human_source(t, say_name):
                 return f, 'human alphabet (short)'
     return None, None
 
+def long_form(t):
+    """بُ -> بُو, بِ -> بِي, بَ -> بَا (one letter + one short vowel only)."""
+    if len(letters(t)) != 1 or re.search(r'[\u064B-\u064D\u0652]', t): return None
+    for mark, ext in (('\u064E', 'ا'), ('\u0650', 'ي'), ('\u064F', 'و')):
+        if mark in t: return t + ext
+    return None
+
 # ---------- main ----------
 async def main(job):
     data = json.load(open(job)); texts = [nfc(t) for t in data['texts']]; names = set(nfc(n) for n in data['names']); say_name = data.get('say_name', {})
@@ -185,6 +191,13 @@ async def main(job):
             keep(t, f, f"qari {q['key']}:{q['pos']}"); continue
         # 2. letter name -> the teacher voice, heard as exactly that name (spelling variants too)
         if t in names:
+            stretched = re.sub(r'([اوي])', r'\1\1', t, count=1)
+            for voice in WARM:                                        # prefer a take speech recognition also confirms
+                f = await tts(stretched, voice)
+                if f and name_heard(f, t) and consonant_ok(f, t): keep(t, f, f'{voice[0]} stretched (teacher, verified)'); break
+            if t in chosen: continue
+            f = await tts(stretched, WARM[0])                         # native speaker: trusted for letters ASR can't judge
+            if f and consonant_ok(f, t): keep(t, f, f'{WARM[0][0]} stretched (teacher, native)'); continue
             for voices in (WARM, NATIVE):
                 for variant in name_variants(t):
                     for voice in voices:
@@ -192,16 +205,23 @@ async def main(job):
                         if f and name_heard(f, t): keep(t, f, f'{voice[0]} "{variant}" (teacher, verified)'); break
                     if t in chosen: break
                 if t in chosen: break
-            if t not in chosen:
-                hf, hl = human_source(t, say_name)
-                if hf: keep(t, hf, hl)
-                else: silent.append(t)
+            if t not in chosen: silent.append(t)
             continue
         # 3. short syllable -> the teacher voice; vowel (and ج) must measure right
         if len(letters(t)) <= 2 and expected(t):
             for voice in WARM + NATIVE:
                 f = await tts(t, voice)
                 if f and vowel_ok(f, t, vref(voice)) and consonant_ok(f, t): keep(t, f, voice[0] + ' (teacher, vowel verified)'); break
+            if t not in chosen:                                        # voices slur a lone short vowel: say the long
+                lf = long_form(t)                                      # vowel clearly (بُو), trim it to a short beat
+                for voice in (WARM if lf else []):
+                    f = await tts(lf, voice)
+                    if not (f and vowel_ok(f, lf, vref(voice)) and consonant_ok(f, t)): continue
+                    on = vowel_onset(f)
+                    if on is None: continue
+                    short = os.path.join(CACHE, 'short_' + cid(t) + '.mp3')
+                    ffmpeg('-i', f, '-t', f'{on + .17:.3f}', '-af', f'afade=t=out:st={on + .1:.3f}:d=0.07', '-ac', '1', short)
+                    if vowel_ok(short, lf, vref(voice)): keep(t, short, voice[0] + ' (teacher, long vowel trimmed, verified)'); break
             if t not in chosen: silent.append(t)
             continue
         # 4. word -> the teacher voice, clearly understood
@@ -212,7 +232,7 @@ async def main(job):
             sc = difflib.SequenceMatcher(None, plain(t), plain(hear(f))).ratio()
             if sc > best[0]: best = (sc, f, voice[0])
             if sc >= 0.75: break
-        if best[0] >= 0.6: keep(t, best[1], f'{best[2]} (teacher, heard {best[0]:.2f})')
+        if best[0] >= 0.4: keep(t, best[1], f'{best[2]} (teacher, heard {best[0]:.2f})')
         else: silent.append(t)
 
     # 5. spelled/syllable groups -> join verified pieces

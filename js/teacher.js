@@ -42,3 +42,10 @@
   html += `<div class="panel"><h2>Qur’an verses used</h2><p class="muted">Exact Uthmani text (Ḥafṣ). Waqf marks kept as in the muṣḥaf.</p><table><tbody>${Object.keys(C.AYAH).map((k) => `<tr><td style="width:170px"><b>${esc(C.ref(k))}</b></td><td class="qr" style="text-align:right">${esc(C.AYAH[k])}</td></tr>`).join('')}</tbody></table></div>`;
   document.getElementById('tg').innerHTML = html;
 })();
+
+// tanwīn ḍamm in a font that draws the proper muṣḥaf form (see .tw in css/style.css)
+(function () {
+  const tag = () => { const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) if (/ٌ/.test(n.nodeValue) && n.parentElement) n.parentElement.classList.add('tw'); };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tag); else tag();
+  setTimeout(tag, 500);
+})();

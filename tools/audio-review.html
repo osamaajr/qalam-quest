@@ -27,7 +27,7 @@
 </style></head><body>
 <header><h1>🎧 Qalam audio review</h1>
   <p>Tap ▶ to hear exactly what the game plays. Tick <b>Fix this</b> on anything wrong and add a note (e.g. “sounds robotic”, “wrong vowel”). Your marks are saved in this browser. When done, press <b>Copy list</b> and paste it to Claude.</p>
-  <button class="main-btn" id="all">▶ Play section</button><button class="ghost" id="stop">■ Stop</button><button class="main-btn" id="copy">Copy list (<span id="n">0</span>)</button></header>
+  <button class="main-btn" id="all">▶ Play section</button><button class="ghost" id="stop">■ Stop</button><button class="main-btn" id="copy">Copy list (<span id="n">0</span>)</button><button class="ghost" id="clear">Clear marks</button></header>
 <main><div id="out"></div><div id="sections"></div></main>
 <script src="../js/content.js"></script><script src="../js/audio-manifest.js"></script>
 <script>
@@ -38,7 +38,7 @@ const marks = (() => { try { return JSON.parse(localStorage.getItem(KEY)) || {};
 const saveMarks = () => { try { localStorage.setItem(KEY, JSON.stringify(marks)); } catch (e) {} document.getElementById('n').textContent = Object.keys(marks).length; };
 const nameOf = Object.fromEntries(Object.entries(C.SAY_NAME).map(([k, v]) => [v.normalize('NFC'), k]));
 const letters = (t) => t.replace(/[ً-ٰٟ\s]/g, '').length;
-function who(t) { const s = SRC[t] || ''; return s.startsWith('qari') ? 'Qāriʾ recitation' : s.startsWith('brian') ? 'Teacher voice' : s.startsWith('hamed') || s.startsWith('zariyah') ? 'Native Arabic teacher' : s.startsWith('human') ? 'Human alphabet recording' : s.startsWith('joined') ? 'Joined letters' : s ? s : '—'; }
+function who(t) { const s = SRC[t] || ''; return s.startsWith('qari') ? 'Qāriʾ recitation' : s.startsWith('teach') ? 'Teacher voice' : s.startsWith('hamed') || s.startsWith('zariyah') ? 'Native Arabic teacher' : s.startsWith('human') ? 'Human alphabet recording' : s.startsWith('joined') ? 'Joined letters' : s ? s : '—'; }
 let cur, queue = [];
 function play(btn) {
   if (cur) cur.pause(); document.querySelectorAll('.playing').forEach((x) => x.classList.remove('playing'));
@@ -80,6 +80,7 @@ function card(t) {
     const out = document.getElementById('out'); out.style.display = 'block'; out.textContent = txt;
     try { await navigator.clipboard.writeText(txt); document.getElementById('copy').firstChild.textContent = 'Copied! ('; } catch (e) {}
   };
+  document.getElementById('clear').onclick = () => { if (!confirm('Clear all your marks?')) return; for (const k in marks) delete marks[k]; saveMarks(); document.querySelectorAll('.item').forEach((it) => { it.classList.remove('bad'); it.querySelector('input[type=checkbox]').checked = false; it.querySelector('input[type=text]').value = ''; }); };
   saveMarks();
 })();
 </script></body></html>

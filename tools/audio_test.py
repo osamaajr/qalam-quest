@@ -35,7 +35,7 @@ for text, cid in man.items():
     if peak < -30: fails.append(f'too quiet ({peak} dB): {text}')
     if peak > -.3: fails.append(f'clipping ({peak} dB): {text}')
     how = src.get(text, '?').split()[0]
-    kind = 'qari' if how == 'qari' else ('joined' if how == 'joined' else ('teacher' if how.startswith('brian') else ('native teacher' if how.endswith('_x') or how.endswith('_xs') else how)))
+    kind = 'qari' if how == 'qari' else ('joined' if how == 'joined' else ('teacher' if how.startswith('teach') else ('native teacher' if how.endswith('_x') or how.endswith('_xs') else how)))
     voices[kind] = voices.get(kind, 0) + 1
     if kind not in ('qari', 'teacher', 'native teacher', 'joined', 'your', 'human'): fails.append(f'not the teacher voice ({how}): {text}')
 print(f'{len(man)} clips checked. Sources: {voices}')

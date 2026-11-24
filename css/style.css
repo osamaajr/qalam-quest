@@ -733,3 +733,8 @@ img { -webkit-user-drag: none; user-select: none; }
 .ldots { display: flex; gap: 5px; margin-top: 8px; }
 .ldots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
 .ldots i.on { background: var(--gold); }
+
+/* tanwīn ḍamm (ٌ): Noto Naskh draws it as two side-by-side ḍammas (looks like a double wāw). Text that
+   contains it uses Amiri, which draws the proper muṣḥaf form (a ḍamma with a turned-back tail).
+   Elements are tagged automatically by app.js. */
+.tw { font-family: 'Amiri', 'Amiri Quran', var(--ar) !important; }
