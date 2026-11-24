@@ -237,6 +237,34 @@
   .kid * { animation: none !important; transition: none !important; }
 }
 
+/* =================== ELBOWS — the forearm bends on top of every pose ===================
+   (.k-fore turns around the elbow; same sense as the shoulder: on the right arm + = inward/up) */
+.kid .k-fore { transition: rotate .6s var(--spring) .08s; }
+@keyframes k-waveFore { 0%, 100% { transform: rotate(8deg); } 50% { transform: rotate(-26deg); } }
+.kid[data-mood="wave"] .k-arm-r { rotate: -98deg; animation: none; }
+.kid[data-mood="wave"] .k-arm-r .k-fore { rotate: -64deg; animation: k-waveFore .8s var(--ease) .3s infinite; }
+.kid:is([data-mood="happy"], [data-mood="celebrate"]) .k-arm-l .k-fore { rotate: -28deg; }
+.kid:is([data-mood="happy"], [data-mood="celebrate"]) .k-arm-r .k-fore { rotate: 28deg; }
+.kid[data-mood="talk"] .k-arm-r { rotate: -24deg; }
+.kid[data-mood="talk"] .k-arm-r .k-fore { rotate: -70deg; }
+.kid[data-mood="shrug"] .k-arm-l { rotate: 30deg; } .kid[data-mood="shrug"] .k-arm-l .k-fore { rotate: 72deg; }
+.kid[data-mood="shrug"] .k-arm-r { rotate: -30deg; } .kid[data-mood="shrug"] .k-arm-r .k-fore { rotate: -72deg; }
+@keyframes k-clapForeL { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(18deg); } }
+@keyframes k-clapForeR { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-18deg); } }
+.kid[data-mood="clap"] .k-arm-l { rotate: -10deg; animation: none; } .kid[data-mood="clap"] .k-arm-l .k-fore { rotate: -100deg; animation: k-clapForeL .42s var(--ease) infinite; }
+.kid[data-mood="clap"] .k-arm-r { rotate: 10deg; animation: none; } .kid[data-mood="clap"] .k-arm-r .k-fore { rotate: 100deg; animation: k-clapForeR .42s var(--ease) infinite; }
+.kid[data-mood="think"] .k-arm-r { rotate: 26deg; } .kid[data-mood="think"] .k-arm-r .k-fore { rotate: 150deg; }
+.kid[data-mood="think"] .k-arm-l { rotate: -4deg; } .kid[data-mood="think"] .k-arm-l .k-fore { rotate: -92deg; }
+.kid[data-mood="cheeky"] .k-arm-r { rotate: -40deg; } .kid[data-mood="cheeky"] .k-arm-r .k-fore { rotate: -100deg; }
+.kid[data-mood="cheeky"] .k-thumb { rotate: 140deg; }
+.kid[data-mood="dance"] .k-arm-l .k-fore { rotate: -30deg; } .kid[data-mood="dance"] .k-arm-r .k-fore { rotate: 40deg; }
+.kid[data-mood="walk"] .k-arm-l .k-fore { rotate: -14deg; } .kid[data-mood="walk"] .k-arm-r .k-fore { rotate: 14deg; }
+.kid[data-mood="read"] .k-arm-r { rotate: 8deg; } .kid[data-mood="read"] .k-arm-r .k-fore { rotate: 78deg; }
+.kid[data-mood="read"] .k-arm-l { rotate: -8deg; } .kid[data-mood="read"] .k-arm-l .k-fore { rotate: -70deg; }
+.kid[data-mood="sad"] .k-arm-l .k-fore { rotate: -6deg; } .kid[data-mood="sad"] .k-arm-r .k-fore { rotate: 6deg; }
+@keyframes fx-scratchFore { 0%, 100% { transform: rotate(0); } 25%, 80% { transform: rotate(70deg); } 40%, 55%, 70% { transform: rotate(62deg); } }
+.kid.fx-scratch .k-arm-r .k-fore { animation: fx-scratchFore 1.9s var(--ease); }
+
 /* =================== ACTIVITIES — one constant, characterful action per character ===================
    Pose angles are injected by mascot.js; these are the loops. Slow, calm, never jumpy. */
 .kid .kp { transform-box: view-box; }
@@ -264,7 +292,7 @@
 @keyframes a-scribble { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-4deg); } 50% { transform: rotate(1deg); } 75% { transform: rotate(-3deg); } }
 @keyframes a-write { 0%, 10% { stroke-dashoffset: 1; } 60%, 90% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: 0; opacity: 0; } }
 @keyframes a-dotIn { 0%, 62% { opacity: 0; } 66%, 92% { opacity: 1; } 100% { opacity: 0; } }
-.kid[data-mood="writing"] .k-arm-r { animation: a-scribble .7s var(--ease) infinite; }
+.kid[data-mood="writing"] .k-arm-r .k-fore { animation: a-scribble .7s var(--ease) infinite; }
 .kid:is([data-mood="writing"], [data-mood="painting"]) .p-letter, .kid[data-mood="painting"] .p-paint { stroke-dasharray: 1; animation: a-write 4s var(--ease) infinite; }
 .kid:is([data-mood="writing"], [data-mood="painting"]) .p-dot { animation: a-dotIn 4s var(--ease) infinite; }
 .kid[data-mood="writing"] .k-head { rotate: -4deg; }
@@ -282,7 +310,8 @@
 /* napping: lying under a blanket, slow deep breaths, z's drifting up */
 @keyframes a-blanket { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.06); } }
 @keyframes a-z { 0% { opacity: 0; transform: translate(0, 6px) scale(.7); } 30%, 70% { opacity: 1; } 100% { opacity: 0; transform: translate(10px, -14px) scale(1.1); } }
-.kid[data-mood="napping"] .k-all { transform: translate(72px, -26px) rotate(-90deg) scale(.5); }
+.kid[data-mood="napping"] .k-all { transform: translate(84px, -44px) rotate(-90deg) scale(.62); }
+.kid[data-mood="napping"] .k-arm-l { rotate: -14deg; } .kid[data-mood="napping"] .k-arm-r { rotate: 14deg; }
 .kid[data-mood="napping"] .k-shadow { opacity: 0; }
 .kid[data-mood="napping"] .k-eyes { display: none; } .kid[data-mood="napping"] .k-eyes-shut { display: block; }
 .kid[data-mood="napping"] .m-base { display: none; } .kid[data-mood="napping"] .m-o { display: block; scale: .5; transform-box: fill-box; transform-origin: center; }
@@ -303,11 +332,18 @@
 .kid[data-mood="dua"] .p-glow .g2 { animation-delay: 1.1s; } .kid[data-mood="dua"] .p-glow .g3 { animation-delay: 2.1s; }
 
 /* snacking on dates: hand to mouth, then happy chewing */
-@keyframes a-eat { 0%, 20% { rotate: 28deg; } 38%, 48% { rotate: 128deg; } 62%, 100% { rotate: 28deg; } }
-@keyframes a-dateGone { 0%, 44% { opacity: 1; } 46%, 96% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes a-eat { 0%, 20% { rotate: 10deg; } 34%, 42% { rotate: 44deg; } 64%, 100% { rotate: 10deg; } }
+@keyframes a-eatFore { 0%, 20% { rotate: 70deg; } 34%, 42% { rotate: 152deg; } 64%, 100% { rotate: 70deg; } }
+@keyframes a-dateGone { 0%, 39% { opacity: 1; } 40%, 96% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes a-toss { 0%, 39% { opacity: 0; transform: translate(0, 0); } 40% { opacity: 1; transform: translate(0, 0); } 46% { transform: translate(calc(var(--dx) * .5), calc(var(--dy) - 16px)); } 52% { opacity: 1; transform: translate(var(--dx), var(--dy)); } 54%, 100% { opacity: 0; transform: translate(var(--dx), var(--dy)); } }
+.kid[data-mood="dates"] .p-toss { animation: a-toss 3.6s linear infinite; }
+.kid[data-mood="dates"] .p-toss ellipse { transform-box: fill-box; transform-origin: center; }
 @keyframes a-chewA { 0%, 48%, 100% { opacity: 1; } 55%, 63%, 71%, 79% { opacity: 0; } 59%, 67%, 75%, 83% { opacity: 1; } }
 @keyframes a-chewB { 0%, 48%, 100% { opacity: 0; } 55%, 63%, 71%, 79% { opacity: 1; } 59%, 67%, 75%, 83% { opacity: 0; } }
 .kid[data-mood="dates"] .k-arm-r { animation: a-eat 3.6s var(--ease) infinite; }
+.kid[data-mood="dates"] .k-arm-r .k-fore { animation: a-eatFore 3.6s var(--ease) infinite; }
+@keyframes a-eatHead { 0%, 22%, 66%, 100% { transform: rotate(0) translateY(0); } 38%, 50% { transform: rotate(4deg) translateY(4px); } }
+.kid[data-mood="dates"] .k-head { animation: a-eatHead 3.6s var(--ease) infinite; }
 .kid[data-mood="dates"] .p-date { animation: a-dateGone 3.6s linear infinite; }
 .kid[data-mood="dates"] .m-base { animation: a-chewA 3.6s steps(1) infinite; }
 .kid[data-mood="dates"] .m-o { display: block; scale: .6; transform-box: fill-box; transform-origin: center; animation: a-chewB 3.6s steps(1) infinite; }
@@ -325,7 +361,7 @@
 
 /* painting: brush strokes on the easel, the letter paints itself */
 @keyframes a-brush { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(-7deg); } 60% { transform: rotate(4deg); } }
-.kid[data-mood="painting"] .k-arm-r { animation: a-brush 1.2s var(--ease) infinite; }
+.kid[data-mood="painting"] .k-arm-r .k-fore { animation: a-brush 1.2s var(--ease) infinite; }
 .kid[data-mood="painting"] .k-all { translate: -12px 0; }
 .kid[data-mood="painting"] .k-head { rotate: 5deg; }
 .kid[data-mood="painting"] .k-eyes { transform: translate(3px, 0); }
@@ -369,11 +405,15 @@
 .kid[data-mood="ball"] .k-eyes { transform: translate(3px, 3px); }
 
 /* stretching: slow, big side stretches */
-@keyframes a-stretchL { 0%, 100% { transform: rotate(0); } 25%, 45% { transform: rotate(155deg); } }
+@keyframes a-stretchL { 0%, 100% { transform: rotate(0); } 25%, 45% { transform: rotate(158deg); } }
+@keyframes a-stretchForeL { 0%, 100% { transform: rotate(0); } 25%, 45% { transform: rotate(-22deg); } }
+@keyframes a-stretchForeR { 0%, 50%, 100% { transform: rotate(0); } 75%, 95% { transform: rotate(22deg); } }
 @keyframes a-stretchR { 0%, 50%, 100% { transform: rotate(0); } 75%, 95% { transform: rotate(-155deg); } }
 @keyframes a-lean { 0%, 100% { transform: rotate(0); } 35% { transform: rotate(5deg); } 85% { transform: rotate(-5deg); } }
 .kid[data-mood="stretching"] .k-arm-l { animation: a-stretchL 6s var(--ease) infinite; }
 .kid[data-mood="stretching"] .k-arm-r { animation: a-stretchR 6s var(--ease) infinite; }
+.kid[data-mood="stretching"] .k-arm-l .k-fore { animation: a-stretchForeL 6s var(--ease) infinite; }
+.kid[data-mood="stretching"] .k-arm-r .k-fore { animation: a-stretchForeR 6s var(--ease) infinite; }
 .kid[data-mood="stretching"] .k-upper { animation: a-lean 6s var(--ease) infinite; }
 .kid[data-mood="stretching"] .k-eyes { display: none; } .kid[data-mood="stretching"] .k-eyes-happy { display: block; }
 
