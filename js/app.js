@@ -262,19 +262,8 @@
       <g clip-path="url(#${id}c)" opacity=".32"><path d="M30 16 L46 16 L20 96 L4 96Z" fill="#fff"/><path d="M52 16 L58 16 L32 96 L26 96Z" fill="#fff"/></g>`}
     </svg>`;
   }
-  // The wordmark (vector, traced from the design in tools/ref/logo-ref.png). With `write`, the word is
-  // written left to right, then the gold swoosh flows out of the q into the pen nib.
-  function logoSVG(write, cls = '') {
-    const id = 'lg' + (++uid); const L = window.QQ_LOGO || { word: '', swoosh: '' };
-    return `<svg class="logo ${write ? 'write' : ''} ${cls}" viewBox="40 7 616 314" role="img" aria-label="Qalam">
-      <defs>
-        <clipPath id="${id}w"><rect class="lg-reveal" x="40" y="0" width="616" height="330"/></clipPath>
-        <clipPath id="${id}s"><rect class="lg-reveal-s" x="40" y="180" width="616" height="150"/></clipPath>
-      </defs>
-      <g clip-path="url(#${id}s)"><path class="lg-swoosh" d="${L.swoosh}" fill-rule="evenodd"/></g>
-      <g clip-path="url(#${id}w)"><path class="lg-word" d="${L.word}" fill-rule="evenodd"/></g>
-    </svg>`;
-  }
+  // The Qalam letter-tile wordmark (js/logo-component.js). `animate` plays the tile entrance once per mount.
+  function logoSVG(animate, cls = '') { return window.QQLogo ? QQLogo.svg({ animate, className: 'logo ' + cls }) : ''; }
 
   // ======================= CONFETTI / TOAST / MODAL =======================
   function confetti(n = 120) {
@@ -344,7 +333,7 @@
       <button class="stat gems" data-pop="gems">${IMG('gem')}${S.gems}</button>${hearts}<button class="theme-toggle" data-theme-toggle aria-label="Switch light or dark mode" title="Light / dark">${IMG(isDark() ? 'sun' : 'moon')}</button></div>`;
   }
   function sidenavHTML() {
-    return `<aside class="sidenav"><a class="logo-link" href="#" data-tab="learn" aria-label="Qalam home">${logoSVG(false)}<img class="logo-mini" src="icons/icon-192.png" alt=""></a>
+    return `<aside class="sidenav"><a class="logo-link" href="#" data-tab="learn" aria-label="Qalam home">${logoSVG(false)}<span class="logo-mini">${window.QQLogo ? QQLogo.icon() : ''}</span></a>
       ${NAV.map((n) => `<button class="nav-item ${tab === n.id ? 'on' : ''}" data-tab="${n.id}">${n.avatar ? avatarHTML(34) : IMG(n.icon)}<span>${n.label}</span></button>`).join('')}
       <div class="side-promo">${M.kid(S.buddy === 'zaid' ? 'huda' : 'zaid', 'dates')}<b>Teaching a class?</b><p>Every lesson, answer and Qur’an reference in one place.</p><button class="link-btn" data-tab="more">Teacher corner</button></div></aside>`;
   }

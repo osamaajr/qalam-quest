@@ -1,0 +1,53 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qalam logo preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; font-family: Nunito, system-ui, sans-serif; background: #FAF4EA; color: #3C1A4E; padding: 24px; }
+  h2 { font-size: 15px; letter-spacing: 1px; text-transform: uppercase; margin: 26px 0 10px; color: #6B2A6E; }
+  .row { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-end; }
+  .card { background: #FDF8F1; border: 2px solid #EADFCF; border-radius: 18px; padding: 16px; }
+  .card small { display: block; font-size: 12px; color: #8E7A8E; margin-top: 8px; }
+  .cmp img, .cmp .ql-logo { width: 460px; display: block; }
+  .header-demo { display: flex; align-items: center; gap: 14px; background: #fff; border-radius: 14px; padding: 12px 16px; }
+  .header-demo .ql-logo { width: 150px; }
+  .dark { background: #131A2B; }
+  .fav { display: flex; gap: 18px; align-items: flex-end; } .fav span { display: inline-block; }
+  button { font: inherit; font-weight: 900; border: 0; border-radius: 12px; padding: 10px 16px; background: #0C47D5; color: #fff; box-shadow: 0 3px 0 #08349E; cursor: pointer; }
+  .frames { display: grid; grid-template-columns: repeat(6, 160px); gap: 10px; }
+  .frames .card { padding: 8px; } .frames .ql-logo { width: 140px; }
+  .frames .ql-tile { animation-play-state: paused !important; }
+</style></head><body>
+<h1 style="margin:0">Qalam logo — Option 02</h1>
+<h2>Settled logo vs the original Option 02 crop</h2>
+<div class="row cmp">
+  <div class="card"><canvas id="ref" width="1380" height="450" style="width:460px;height:150px"></canvas><small>Original (cropped from tools/ref/logo-board.webp)</small></div>
+  <div class="card"><div id="static"></div><small>Traced SVG (assets/logo/qalam-wordmark.svg)</small></div>
+  <div class="card"><canvas id="overlay" width="1380" height="450" style="width:460px;height:150px"></canvas><small>50/50 overlay</small></div>
+</div>
+<h2>Entrance animation</h2>
+<div class="row"><div class="card" style="width:500px"><div id="anim"></div></div><button id="replay">↻ Replay</button></div>
+<h2>Storyboard check (frozen moments)</h2>
+<div class="frames" id="frames"></div>
+<h2>Header size</h2>
+<div class="row"><div class="header-demo"><span id="hdr"></span></div><div class="header-demo dark"><span id="hdr2"></span></div></div>
+<h2>Icon at favicon sizes</h2>
+<div class="row"><div class="card fav"><span style="width:16px" id="f16"></span><span style="width:32px" id="f32"></span><span style="width:48px" id="f48"></span><span style="width:96px" id="f96"></span></div>
+  <div class="card fav dark"><span style="width:16px" id="d16"></span><span style="width:32px" id="d32"></span><span style="width:48px" id="d48"></span></div></div>
+<script src="../js/logo.js"></script><script src="../js/logo-component.js"></script>
+<script>
+document.getElementById('static').innerHTML = QQLogo.svg();
+const anim = document.getElementById('anim'); const play = () => QQLogo.mount(anim, { animate: true }); play();
+document.getElementById('replay').onclick = play;
+document.getElementById('hdr').innerHTML = QQLogo.svg(); document.getElementById('hdr2').innerHTML = QQLogo.svg();
+for (const id of ['f16', 'f32', 'f48', 'f96', 'd16', 'd32', 'd48']) document.getElementById(id).innerHTML = QQLogo.icon();
+const T = [0, 160, 420, 620, 760, 1000], names = ['01 Ready', '02 First tile', '03 Build', '04 Overshoot', '05 Settle', '06 Hold'];
+document.getElementById('frames').innerHTML = T.map((t, i) => `<div class="card"><div data-t="${t}">${QQLogo.svg({ animate: true })}</div><small>${names[i]} · ${t} ms</small></div>`).join('');
+document.querySelectorAll('[data-t]').forEach((el) => el.querySelectorAll('.ql-tile').forEach((g) => { g.style.animationDelay = `${(+g.style.getPropertyValue('--i')) * QQLogo.STAGGER - el.dataset.t}ms`; }));
+// reference crop + overlay
+const img = new Image(); img.onload = () => {
+  const r = document.getElementById('ref').getContext('2d'); r.drawImage(img, 815, 85, 690, 225, 0, 0, 1380, 450);
+  const o = document.getElementById('overlay').getContext('2d'); o.drawImage(img, 815, 85, 690, 225, 0, 0, 1380, 450);
+  const v = new Image(); v.onload = () => { o.globalAlpha = .5; o.fillStyle = '#FAF4EA'; o.drawImage(v, 0, 0, 1380, 450); };
+  v.src = '../assets/logo/qalam-wordmark.svg';
+}; img.src = 'ref/logo-board.webp';
+</script></body></html>
