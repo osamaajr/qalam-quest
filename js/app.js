@@ -1095,16 +1095,6 @@
     if (s && s.type === 'reset' && s.lost >= 2) setTimeout(() => modal(`${M.kid(S.buddy, 'wave')}<h2>Welcome back!</h2><p>Your ${s.lost}-day streak took a rest. Every day is a fresh start — let’s begin a new one!</p><button class="btn" data-x>Let’s go</button>`, (m, c) => (m.querySelector('[data-x]').onclick = c)), 400);
   }
   // tag any element whose own text contains tanwīn ḍamm, so it renders in a font with the correct form
-  (function tagTanwin() {
-    const TW = /\u064C/;
-    const tag = (root) => {
-      const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: (n) => TW.test(n.nodeValue) ? 1 : 3 });
-      for (let n = w.nextNode(); n; n = w.nextNode()) { const el = n.parentElement; if (el && !el.closest('svg')) el.classList.add('tw'); }
-    };
-    new MutationObserver((ms) => ms.forEach((m) => m.addedNodes.forEach((n) => { if (n.nodeType === 1) tag(n); else if (n.nodeType === 3 && TW.test(n.nodeValue) && n.parentElement) n.parentElement.classList.add('tw'); })))
-      .observe(document.body, { childList: true, subtree: true, characterData: false });
-    tag(document.body);
-  })();
   window.QQ_APP = { get state() { return S; }, render, tour, chestSVG };
   boot();
 })();

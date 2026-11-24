@@ -737,4 +737,6 @@ img { -webkit-user-drag: none; user-select: none; }
 /* tanwīn ḍamm (ٌ): Noto Naskh draws it as two side-by-side ḍammas (looks like a double wāw). Text that
    contains it uses Amiri, which draws the proper muṣḥaf form (a ḍamma with a turned-back tail).
    Elements are tagged automatically by app.js. */
+/* joined Arabic letters must never be spaced apart (js/arabic-text.js adds .arj) */
+.arj { letter-spacing: 0 !important; }
 .tw { font-family: 'Amiri', 'Amiri Quran', var(--ar) !important; }
