@@ -773,11 +773,13 @@
   }
   let EX = null;
   function nextExercise() {
+    L.feedbackEx = null;
     setProgress();
     if (!L.queue.length) { finishLesson(); return; }
     const ex = L.queue[0]; window.__qqEx = ex; // exposed for automated play-testing
     const lb = document.getElementById('lb'), check = document.getElementById('check'), foot = document.getElementById('foot');
     document.getElementById('sheet').className = 'sheet';
+    document.querySelector('#sheet .sheet-in').innerHTML = '';
     foot.classList.remove('hidden');
     check.disabled = true; check.textContent = 'Check';
     lb.innerHTML = ''; const wrap = document.createElement('div'); wrap.className = 'ex'; lb.appendChild(wrap);
@@ -790,7 +792,9 @@
   }
   const PRAISE = ['Amazing!', 'Mashā’Allāh!', 'Brilliant!', 'Great job!', 'You got it!', 'Super!', 'Nailed it!'];
   function showFeedback(r, ex) {
-    if (!L) return; // the lesson already ended (quit or out of hearts) before a delayed result arrived
+    // Ignore delayed or repeated results after the question has been graded.
+    if (!L || L.feedbackEx === ex) return;
+    L.feedbackEx = ex;
     const graded = !['match', 'sort'].includes(ex.type);
     L.graded++; S.stats.answered++;
     if (r.correct) { L.correct++; S.stats.correct++; L.combo++; L.bestCombo = Math.max(L.bestCombo, L.combo); }
@@ -808,7 +812,8 @@
     L.queue.shift(); L.doneCount++;
     save();
     Sfx.play(r.correct ? 'correct' : 'wrong'); buzz(r.correct ? 12 : [30, 50, 30]);
-    if (r.correct && [5, 10, 15, 20].includes(L.combo)) { L.comboBonus = Math.min(5, L.comboBonus + (L.combo === 5 ? 2 : 1)); const c = L.combo; setTimeout(() => comboBurst(c), 250); }
+    const comboMilestone = r.correct && [5, 10, 15, 20].includes(L.combo);
+    if (comboMilestone) L.comboBonus = Math.min(5, L.comboBonus + (L.combo === 5 ? 2 : 1));
     setProgress();
     const sheet = document.getElementById('sheet');
     const title = r.correct ? (ex.type === 'match' ? 'Perfect pairs!' : ex.type === 'sort' ? 'Sorted!' : C.pick(PRAISE)) : graded ? 'Not quite!' : 'Done — good effort!';
@@ -822,22 +827,45 @@
     requestAnimationFrame(() => sheet.classList.add('show'));
     document.getElementById('foot').classList.add('hidden');
     const cont = document.getElementById('cont');
+    if (comboMilestone) {
+      cont.disabled = true;
+      const lesson = L;
+      setTimeout(() => {
+        if (L !== lesson || !cont.isConnected) return;
+        comboBurst(lesson.combo, () => {
+          if (L !== lesson || !cont.isConnected) return;
+          cont.disabled = false;
+          cont.focus({ preventScroll: true });
+        });
+      }, 250);
+    }
     cont.onclick = () => {
       Sfx.play('tap');
       if (L.test && L.test.lives <= 0) { finishTest(false); return; }
       if (!L.test && !S.settings.classMode && !L.practice && S.hearts <= 0) { outOfHearts(L.f, false); return; }
       nextExercise();
     };
-    cont.focus({ preventScroll: true });
+    if (!comboMilestone) cont.focus({ preventScroll: true });
   }
-  function comboBurst(n) {
+  function comboBurst(n, onEnd) {
     Sfx.play('combo');
     const d = document.createElement('div'); d.className = 'combo-burst';
-    d.innerHTML = `${M.kid(S.buddy, 'happy')}<b>${IMG('fire')}${n} in a row!</b>`;
-    document.body.appendChild(d); setTimeout(() => d.remove(), 1600);
+    d.setAttribute('role', 'status');
+    d.innerHTML = `<div class="combo-burst-inner">${M.kid(S.buddy, 'happy')}<b>${IMG('fire')}${n} in a row!</b></div>`;
+    document.body.appendChild(d);
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      d.remove();
+      onEnd();
+    };
+    const inner = d.querySelector('.combo-burst-inner');
+    inner.addEventListener('animationend', (event) => { if (event.target === inner) finish(); });
+    setTimeout(finish, 2000); // fallback for browsers that skip animationend
   }
   function lessonKeys(e) {
-    if (document.querySelector('.modal-bg')) return;
+    if (document.querySelector('.modal-bg, .combo-burst')) return;
     const sheet = document.getElementById('sheet');
     if (e.key === 'Enter') {
       e.preventDefault();
