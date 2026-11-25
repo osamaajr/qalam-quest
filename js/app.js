@@ -103,16 +103,21 @@
   const STEP = { lessons: (n) => n + 2, xp: (n) => n * 2, combo: (n) => Math.min(n + 4, 25), acc90: (n) => n + 1, perfect: (n) => n + 1 };
   const LABEL = { lessons: (n) => `Complete ${n} lessons`, xp: (n) => `Earn ${n} XP`, combo: (n) => `Get ${n} answers in a row`, acc90: (n) => n === 1 ? 'Score 90% or more in a lesson' : `Score 90%+ in ${n} lessons`, perfect: (n) => n === 1 ? 'Finish a lesson with no mistakes' : `Finish ${n} lessons with no mistakes` };
   const questGems = (q) => 10 + 5 * ((q.tier || 1) - 1);
-  function bumpQuests(r) {
+  // A lesson pays out at most QUEST_ROOM rewards (daily quests first, then ladder rungs). Anything else
+  // that was reached stays ready and pays out after the next lesson, so nothing is lost — it just
+  // stops one lesson from completing a whole screen of quests at once.
+  const QUEST_ROOM = 2;
+  function bumpQuests(r, room = Infinity) {
     ensureQuests(); const done = [];
     S.quests.list.forEach((q) => {
-      if (q.p >= q.n) return;
-      if (q.m === 'xp') q.p += r.xp;
-      if (q.m === 'lessons') q.p += 1;
-      if (q.m === 'combo') q.p = Math.max(q.p, r.bestCombo);
-      if (q.m === 'acc90' && r.acc >= 90) q.p += 1;
-      if (q.m === 'perfect' && r.mistakes === 0) q.p += 1;
-      if (q.p < q.n) return;
+      if (q.p < q.n) {
+        if (q.m === 'xp') q.p += r.xp;
+        if (q.m === 'lessons') q.p += 1;
+        if (q.m === 'combo') q.p = Math.max(q.p, r.bestCombo);
+        if (q.m === 'acc90' && r.acc >= 90) q.p += 1;
+        if (q.m === 'perfect' && r.mistakes === 0) q.p += 1;
+      }
+      if (q.p < q.n || done.length >= room) return;     // not reached, or saved for the next lesson
       const gems = questGems(q); S.gems += gems;
       done.push({ icon: q.icon, label: q.label, gems });
       q.cleared = (q.cleared || 0) + 1;
@@ -139,14 +144,17 @@
     const i = S.ladders[L.id] || 0; const v = L.val();
     return { i, v, max: i >= L.tiers.length, target: L.tiers[Math.min(i, L.tiers.length - 1)], prev: i ? L.tiers[i - 1] : 0 };
   }
-  function bumpLadders() {
+  // room = how many rungs may be paid now. After a lesson each ladder climbs one rung at most
+  // (5 and 10 in a row are two separate moments); with no limit (old saves) every earned rung is credited.
+  function bumpLadders(room = Infinity) {
     const done = [];
     for (const L of LADDERS) {
       let st = ladderState(L);
-      while (!st.max && st.v >= st.target) {
+      while (done.length < room && !st.max && st.v >= st.target) {
         const gems = ladderGems(st.i); S.gems += gems;
-        done.push({ icon: L.icon, label: `${L.name}: ${st.target} ${L.unit}`, gems, ladder: true });
+        done.push({ icon: L.icon, label: `${L.name}: ${st.target} ${st.target === 1 ? L.unit.replace(/s\b/, '') : L.unit}`, gems, ladder: true });
         S.ladders[L.id] = st.i + 1; st = ladderState(L);
+        if (room !== Infinity) break;
       }
     }
     return done;
@@ -1101,7 +1109,8 @@
       if (S.streak % 7 === 0 && S.freezes < MAX_FREEZES) { S.freezes++; streakUp.freeze = true; }
       if ([3, 7, 14, 30, 50, 100].includes(S.streak)) { const g = S.streak >= 30 ? 50 : 20; S.gems += g; streakUp.gems = g; }
     }
-    const quests = bumpQuests(r).concat(bumpLadders());
+    const daily = bumpQuests(r, QUEST_ROOM);
+    const quests = daily.concat(bumpLadders(QUEST_ROOM - daily.length));
     const badges = newBadges();
     save(); endRun();
     const screens = [(n) => resultScreen(r, practice, n)];
