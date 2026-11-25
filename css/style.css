@@ -296,7 +296,10 @@ img { -webkit-user-drag: none; user-select: none; }
 .speech { display: flex; align-items: flex-end; gap: 4px; max-width: 500px; }
 .speech .kid { width: 130px; flex: none; }
 .bubble { position: relative; border: 2px solid var(--line); border-radius: 18px; padding: 12px 16px; font-size: 17px; text-align: left; background: var(--surface); margin-bottom: 80px; }
-.bubble::before { content: ''; position: absolute; left: -8px; bottom: 20px; width: 16px; height: 16px; background: var(--surface); border-left: 2px solid var(--line); border-bottom: 2px solid var(--line); transform: rotate(45deg); }
+/* Two nested triangles mask the bubble border where the tail joins. */
+.bubble::before, .bubble::after { content: ''; position: absolute; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.bubble::before { left: -24px; width: 34px; height: 30px; background: var(--line); clip-path: polygon(100% 0, 0 50%, 100% 100%); }
+.bubble::after { left: -19px; width: 31px; height: 30px; background: var(--surface); clip-path: polygon(100% 0, 0 50%, 100% 100%); }
 
 /* ---------- tour ---------- */
 .tour-spot { position: fixed; z-index: 200; border-radius: 18px; box-shadow: 0 0 0 9999px rgba(20,16,40,.62); pointer-events: none; transition: all .45s cubic-bezier(.3,1.2,.4,1); }

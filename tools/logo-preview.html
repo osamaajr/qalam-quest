@@ -15,7 +15,7 @@
   button { font: inherit; font-weight: 900; border: 0; border-radius: 12px; padding: 10px 16px; background: #0C47D5; color: #fff; box-shadow: 0 3px 0 #08349E; cursor: pointer; }
   .frames { display: grid; grid-template-columns: repeat(6, 160px); gap: 10px; }
   .frames .card { padding: 8px; } .frames .ql-logo { width: 140px; }
-  .frames .ql-tile, .frames .ql-underlap { animation-play-state: paused !important; }
+  .frames .ql-tile { animation-play-state: paused !important; }
 </style></head><body>
 <h1 style="margin:0">Qalam logo — tiles land in place</h1>
 <h2>Settled logo vs the original Option 02 crop</h2>
@@ -45,7 +45,6 @@ document.getElementById('frames').innerHTML = T.map((t, i) => `<div class="card"
 document.querySelectorAll('[data-t]').forEach((el) => {
   const t = +el.dataset.t;
   el.querySelectorAll('.ql-tile').forEach((g) => { g.style.animationDelay = `${(+g.style.getPropertyValue('--i')) * QQLogo.STAGGER - t}ms`; });
-  el.querySelectorAll('.ql-underlap').forEach((g) => { g.style.animationDelay = `${parseFloat(g.style.getPropertyValue('--join')) - t}ms`; });
 });
 // reference crop + overlay
 const img = new Image(); img.onload = () => {
