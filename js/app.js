@@ -460,8 +460,8 @@
         const x = OFFS[k % OFFS.length];
         const here = items[decoAt];
         const decoLocked = here && (here.kind === 'chest' ? !(S.done[here.after] || S.settings.unlockAll) : !isUnlocked(here.l.id));
-        const aniHTML = animal && k === aniAt ? `<button class="deco-animal ${lockedAt(k) ? 'locked' : ''}" style="${x > 0 ? 'right' : 'left'}:calc(100% + 48px);top:-34px" data-animal-info="${animal.key}" aria-label="${esc(animal.name)}">${QQ_ANIMALS.svg(animal.key, { state: 'idle' })}</button>` : '';
-        const decoHTML = (k === aniAt ? aniHTML : '') + (k !== decoAt ? '' : `<div class="deco-buddy ${decoLocked ? 'locked' : ''}" style="${x > 0 ? 'right' : 'left'}:calc(100% + 64px);top:-86px" >${M.kid(decoBuddy, UNIT_ACT[ui % UNIT_ACT.length])}</div>`);
+        const aniHTML = animal && k === aniAt ? `<button class="deco-animal ${lockedAt(k) ? 'locked' : ''}" style="${x > 0 ? 'right' : 'left'}:calc(100% + var(--ani-gap));top:-34px" data-animal-info="${animal.key}" aria-label="${esc(animal.name)}">${QQ_ANIMALS.svg(animal.key, { state: 'idle' })}</button>` : '';
+        const decoHTML = (k === aniAt ? aniHTML : '') + (k !== decoAt ? '' : `<div class="deco-buddy ${decoLocked ? 'locked' : ''}" style="${x > 0 ? 'right' : 'left'}:calc(100% + var(--deco-gap));top:-86px">${M.kid(decoBuddy, UNIT_ACT[ui % UNIT_ACT.length])}</div>`);
         if (it.kind === 'chest') {
           const opened = S.chests.includes(it.id); const open = S.done[it.after] || S.settings.unlockAll;
           return `<div class="node-wrap" style="transform:translateX(${x}px)">${decoHTML}<button class="chest-node ${opened ? 'opened' : open ? 'ready' : 'locked'}" data-chest="${it.id}" data-open="${open ? 1 : 0}" aria-label="Treasure chest">${chestSVG(opened)}</button></div>`;
@@ -643,7 +643,7 @@
   }
   function bindMore() {
     bindSwitches();
-    document.getElementById('retour').onclick = () => { tab = 'learn'; render(true); setTimeout(tour, 700); };
+    document.getElementById('retour').onclick = () => { tab = 'learn'; render(true); setTimeout(tour, 450); };
     document.getElementById('reset').onclick = () => modal(`<h2>Erase all progress?</h2><p>This removes streaks, XP and lessons on this device. It can’t be undone.</p><button class="btn btn-red" data-y>Yes, erase</button><button class="link-btn" data-x>Cancel</button>`, (m, close) => { m.querySelector('[data-x]').onclick = close; m.querySelector('[data-y]').onclick = () => { localStorage.removeItem(KEY); location.reload(); }; });
   }
 
@@ -709,7 +709,7 @@
     }
     goHomeWithTour();
   }
-  function goHomeWithTour() { tab = 'learn'; render(true); if (!S.toured) setTimeout(tour, 900); }
+  function goHomeWithTour() { tab = 'learn'; render(true); if (!S.toured) setTimeout(tour, 450); }
 
   // ======================= LANDING TOUR =======================
   function visible(sel) { return [...document.querySelectorAll(sel)].find((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(e).visibility !== 'hidden'; }); }
@@ -728,7 +728,10 @@
     const card = document.createElement('div'); card.className = 'tour-card';
     document.body.append(spot, card);
     let i = 0;
-    const end = () => { spot.remove(); card.remove(); S.toured = true; save(); window.removeEventListener('resize', place); window.removeEventListener('scroll', place); const c = document.getElementById('current'); if (c) c.scrollIntoView({ block: 'center', behavior: 'smooth' }); };
+    const end = () => { spot.remove(); card.remove(); S.toured = true; save(); window.removeEventListener('resize', follow); window.removeEventListener('scroll', follow); const c = document.getElementById('current'); if (c) c.scrollIntoView({ block: 'center', behavior: 'smooth' }); };
+    // follow the page while it scrolls/resizes without easing, so the highlight never lags behind
+    let still = 0;
+    const follow = () => { spot.classList.add('still'); card.classList.add('still'); place(); clearTimeout(still); still = setTimeout(() => { spot.classList.remove('still'); card.classList.remove('still'); }, 120); };
     function place() {
       const s = steps[i]; const el = visible(s.sel); if (!el) return;
       const r = el.getBoundingClientRect(); const pad = s.shape === 'ellipse' ? 5 : 10;
@@ -751,10 +754,12 @@
       card.querySelector('[data-next]').onclick = () => { Sfx.play('whoosh'); if (++i >= steps.length) end(); else show(); };
       const el = visible(s.sel);
       const r = el.getBoundingClientRect();
-      if (r.top < 80 || r.bottom > innerHeight - 80) { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); setTimeout(place, 450); } else place();
+      // jump straight to an off-screen target, then slide the highlight there (no waiting on a smooth scroll)
+      if (r.top < 80 || r.bottom > innerHeight - 80) el.scrollIntoView({ block: 'center', behavior: 'instant' });
+      place();
     }
-    window.addEventListener('resize', place);
-    window.addEventListener('scroll', place, { passive: true });
+    window.addEventListener('resize', follow);
+    window.addEventListener('scroll', follow, { passive: true });
     show();
   }
 
@@ -1160,7 +1165,7 @@
     const s = checkStreak(); save();
     if (!S.onboarded) { onboarding(); return; }
     render(true);
-    if (!S.toured) setTimeout(tour, 900);
+    if (!S.toured) setTimeout(tour, 450);
     if (s && s.type === 'frozen') setTimeout(() => modal(`<div style="align-self:center">${IMG('snowflake').replace('class="ico', 'style="width:96px;height:96px" class="ico')}</div><h2>Streak saved!</h2><p>A streak freeze protected your ${S.streak}-day streak while you were away. Welcome back!</p><button class="btn btn-sky" data-x>Yay!</button>`, (m, c) => (m.querySelector('[data-x]').onclick = c)), 400);
     if (s && s.type === 'reset' && s.lost >= 2) setTimeout(() => modal(`${M.kid(S.buddy, 'wave')}<h2>Welcome back!</h2><p>Your ${s.lost}-day streak took a rest. Every day is a fresh start — let’s begin a new one!</p><button class="btn" data-x>Let’s go</button>`, (m, c) => (m.querySelector('[data-x]').onclick = c)), 400);
   }
