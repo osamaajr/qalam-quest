@@ -8,7 +8,34 @@
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const rich = (s) => esc(s).replace(/([؀-ۿ][؀-ۿً-ٰٟۖ-ۭ\s]*[؀-ۿً-ٰٟۖ-ۭ]|[؀-ۿ])/g, (m) => `<span class="${/[ٱ۟-ٰۭ]/.test(m) ? 'qr' : 'ar'}">${m}</span>`);
   const isQ = (s) => /[ٱ۟-ۭ]/.test(s);
-  const IMG = (n, cls = '') => `<img class="ico ${cls}" src="assets/icons/${n}.png" alt="" draggable="false">`;
+  const IMG = (n, cls = '') => `<img class="ico ${cls}" src="assets/icons/${n}.png" data-icon="${n}" alt="" draggable="false">`;
+  const ICON_FALLBACK = {
+    bell: '🔔', bolt: '⚡', book: '📖', books: '📚', bulb: '💡', construction: '🏗️',
+    crown: '👑', fire: '🔥', gear: '⚙️', gem: '💎', 'glowing-star': '🌟', grad: '🎓',
+    heart: '❤️', house: '🏠', hundred: '💯', key: '🔑', lock: '🔒', magnifier: '🔎',
+    medal: '🏅', moon: '🌙', nose: '👃', notes: '🎵', party: '🎉', pen: '🖊️',
+    practice: '💪', rocket: '🚀', scroll: '📜', seedling: '🌱', shield: '🛡️',
+    shop: '🛍️', snowflake: '❄️', sparkles: '✨', speaker: '🔊', star: '⭐',
+    stop: '🛑', stopwatch: '⏱️', sun: '☀️', target: '🎯', thread: '🧵',
+    trophy: '🏆', turtle: '🐢',
+  };
+  // A failed image load should never leave a browser's broken-image symbol in the game.
+  document.addEventListener('error', (event) => {
+    const img = event.target;
+    if (!(img instanceof HTMLImageElement) || !img.classList.contains('ico')) return;
+    if (!img.dataset.retried) {
+      img.dataset.retried = '1';
+      const retry = new URL(img.src, location.href);
+      retry.searchParams.set('icon-retry', '1');
+      img.src = retry.href;
+      return;
+    }
+    const fallback = document.createElement('span');
+    fallback.className = `${img.className} ico-fallback`;
+    fallback.setAttribute('aria-hidden', 'true');
+    fallback.textContent = ICON_FALLBACK[img.dataset.icon] || '✦';
+    img.replaceWith(fallback);
+  }, true);
   let uid = 0;
 
   // ======================= STATE =======================
@@ -689,7 +716,7 @@
   function tour() {
     if (document.querySelector('.tour-card')) return;
     const steps = [
-      { sel: '#current .node-box', title: 'This is your path', text: 'Tap the glowing button to start a lesson. Each one takes about 3 minutes. Finish one to unlock the next!', mood: 'point' },
+      { sel: '#current .node-ring', shape: 'ellipse', title: 'This is your path', text: 'Tap the glowing button to start a lesson. Each one takes about 3 minutes. Finish one to unlock the next!', mood: 'point' },
       { sel: '.unit-banner .guide-btn', title: 'Unit guidebook', text: 'Stuck? The guidebook explains each unit’s big ideas — great for grown-ups too.', mood: 'read' },
       { sel: '.stat.streak', title: 'Your streak', text: 'Learn every day to grow your flame. Streak freezes protect it if you miss a day.', mood: 'happy' },
       { sel: '.stat.hearts', title: 'Hearts', text: 'You lose a heart for each mistake. Practise to win them back — you can never get stuck.', mood: 'talk' },
@@ -704,8 +731,12 @@
     const end = () => { spot.remove(); card.remove(); S.toured = true; save(); window.removeEventListener('resize', place); window.removeEventListener('scroll', place); const c = document.getElementById('current'); if (c) c.scrollIntoView({ block: 'center', behavior: 'smooth' }); };
     function place() {
       const s = steps[i]; const el = visible(s.sel); if (!el) return;
-      const r = el.getBoundingClientRect(); const pad = 10;
-      Object.assign(spot.style, { left: r.left - pad + 'px', top: r.top - pad + 'px', width: r.width + pad * 2 + 'px', height: r.height + pad * 2 + 'px' });
+      const r = el.getBoundingClientRect(); const pad = s.shape === 'ellipse' ? 5 : 10;
+      Object.assign(spot.style, {
+        left: r.left - pad + 'px', top: r.top - pad + 'px',
+        width: r.width + pad * 2 + 'px', height: r.height + pad * 2 + 'px',
+        borderRadius: s.shape === 'ellipse' ? '50%' : getComputedStyle(el).borderRadius || '18px',
+      });
       const cw = card.offsetWidth, ch = card.offsetHeight;
       let top = r.bottom + pad + 14; if (top + ch > innerHeight - 10) top = Math.max(10, r.top - pad - 14 - ch);
       let left = Math.min(Math.max(10, r.left + r.width / 2 - cw / 2), innerWidth - cw - 10);

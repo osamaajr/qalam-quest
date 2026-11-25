@@ -51,7 +51,7 @@ A Duolingo-style game that teaches children (about 5–12) to read the Arabic of
 
 A short guided tour runs on first visit.
 
-**Read aloud:** Qur'an words play a qāriʾ's word-by-word recitation (audio from [Quran.com](https://quran.com)); letter names, syllables and practice words use a single Arabic teacher voice (Hamed), with clips kept only after an automatic check. Human recordings can replace generated clips; anything unverifiable stays silent rather than teach a wrong sound. Where each clip came from is listed in `tools/audio-sources.json`. The browser's built-in voice is never used.
+**Read aloud:** Qur'an words play a qāriʾ's word-by-word recitation (audio from [Quran.com](https://quran.com)); letter names, syllables and practice words use a generated Arabic teacher voice (Hamed). These are two distinct voices. Clips are kept only after an automatic check; anything unverifiable stays silent rather than teach a wrong sound. Quiet margins are trimmed so short clips play promptly. Where each clip came from is listed in `tools/audio-sources.json`. The browser's built-in voice is never used.
 
 **Teacher & parent corner** (in the game: Teachers in the sidebar, or Profile → Teacher & parent corner):
 
@@ -79,7 +79,7 @@ RESEARCH.md       why it's built this way (pedagogy, tajwīd sources, Duolingo r
 
 - **Run locally:** `python3 -m http.server` and open http://localhost:8000. Double-clicking `index.html` also works.
 - **Verify the Qur'an text:** `node tools/verify.js`
-- **Re-record audio after changing content:** `pip install edge-tts gTTS faster-whisper praat-parselmouth`, then `node tools/make-audio.js` (see the top of `tools/build_audio.py` for the rules). Qur'an words use the matching Quran.com word recitation; letter names are kept only if speech recognition hears exactly that name; syllables only if their vowel measures right (and ج as a real "j"); words only if understood well. No trimming or loudness processing is applied. Unverified sounds are listed in `tools/audio-silent.json`.
+- **Re-record audio after changing content:** `pip install edge-tts gTTS faster-whisper praat-parselmouth`, then `node tools/make-audio.js` (see the top of `tools/build_audio.py` for the rules). Qur'an words use the matching Quran.com word recitation; letter names are kept only if speech recognition hears exactly that name; syllables only if their vowel measures right (and ج as a real "j"); words only if understood well. The build trims quiet margins and normalizes peaks. Unverified sounds are listed in `tools/audio-silent.json`.
 - **Record real voices (Qalam Studio):** run `python3 tools/record_server.py` and open http://localhost:8765/tools/record.html. Record any letter name, syllable or word; saved recordings replace the computer voice immediately and are protected from `make-audio.js`. Commit `assets/audio`, `js/audio-manifest.js` and `tools/human-recorded.json` to publish them.
 - **Full automated QA:** open `tools/qa.html` while serving the project. It plays all 31 lessons and tests hearts, placement tests, every page, the theme toggle, chests, the shop, the tour and onboarding, then reports any errors.
 - **Add a lesson:** add an entry to a unit in `js/content.js`, using the helpers `T` (teach), `MCQ`, `LISTEN`, `MATCH`, `SORT`, `TAP` and `BUILD`. For any Qur'an text, add the verse to `AYAH` and run the verifier.

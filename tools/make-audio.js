@@ -36,4 +36,5 @@ for (let run = 0; run < 120; run++) for (const u of C.UNITS) for (const l of u.l
 const job = path.join(__dirname, '.audio-job.json');
 fs.writeFileSync(job, JSON.stringify({ texts: [...texts].sort(), names: Object.values(NAMES).map(key), say_name: NAMES }));
 execFileSync('python3', [path.join(__dirname, 'build_audio.py'), job], { stdio: 'inherit' });
+execFileSync('python3', [path.join(__dirname, 'trim_audio.py')], { stdio: 'inherit' });
 fs.unlinkSync(job);

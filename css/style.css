@@ -32,6 +32,7 @@ img { -webkit-user-drag: none; user-select: none; }
 .qr { font-family: var(--quran); direction: rtl; unicode-bidi: isolate; font-weight: 400; }
 .hidden { display: none !important; }
 .ico { width: 28px; height: 28px; object-fit: contain; flex: none; display: inline-block; vertical-align: middle; }
+.ico-fallback { display: inline-grid; place-items: center; font-size: 1.5em; line-height: 1; }
 .muted { color: var(--muted); }
 
 /* ---------- colour themes ---------- */
@@ -295,7 +296,7 @@ img { -webkit-user-drag: none; user-select: none; }
 .speech { display: flex; align-items: flex-end; gap: 4px; max-width: 500px; }
 .speech .kid { width: 130px; flex: none; }
 .bubble { position: relative; border: 2px solid var(--line); border-radius: 18px; padding: 12px 16px; font-size: 17px; text-align: left; background: var(--surface); margin-bottom: 80px; }
-.bubble::before { content: ''; position: absolute; left: -10px; bottom: 20px; width: 16px; height: 16px; background: var(--surface); border-left: 2px solid var(--line); border-bottom: 2px solid var(--line); transform: rotate(45deg); }
+.bubble::before { content: ''; position: absolute; left: -8px; bottom: 20px; width: 16px; height: 16px; background: var(--surface); border-left: 2px solid var(--line); border-bottom: 2px solid var(--line); transform: rotate(45deg); }
 
 /* ---------- tour ---------- */
 .tour-spot { position: fixed; z-index: 200; border-radius: 18px; box-shadow: 0 0 0 9999px rgba(20,16,40,.62); pointer-events: none; transition: all .45s cubic-bezier(.3,1.2,.4,1); }
@@ -312,7 +313,8 @@ img { -webkit-user-drag: none; user-select: none; }
 
 /* ---------- lesson ---------- */
 .lesson { min-height: 100vh; display: flex; flex-direction: column; }
-.lesson-top { display: flex; align-items: center; gap: 16px; padding: 18px 20px; max-width: 1000px; width: 100%; margin: 0 auto; }
+.lesson-top { display: flex; align-items: center; gap: 16px; padding: calc(28px + env(safe-area-inset-top)) 20px 18px; max-width: 1000px; width: 100%; margin: 0 auto; }
+@media (min-width: 768px) { .lesson-top { padding-top: 48px; } }
 .x-btn { width: 36px; height: 36px; color: var(--muted); display: grid; place-items: center; flex: none; }
 .x-btn svg { width: 26px; height: 26px; }
 .progress { flex: 1; height: 18px; border-radius: 99px; background: var(--line); position: relative; }

@@ -27,10 +27,10 @@ async function solve(wrong) {
   if (ex.type === 'teach') { q('#check').click(); return; }
   if (ex.type === 'mcq' || ex.type === 'listen') qa('.opt').find((b) => (wrong ? b.querySelector('.t').textContent !== ex.correct : b.querySelector('.t').textContent === ex.correct)).click();
   if (ex.type === 'tap') { const w = qa('.wd'); const i = ex.byIndex ? ex.answers[0] : ex.words.indexOf(ex.answers[0]); w[wrong ? (i + 1) % w.length : i].click(); }
-  if (ex.type === 'build') for (const x of ex.target) qa('#bank .tile').find((b) => b.textContent === x && !b.classList.contains('used')).click();
-  if (ex.type === 'match') { for (const p of ex.pairs) { const L = qa('.mt[data-s=L]').find((b) => b.textContent === p[0] && !b.classList.contains('good')); L.click(); q(`.mt[data-s=R][data-i="${L.dataset.i}"]`).click(); } await until(() => q('#sheet.show')); q('#cont').click(); return; }
-  if (ex.type === 'sort') { for (let k = 0; k < ex.items.length; k++) { await until(() => q('.sort-card:not([class*=fly]) .g')); const it = ex.items.find((x) => x.t === q('.sort-card:not([class*=fly]) .g').textContent); qa('.bucket')[it.b].click(); await until(() => !q('.sort-card[class*=fly]')); } await until(() => q('#sheet.show')); q('#cont').click(); return; }
-  q('#check').click(); await until(() => q('#cont')); q('#cont').click();
+  if (ex.type === 'build') for (const x of ex.target) { const tile = qa('#bank .tile').find((b) => b.textContent === x && !b.classList.contains('used')); if (!tile) throw Error('missing build tile ' + JSON.stringify(x) + ' in ' + JSON.stringify(qa('#bank .tile').map((b) => [b.textContent, b.className])) + ' for ' + JSON.stringify(ex.target)); tile.click(); }
+  if (ex.type === 'match') { for (const p of ex.pairs) { const L = qa('.mt[data-s=L]').find((b) => b.textContent === p[0] && !b.classList.contains('good')); if (!L) throw Error('missing match left ' + JSON.stringify(p) + ' in ' + JSON.stringify(qa('.mt[data-s=L]').map((b) => [b.textContent, b.className]))); L.click(); const R = q(`.mt[data-s=R][data-i="${L.dataset.i}"]`); if (!R) throw Error('missing match right for ' + L.dataset.i); R.click(); } await until(() => q('#sheet #cont') && !q('#cont').disabled); q('#cont').click(); return; }
+  if (ex.type === 'sort') { for (let k = 0; k < ex.items.length; k++) { await until(() => q('.sort-card:not([class*=fly]) .g')); const it = ex.items.find((x) => x.t === q('.sort-card:not([class*=fly]) .g').textContent); qa('.bucket')[it.b].click(); await until(() => !q('.sort-card[class*=fly]')); } await until(() => q('#sheet #cont') && !q('#cont').disabled); q('#cont').click(); return; }
+  q('#check').click(); await until(() => q('#sheet #cont') && !q('#cont').disabled); q('#cont').click();
 }
 async function playLesson(id, wrongAt) {
   q('[data-tab=learn]').click(); await sleep(100);
@@ -91,11 +91,11 @@ async function playLesson(id, wrongAt) {
     const one = (id) => new Promise((res) => {
       const a = new Audio('../assets/audio/' + id + '.mp3'); a.preload = 'auto';
       const t = setTimeout(() => { bad.push(id + ' (timeout)'); res(); }, 20000);
-      a.oncanplaythrough = () => { clearTimeout(t); if (a.duration > .2) ok++; else bad.push(id + ' (empty)'); res(); };
+      a.onloadedmetadata = () => { clearTimeout(t); if (a.duration > .2) ok++; else bad.push(id + ' (empty)'); res(); };
       a.onerror = () => { clearTimeout(t); bad.push(id + ' (error)'); res(); };
     });
     for (let i = 0; i < ids.length; i += 8) await Promise.all(ids.slice(i, i + 8).map(one));
-    log(`audio: ${ok}/${ids.length} clips load and play` + (bad.length ? ' — FAILED: ' + bad.slice(0, 5).join(', ') : ''));
+    log(`audio: ${ok}/${ids.length} clips load with valid duration` + (bad.length ? ' — FAILED: ' + bad.slice(0, 5).join(', ') : ''));
   } catch (e) { log('audio check error ' + e.message); }
   log(errors.length ? 'JS ERRORS:\n' + [...new Set(errors)].join('\n') : 'JS errors: none');
   log('DONE');

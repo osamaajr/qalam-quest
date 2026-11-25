@@ -2,8 +2,8 @@
 
 Rule: a sound is only used if it is a HUMAN recording or a computer-voice take that passed an
 automatic check.  Anything that cannot be verified is left silent (listed in tools/audio-silent.json)
-rather than risk teaching a wrong sound.  No trimming, compression or loudness processing is applied
-(that degraded the clips before) - only a plain volume change so clips play at a similar level.
+rather than risk teaching a wrong sound.  This stage adjusts peak level; tools/trim_audio.py
+subsequently removes long quiet margins and rebuilds joined phrases from the trimmed pieces.
 
   Qur'an words   - the qāriʾ's word-by-word recitation from Quran.com (exact match on letters and
                    vowels against Al-Fātiḥah and Juz ʿAmma).
@@ -29,12 +29,9 @@ HUMAN_DIR = os.path.join(HERE, 'human-audio')
 # Measured on the game's own words/syllables: Brian with an exclamation ("كِتَاب!") at a gentle pace was
 # both the liveliest (pitch variety 4.45 st vs 1.87 for the old Arabic voice) and the most accurate.
 # A name ending in _x means the text is said with "!" for a warm, encouraging tone.
-# ONE teacher voice for everything a child hears (letters, syllables, words): Brian, said with
-# encouragement. Several deliveries of the same voice are tried (pace, exclamation) and the first that
-# passes the accuracy check is kept, so the voice stays consistent while accuracy is preserved.
-# ONE native Arabic teacher voice for everything a child hears (Hamed, Saudi): chosen by audition over 12
-# Arabic voices — the liveliest, clear, and one of only three that say ج as a true "j" (measured). Letter names are said with the long vowel stretched like a teacher does.
-# No other voices are mixed in (the user heard mixed voices as "the wrong person").
+# One generated teacher voice is used for non-Qur'an clips (Hamed, Saudi). Several deliveries
+# of that voice are tried. Qur'an words use a separate qari's recordings, so the full library
+# does not currently have a single speaker.
 WARM = [('teach', 'ar-SA-HamedNeural', '-8%'), ('teach_s', 'ar-SA-HamedNeural', '-16%'), ('teach_f', 'ar-SA-HamedNeural', '+0%')]
 NATIVE = []
 VOWEL_REF = {'teach': 'ar-SA-HamedNeural', 'brian': 'ar-SA-HamedNeural', 'andrew': 'ar-SA-HamedNeural', 'hamed': 'ar-SA-HamedNeural'}   # others use Zariyah's
