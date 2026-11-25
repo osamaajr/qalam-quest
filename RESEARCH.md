@@ -128,7 +128,7 @@ The suggested grammar order (word types, then gender, then pronoun endings, then
   - Bright unit colours.
   - A bouncy chime for correct answers and a low tone for wrong ones (all made with the Web Audio API, no audio files).
   - Light haptics on phones.
-  - A rigged SVG character who blinks, talks, cheers and droops.
+  - Illustrated character poses that wave, talk, cheer, think and read.
 
 **Play before signing up**
 - **Evidence:** Duolingo delayed sign-up until after the first lesson. This is reported second-hand ([source](https://taplytics.com/blog/duolingo-ab-test-onboarding)).
@@ -140,7 +140,7 @@ The suggested grammar order (word types, then gender, then pronoun endings, then
 
 **A living mascot**
 - **Evidence:** Duolingo's characters are animated state machines (built in Rive) that react to the learner ([Duolingo blog](https://blog.duolingo.com/world-character-visemes)).
-- **In the game:** Zaid and Huda are rigged SVG characters. They walk onto the path, wave, point at the next lesson, dance, read and think, and they cheer or droop after each answer.
+- **In the game:** Zaid and Huda use illustrated pose sheets. Their whole-body animations move coherent artwork for waving, pointing, dancing, reading, thinking and reacting to answers.
 
 ### What we deliberately changed for children
 
@@ -155,7 +155,7 @@ So the game:
 - **Never sells anything for real money.** Gems are earned by learning only.
 - **Never locks a child out of learning.** Out of hearts → a free practice session refills them. Teachers can switch on *Class mode* for unlimited hearts. Duolingo itself found beginners were about 2× as likely to run out of hearts ([Duolingo blog](https://blog.duolingo.com/duolingo-energy/)).
 - **Has no leaderboards against strangers and no push notifications.** Reminders are better coming from the teacher or parent.
-- **Collects no data.** Progress lives only in the browser on that device.
+- **Keeps progress on the device.** There are no accounts or analytics; the pages load fonts from Google Fonts.
 
 ### Not verified
 

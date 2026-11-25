@@ -7,22 +7,32 @@
  * Shapes come from js/logo.js (traced by tools/trace_logo_tiles.py; static files in assets/logo/).
  * Each tile and its letter form one <g>, so they move together. With `animate`, the tiles enter left to
  * right following the storyboard (tools/ref/logo-storyboard.webp): ready → first tile → build →
- * overshoot → settle → hold. Each tile rises a short way, pops slightly past its pose and settles;
- * starts are 90 ms apart and the whole entrance takes ~820 ms. The animation runs once per mount (it is
+ * overshoot → settle → hold. Each tile lands around its own base, with a small, controlled rebound;
+ * starts are 105 ms apart and the whole entrance takes ~900 ms. The animation runs once per mount (it is
  * plain CSS on freshly inserted markup). The SVG always reserves its full size (viewBox + aspect-ratio),
  * so there is no layout shift; with prefers-reduced-motion the finished logo shows immediately.
  */
 (function () {
   'use strict';
   const L = () => window.QQ_LOGO;
-  const STAGGER = 90, DURATION = 460;                       // 4 × 90 + 460 = 820 ms
+  const STAGGER = 105, DURATION = 480;                      // 4 × 105 + 480 = 900 ms
+  // The traced artwork overlaps its neighbours. Move whole tiles, including
+  // their letters, so the animated and settled cards have visible gaps.
+  const TILE_SHIFT = [0, 24, 42, 64, 79];
+  const SPACED_WIDTH = 770;
+
+  function visibleTilePath(path) {
+    // The trace includes narrow hidden fragments where cards used to overlap.
+    // The largest subpath is the complete visible card.
+    return (path.match(/M[^M]*/g) || [path]).reduce((a, b) => b.length > a.length ? b : a);
+  }
 
   function svg(opts) {
     const o = opts || {}; const d = L(); if (!d) return '';
-    const [, , w, h] = d.viewBox.split(' ').map(Number);
-    const g = (t) => `<g class="ql-tile" data-tile="${t.i}" style="--i:${t.i};transform-origin:${t.cx}px ${t.cy + 40}px">`
-      + `<path d="${t.tile}" fill="${t.fill}"/><path d="${t.letter}" fill="#FFFFFF" fill-rule="evenodd"/></g>`;
-    return `<svg class="ql-logo ${o.animate ? 'ql-animate' : ''} ${o.className || ''}" viewBox="${d.viewBox}" style="aspect-ratio:${w}/${h}" role="img" aria-label="Qalam">`
+    const [, , , h] = d.viewBox.split(' ').map(Number);
+    const g = (t) => `<g transform="translate(${TILE_SHIFT[t.i]} 0)"><g class="ql-tile" data-tile="${t.i}" style="--i:${t.i}">`
+      + `<path d="${visibleTilePath(t.tile)}" fill="${t.fill}"/><path d="${t.letter}" fill="#FFFFFF" fill-rule="evenodd"/></g></g>`;
+    return `<svg class="ql-logo ${o.animate ? 'ql-animate' : ''} ${o.className || ''}" viewBox="0 0 ${SPACED_WIDTH} ${h}" style="aspect-ratio:${SPACED_WIDTH}/${h}" role="img" aria-label="Qalam">`
       + d.order.map((i) => g(d.tiles[i])).join('') + '</svg>';
   }
   function icon(opts) {
@@ -34,13 +44,13 @@
   // styles live with the component
   const css = `
 .ql-logo { display: block; width: 100%; height: auto; overflow: visible; }
-.ql-logo .ql-tile { transform-box: view-box; }
-.ql-animate .ql-tile { animation: ql-pop ${DURATION}ms cubic-bezier(.3, .7, .4, 1) calc(var(--i) * ${STAGGER}ms) both; }
-@keyframes ql-pop {
-  0%   { opacity: 0; transform: translateY(26px) scale(.82); }
-  35%  { opacity: 1; }
-  62%  { transform: translateY(-7px) scale(1.07) rotate(-1.5deg); }
-  82%  { transform: translateY(1.5px) scale(.985) rotate(.4deg); }
+.ql-logo .ql-tile { transform-box: fill-box; transform-origin: center bottom; }
+.ql-animate .ql-tile { animation: ql-land ${DURATION}ms cubic-bezier(.22, .8, .28, 1) calc(var(--i) * ${STAGGER}ms) both; }
+@keyframes ql-land {
+  0%   { opacity: 0; transform: translateY(24px) rotate(-5deg) scale(.94); }
+  25%  { opacity: 1; }
+  58%  { transform: translateY(-5px) rotate(2deg) scale(1.02); }
+  78%  { transform: translateY(1px) rotate(-.6deg) scale(.995); }
   100% { opacity: 1; transform: none; }
 }
 .ql-icon { display: block; width: 100%; height: auto; }

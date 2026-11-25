@@ -21,7 +21,7 @@ A Duolingo-style game that teaches children (about 5–12) to read the Arabic of
 
 - teach cards
 - multiple choice
-- listen and choose (uses the device's Arabic voice, if it has one)
+- listen and choose (uses the game's recorded Arabic clips)
 - match pairs
 - sort into buckets (☀️/🌙, ism/fiʿl/ḥarf…)
 - tap the word inside a real āyah
@@ -38,7 +38,9 @@ A Duolingo-style game that teaches children (about 5–12) to read the Arabic of
 - combo celebrations
 - confetti and sound effects
 
-**Buddies:** pick Zaid or Huda. Both are rigged SVG characters drawn from the reference artwork, with 12 animations: idle, wave, jump for joy, talk, sad, think, dance, walk, read, point, sit and sleep. They walk onto the path, cheer, read their books, and react to every answer.
+**Buddies:** pick Zaid or Huda. Both use illustrated transparent pose sheets based on the character reference, with animated moods including idle, wave, joy, talk, sad, think, dance, walk, read, point and sleep. They guide the child on the path and react to answers.
+
+**Qur’an animal friends:** seven illustrated animals appear along the path: hoopoe, bee, ant, camel, elephant, whale and cow. Each has four generated poses, a gentle activity animation, and a Qur’an reference in its info card.
 
 **Start at your level:** during onboarding, children say how much Arabic they already know and take a short placement test. Any locked unit also has a "Jump here?" button that offers a 12-question test with 3 lives; passing it unlocks everything before that unit.
 
@@ -49,7 +51,7 @@ A Duolingo-style game that teaches children (about 5–12) to read the Arabic of
 
 A short guided tour runs on first visit.
 
-**Read aloud:** Qur'an words play a qāriʾ's word-by-word recitation (audio from [Quran.com](https://quran.com)); letter names, syllables and practice words use a warm, expressive teacher voice (Microsoft's multilingual "Brian", said with encouragement — chosen because it measured both the liveliest and the most accurate), and only takes that pass an automatic check are kept, falling back to a native-speaker alphabet recording (`tools/human-audio/CREDITS.md`); anything unverifiable stays silent rather than teach a wrong sound. Where each clip came from is listed in `tools/audio-sources.json`. The browser's built-in voice is never used.
+**Read aloud:** Qur'an words play a qāriʾ's word-by-word recitation (audio from [Quran.com](https://quran.com)); letter names, syllables and practice words use a single Arabic teacher voice (Hamed), with clips kept only after an automatic check. Human recordings can replace generated clips; anything unverifiable stays silent rather than teach a wrong sound. Where each clip came from is listed in `tools/audio-sources.json`. The browser's built-in voice is never used.
 
 **Teacher & parent corner** (in the game: Teachers in the sidebar, or Profile → Teacher & parent corner):
 
@@ -58,7 +60,7 @@ A short guided tour runs on first visit.
 - the teacher guide
 - reset progress
 
-**Privacy:** no accounts and no tracking. Progress is saved only in that browser.
+**Privacy:** no accounts or analytics. Progress is saved only in that browser; the pages load fonts from Google Fonts.
 
 ## For developers
 
@@ -68,7 +70,7 @@ The game is plain HTML, CSS and JS, with no build step.
 index.html        the game
 teacher.html      printable teacher guide (generated from the same data)
 js/content.js     ALL curriculum: units, lessons, exercises, verified Qur'an text
-js/mascot.js      Zaid & Huda (rigged SVG; animations in css/mascot.css, preview all moods at tools/mascot-sheet.html)
+js/mascot.js      Zaid & Huda (illustrated pose sheets in assets/characters; animations in css/mascot.css, preview at tools/mascot-sheet.html)
 js/app.js         game engine: state, streaks, quests, sounds, screens, exercises
 css/style.css     visual system
 tools/verify.js   checks every Qur'an quote against tools/quran-source/

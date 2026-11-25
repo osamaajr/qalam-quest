@@ -23,8 +23,8 @@
   <div class="panel"><h2>How to use it in class</h2><ul>
     <li><b>Class mode:</b> in the game, tap <b>Me → Teacher &amp; parent corner → Class mode</b>. Mistakes then never stop a lesson (unlimited hearts).</li>
     <li><b>Preview any lesson:</b> switch on <b>Unlock every lesson</b> in the same place.</li>
-    <li><b>Homework:</b> share the link. Each lesson takes about 3–5 minutes. Progress is saved on that device only — no accounts, no personal data sent anywhere.</li>
-    <li><b>Read aloud:</b> Qur’an words play a qāriʾ’s word-by-word recitation (Quran.com). Letters, syllables and practice words use a warm, expressive teacher voice, and every clip passed an automatic pronunciation check — anything that couldn’t be checked has no speaker button. Please still model recitation yourself.</li>
+    <li><b>Homework:</b> share the link. Each lesson takes about 3–5 minutes. Progress is saved on that device only, with no account or analytics. The page loads fonts from Google Fonts.</li>
+    <li><b>Read aloud:</b> Qur’an words play a qāriʾ’s word-by-word recitation (Quran.com). Letters, syllables and practice words use recorded Arabic clips; generated clips are checked automatically, and anything without a suitable recording has no speaker button. Please still model recitation yourself.</li>
     <li><b>Mixed levels:</b> children who already read can take a short placement test (“Jump here?” on any unit) to skip ahead.</li>
     <li><b>Order:</b> follows the Noorani Qā‘ida path — letters → ḥarakāt → tanwīn → madd → sukūn → shadda → then sun/moon letters, noon rules and first grammar.</li>
   </ul>

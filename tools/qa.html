@@ -73,8 +73,9 @@ async function playLesson(id, wrongAt) {
     }
     // 4. pages, theme toggle, chest, tour
     await boot(base({ gems: 200, done: { u1l1: { stars: 3, best: 100 }, u1l2: { stars: 3, best: 100 }, u1l3: { stars: 3, best: 100 } }, settings: { sound: false, tts: false, classMode: false, unlockAll: false, theme: 'light' } }));
+    log(`light layout: ${W.getComputedStyle(q('.app')).display}`);
     for (const t of ['practice', 'leaderboards', 'quests', 'shop', 'profile', 'more', 'learn']) { q(`.nav-item[data-tab=${t}]`).click(); await sleep(150); log(`page ${t}: ${q('.main').innerText.trim().split('\n')[0].slice(0, 40)}`); }
-    const theme0 = Dc.documentElement.dataset.theme; const tb = q('[data-theme-toggle]'); log('toggle button found: ' + !!tb + ', visible: ' + !!(tb && tb.offsetParent)); tb.click(); await sleep(2500); log(`theme toggle: ${theme0} → ${Dc.documentElement.dataset.theme} (saved setting: ${W.QQ_APP.state.settings.theme})`);
+    const theme0 = Dc.documentElement.dataset.theme; const tb = qa('[data-theme-toggle]').find((b) => b.offsetParent); log('visible theme toggle found: ' + !!tb); tb.click(); await sleep(2500); log(`theme toggle: ${theme0} → ${Dc.documentElement.dataset.theme} (saved setting: ${W.QQ_APP.state.settings.theme})`);
     q('[data-chest]').click(); await sleep(1600); log('chest: ' + (q('.modal h2') ? q('.modal h2').textContent : 'MISSING')); if (q('.modal [data-x]')) q('.modal [data-x]').click(); await sleep(200);
     q('.nav-item[data-tab=shop]').click(); await sleep(150); q('#buyFreeze').click(); await sleep(150); log('shop freeze bought: freezes=' + W.QQ_APP.state.freezes);
     q('.nav-item[data-tab=learn]').click(); await sleep(200); W.QQ_APP.tour(); await sleep(800); let steps = 0; while (q('.tour-card') && steps < 10) { q('[data-next]').click(); steps++; await sleep(600); } log(`tour: ${steps} steps, closed=${!q('.tour-card')}`);

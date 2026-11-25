@@ -398,8 +398,8 @@
 
   // ======================= LEARN: THE PATH =======================
   const OFFS = [0, 44, 70, 44, 0, -44, -70, -44];
-  // each unit's kid does its own constant activity (no two alike on the path)
-  const UNIT_ACT = ['reading', 'writing', 'watering', 'quran', 'painting', 'listening', 'detective'];
+  // Give each unit a distinct illustrated pose from the character sheet.
+  const UNIT_ACT = ['read', 'point', 'wave', 'think', 'happy', 'talk', 'dance'];
   const DECO = [['huda', ['read', 'idle', 'cheeky', 'wave']], ['zaid', ['dance', 'idle', 'happy', 'cheeky']], ['huda', ['think', 'idle', 'wave', 'dance']], ['zaid', ['read', 'idle', 'think', 'cheeky']], ['huda', ['dance', 'cheeky', 'idle', 'read']], ['zaid', ['wave', 'idle', 'think', 'happy']], ['huda', ['read', 'think', 'cheeky', 'dance']]];
   const KIND = new Map(); // lesson id -> icon type, worked out once from its exercises
   function lessonKind(l) {
@@ -505,7 +505,7 @@
     pop.querySelector('.btn').onclick = () => { if (!unlocked) return; Sfx.play('tap'); startLesson(f); };
   }
   function animalCard(a) {
-    return `<div class="animal-card">${QQ_ANIMALS.svg(a.key, { state: 'happy' })}<div><span class="ac-name">${esc(a.name)} · <span class="ar">${esc(a.ar)}</span></span><p>${esc(a.fact)}</p><small>Qur’an ${esc(C.ref(a.ref))}</small></div></div>`;
+    return `<div class="animal-card">${QQ_ANIMALS.svg(a.key, { state: 'happy' })}<div><span class="ac-name">${esc(a.name)} · <span class="ar">${esc(a.ar)}</span></span><p>${esc(a.fact)}</p><small>Qur’an ${esc(a.refLabel)}</small></div></div>`;
   }
   function animalPopup(key) {
     const a = QQ_ANIMALS.LIST.find((x) => x.key === key); if (!a) return;
@@ -658,7 +658,7 @@
     $app.innerHTML = `<div class="onb">${top}${html}</div>`;
     $app.querySelectorAll('.duo-kids .kid').forEach((x, j) => M.liven(x, j ? ['happy', 'dance', 'idle', 'wave'] : ['wave', 'idle', 'dance', 'happy'], 2600));
     const sel = $app.querySelector('.buddy-card.on .kid'); if (sel) setTimeout(() => M.liven(sel, ['dance', 'wave', 'happy'], 2200), 1600);
-    $app.querySelectorAll('.speech .kid').forEach((x) => setTimeout(() => x.setAttribute('data-mood', 'idle'), 2400));
+    $app.querySelectorAll('.speech .kid').forEach((x) => setTimeout(() => M.setMood(x, 'idle'), 2400));
     $app.querySelectorAll('[data-buddy]').forEach((b) => b.onclick = () => { Sfx.play('pop'); S.buddy = b.dataset.buddy; save(); onboarding('buddy'); });
     $app.querySelectorAll('[data-goal]').forEach((b) => b.onclick = () => { Sfx.play('select'); S.dailyGoal = +b.dataset.goal; save(); onboarding('goal'); });
     $app.querySelectorAll('[data-level]').forEach((b) => b.onclick = () => { Sfx.play('select'); S.level = +b.dataset.level; save(); onboarding('level'); });
@@ -872,7 +872,7 @@
         <div class="teach-card">${visual}<h2>${rich(ex.title)}</h2>${ex.sub ? `<p>${rich(ex.sub)}</p>` : ''}${refTag(ex.quranRef)}</div>
         <div class="tip-row">${M.kid(S.buddy, ex.mood || 'talk')}<div class="bubble">${ex.tip ? rich(ex.tip) : C.pick(['Look closely!', 'Can you see it?', 'Say it out loud!', 'Easy peasy!'])}</div></div>`;
       bindSpeak(w);
-      const k = w.querySelector('.tip-row .kid'); setTimeout(() => k && k.setAttribute('data-mood', ex.mood === 'happy' ? 'dance' : 'idle'), 2600);
+      const k = w.querySelector('.tip-row .kid'); setTimeout(() => k && M.setMood(k, ex.mood === 'happy' ? 'dance' : 'idle'), 2600);
       const say = ex.say || ex.bigQ; if (canSpeak(say)) setTimeout(() => speak(say, false, w.querySelector('[data-say]')), 400);
       return {};
     },
