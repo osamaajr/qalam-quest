@@ -1057,15 +1057,26 @@
   }
   function resultScreen(r, practice, next) {
     const mm = `${Math.floor(r.secs / 60)}:${String(r.secs % 60).padStart(2, '0')}`;
-    shellScreen(`${M.kid(S.buddy, 'happy')}<h1>${practice ? 'Hearts refilled!' : r.perfect ? 'Perfect lesson!' : 'Lesson complete!'}</h1>
+    const friend = S.buddy === 'zaid' ? 'huda' : 'zaid';
+    shellScreen(`<div class="finish-scene">
+        <span class="finish-rays" aria-hidden="true"></span>
+        <span class="finish-spark one" aria-hidden="true">${IMG('sparkles')}</span>
+        <span class="finish-spark two" aria-hidden="true">${IMG('sparkles')}</span>
+        <span class="finish-spark three" aria-hidden="true">${IMG('sparkles')}</span>
+        <div class="finish-kids">${M.kid(S.buddy, 'happy')}${M.kid(friend, 'happy')}</div>
+        <span class="finish-ground" aria-hidden="true"></span>
+      </div>
+      <h1 class="finish-title">${practice ? 'Hearts refilled!' : 'Lesson complete!'}</h1>
+      <p class="finish-message">${practice ? 'Your hearts are full and you are ready to keep learning.' : r.perfect ? 'Perfect work — every answer right!' : 'You did it! Every step makes you a stronger reader.'}</p>
       ${practice ? `<div class="hearts-row">${Array.from({ length: MAX_HEARTS }, () => IMG('heart')).join('')}</div>` : `<div class="stars-big">${[1, 2, 3].map((n) => IMG('star', n <= r.stars ? '' : 'off')).join('')}</div>`}
-      <div class="tiles3"><div class="rtile" style="--c:var(--gold)"><div class="lab">Total XP</div><div class="val">${IMG('glowing-star')}<span id="xpv">0</span></div></div>
-      <div class="rtile" style="--c:var(--blue)"><div class="lab">${r.acc >= 90 ? 'Amazing' : r.acc >= 70 ? 'Good' : 'Accuracy'}</div><div class="val">${IMG('target')}<span>${r.acc}%</span></div></div>
-      <div class="rtile" style="--c:var(--violet)"><div class="lab">${r.secs < 150 ? 'Speedy' : 'Time'}</div><div class="val">${IMG('stopwatch')}<span>${mm}</span></div></div></div>
-      ${r.bestCombo >= 5 ? `<p class="muted" style="margin:0">Best combo: ${r.bestCombo} in a row ⚡</p>` : ''}`, 'Continue', next);
-    Sfx.play('complete'); confetti(); buzz([20, 60, 20]);
-    M.liven($app.querySelector('.result .kid'), ['happy', 'dance', 'happy', 'wave'], 1800);
-    setTimeout(() => countUp(document.getElementById('xpv'), r.xp), 400);
+      <div class="finish-stats"><div class="rtile" style="--c:var(--gold)"><div class="lab">Total XP</div><div class="val">${IMG('glowing-star')}<span id="xpv">0</span></div></div>
+      <div class="rtile" style="--c:var(--sky)"><div class="lab">Accuracy</div><div class="val">${IMG('target')}<span>${r.acc}%</span></div></div></div>
+      <p class="finish-details">${IMG('stopwatch')} ${mm}${r.bestCombo >= 5 ? ` · Best combo: ${r.bestCombo} ⚡` : ''}</p>`, 'Continue', next);
+    $app.querySelector('.result').classList.add('lesson-finish');
+    const reducedMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    Sfx.play('complete'); if (!reducedMotion) confetti(); buzz([20, 60, 20]);
+    if (reducedMotion) document.getElementById('xpv').textContent = r.xp;
+    else setTimeout(() => countUp(document.getElementById('xpv'), r.xp), 400);
   }
   function streakScreen(s, next) {
     shellScreen(`<div class="streak-hero">${IMG('fire')}</div><div class="streak-num roll">${s.to}</div><h1 style="color:var(--orange)">day streak!</h1>

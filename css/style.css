@@ -459,6 +459,40 @@ img { -webkit-user-drag: none; user-select: none; }
 .result-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center; }
 .result h1 { font-size: 32px; font-weight: 900; margin: 0; color: var(--gold-d); }
 .result .kid { width: 200px; }
+.lesson-finish { max-width: 600px; }
+.lesson-finish .result-body { gap: 12px; padding: 12px 0; }
+.finish-scene { position: relative; width: min(400px, 100%); height: clamp(190px, 30vh, 260px); flex: none; isolation: isolate; }
+.finish-scene::before { content: ''; position: absolute; inset: 4% 8% 0; border-radius: 50%; background: radial-gradient(circle, rgba(255,184,0,.2), rgba(255,184,0,.06) 48%, transparent 72%); animation: finish-glow 2.4s ease-in-out infinite; }
+.finish-rays { position: absolute; left: 50%; top: 48%; width: min(230px, 62%); aspect-ratio: 1; z-index: 0; background: repeating-conic-gradient(var(--gold) 0deg 3deg, transparent 3deg 30deg); -webkit-mask: radial-gradient(circle, transparent 0 41%, #000 42% 68%, transparent 69%); mask: radial-gradient(circle, transparent 0 41%, #000 42% 68%, transparent 69%); animation: finish-rays-pulse 2s ease-in-out infinite; }
+.finish-kids { position: absolute; inset: 0 0 10px; display: flex; align-items: flex-end; justify-content: center; gap: 2px; z-index: 1; }
+.finish-kids .kid { width: clamp(145px, 23vh, 190px); max-width: 49%; animation: finish-kid-in .7s cubic-bezier(.2,1.4,.4,1) both; }
+.finish-kids .kid:nth-child(2) { animation-delay: .14s; }
+.finish-kids .kid:nth-child(2) .kid-art { animation-delay: -.55s; }
+.finish-ground { position: absolute; left: 16%; right: 16%; bottom: 7px; height: 7px; border-radius: 99px; background: var(--line-d); z-index: 0; }
+.finish-spark { position: absolute; z-index: 2; pointer-events: none; animation: finish-twinkle 1.8s ease-in-out infinite; }
+.finish-spark .ico { width: 42px; height: 42px; }
+.finish-spark.one { left: 9%; top: 14%; }
+.finish-spark.two { right: 8%; top: 7%; animation-delay: -.65s; }
+.finish-spark.three { right: 19%; top: 42%; animation-delay: -1.2s; }
+.finish-spark.three .ico { width: 28px; height: 28px; }
+.lesson-finish .finish-title { color: var(--gold-d); font-size: clamp(30px, 7vw, 40px); line-height: 1.1; animation: finish-title-in .55s cubic-bezier(.2,1.5,.4,1) .3s both; }
+:root[data-theme="dark"] .lesson-finish .finish-title { color: var(--gold); }
+.finish-message { margin: 0; max-width: 420px; color: var(--ink-2); font-size: 16px; font-weight: 800; line-height: 1.35; }
+.finish-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; width: 100%; max-width: 420px; }
+.finish-stats .rtile { animation-delay: .45s; }
+.finish-stats .rtile:nth-child(2) { animation-delay: .6s; }
+.finish-stats .rtile:first-child .lab { color: #513700; }
+.finish-details { margin: 0; display: flex; align-items: center; justify-content: center; gap: 5px; color: var(--muted); font-size: 14px; font-weight: 800; }
+.finish-details .ico { width: 20px; height: 20px; }
+@keyframes finish-kid-in { from { opacity: 0; transform: translateY(28px) scale(.8); } }
+@keyframes finish-glow { 50% { transform: scale(1.08); opacity: .65; } }
+@keyframes finish-rays-pulse { 0%, 100% { transform: translate(-50%, -50%) scale(.94); opacity: .8; } 50% { transform: translate(-50%, -50%) scale(1.08) rotate(8deg); opacity: 1; } }
+@keyframes finish-twinkle { 0%, 100% { transform: scale(.8) rotate(-12deg); opacity: .45; } 50% { transform: scale(1.18) rotate(12deg); opacity: 1; } }
+@keyframes finish-title-in { from { opacity: 0; transform: translateY(18px) scale(.9); } }
+@media (prefers-reduced-motion: reduce) {
+  .finish-scene::before, .finish-rays, .finish-kids .kid, .finish-spark, .lesson-finish .finish-title, .finish-stats .rtile { animation: none !important; }
+  .finish-rays { transform: translate(-50%, -50%); }
+}
 .tiles3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
 .rtile { border-radius: 16px; border: 2px solid var(--c); background: var(--c); overflow: hidden; animation: chipPop .5s cubic-bezier(.2,1.6,.4,1) backwards; }
 .rtile:nth-child(2) { animation-delay: .15s; } .rtile:nth-child(3) { animation-delay: .3s; }

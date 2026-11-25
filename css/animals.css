@@ -27,16 +27,15 @@
   background-size: 200% 200%;
   background-position: var(--frame-x) var(--frame-y);
 }
-.animal-action { --frame-x: 100%; --frame-y: 100%; opacity: 0; }
-.animal[data-state="happy"] .animal-base { --frame-x: 100%; --frame-y: 0%; }
-.animal[data-state="look"] .animal-base { --frame-x: 0%; --frame-y: 100%; }
+.animal[data-state="happy"] { --frame-x: 100%; --frame-y: 0%; }
+.animal[data-state="look"] { --frame-x: 0%; --frame-y: 100%; }
 
-/* Swap complete drawings cleanly; crossfading would show two animals at once. */
+/* One layer changes frames. Keeping the idle frame underneath would draw two animals. */
 @keyframes animal-activity {
-  0%, 29.9%, 70.1%, 100% { opacity: 0; }
-  30%, 70% { opacity: 1; }
+  0%, 29.99%, 70.01%, 100% { background-position: 0% 0%; }
+  30%, 70% { background-position: 100% 100%; }
 }
-.animal[data-state="idle"] .animal-action { animation: animal-activity var(--activity-duration, 5.2s) ease-in-out infinite; }
+.animal[data-state="idle"] .animal-frame { animation: animal-activity var(--activity-duration, 5.2s) steps(1, end) infinite; }
 .animal[data-animal="hoopoe"] { --activity-duration: 3.8s; }
 .animal[data-animal="bee"] { --activity-duration: 4.2s; }
 .animal[data-animal="ant"] { --activity-duration: 2.6s; }
@@ -64,5 +63,5 @@
 .animal[data-state="look"] .animal-body { animation: animal-curious 2.7s ease-in-out infinite; }
 
 @media (prefers-reduced-motion: reduce) {
-  .animal-body, .animal-action { animation: none !important; }
+  .animal-body, .animal-frame { animation: none !important; }
 }

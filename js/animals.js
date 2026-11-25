@@ -20,7 +20,7 @@
     if (!animal) return '';
     const state = ['happy', 'look'].includes(opts.state) ? opts.state : 'idle';
     const cls = opts.cls ? ' ' + opts.cls : '';
-    return `<span class="animal${cls}" data-animal="${name}" data-state="${state}" role="img" aria-label="${animal.name}"><span class="animal-body" aria-hidden="true"><span class="animal-frame animal-base"></span><span class="animal-frame animal-action"></span></span></span>`;
+    return `<span class="animal${cls}" data-animal="${name}" data-state="${state}" role="img" aria-label="${animal.name}"><span class="animal-body" aria-hidden="true"><span class="animal-frame"></span></span></span>`;
   }
 
   window.QQ_ANIMALS = { LIST, svg };
