@@ -300,8 +300,11 @@ img { -webkit-user-drag: none; user-select: none; }
 .bubble::before { content: ''; position: absolute; left: -8px; bottom: 20px; width: 16px; height: 16px; background: var(--surface); border-left: 2px solid var(--line); border-bottom: 2px solid var(--line); transform: rotate(45deg); }
 
 /* ---------- tour ---------- */
-.tour-spot { position: fixed; z-index: 200; border-radius: 18px; box-shadow: 0 0 0 9999px rgba(20,16,40,.62); pointer-events: none; transition: all .45s cubic-bezier(.3,1.2,.4,1); }
-.tour-card { position: fixed; z-index: 201; width: min(370px, calc(100vw - 24px)); background: var(--surface); border-radius: 22px; padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 12px; transition: top .45s cubic-bezier(.3,1.2,.4,1), left .45s cubic-bezier(.3,1.2,.4,1); }
+.tour-spot { position: fixed; z-index: 200; border-radius: 18px; box-shadow: 0 0 0 9999px rgba(20,16,40,.62); pointer-events: none; transition: left .26s cubic-bezier(.2,.8,.2,1), top .26s cubic-bezier(.2,.8,.2,1), width .26s cubic-bezier(.2,.8,.2,1), height .26s cubic-bezier(.2,.8,.2,1), border-radius .26s; }
+.tour-card { position: fixed; z-index: 201; width: min(370px, calc(100vw - 24px)); background: var(--surface); border-radius: 22px; padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 12px; transition: top .26s cubic-bezier(.2,.8,.2,1), left .26s cubic-bezier(.2,.8,.2,1); }
+.tour-spot.still, .tour-card.still { transition: none; }
+.tour-card .t-head { animation: tourIn .2s ease-out; }
+@keyframes tourIn { from { opacity: 0; transform: translateY(4px); } }
 .tour-card .t-head { display: flex; gap: 10px; align-items: center; }
 .tour-card .kid { width: 90px; flex: none; }
 .tour-card h3 { margin: 0 0 4px; font-size: 19px; font-weight: 900; }
