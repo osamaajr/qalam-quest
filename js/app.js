@@ -460,8 +460,8 @@
         const x = OFFS[k % OFFS.length];
         const here = items[decoAt];
         const decoLocked = here && (here.kind === 'chest' ? !(S.done[here.after] || S.settings.unlockAll) : !isUnlocked(here.l.id));
-        const aniHTML = animal && k === aniAt ? `<button class="deco-animal ${lockedAt(k) ? 'locked' : ''}" style="${x > 0 ? 'right' : 'left'}:calc(100% + 48px);top:-34px" data-animal-info="${animal.key}" aria-label="${esc(animal.name)}">${QQ_ANIMALS.svg(animal.key, { state: 'idle' })}</button>` : '';
-        const decoHTML = (k === aniAt ? aniHTML : '') + (k !== decoAt ? '' : `<div class="deco-buddy ${decoLocked ? 'locked' : ''}" style="${x > 0 ? 'right' : 'left'}:calc(100% + 64px);top:-86px" >${M.kid(decoBuddy, UNIT_ACT[ui % UNIT_ACT.length])}</div>`);
+        const aniHTML = animal && k === aniAt ? `<button class="deco-animal ${lockedAt(k) ? 'locked' : ''}" style="${x > 0 ? 'right' : 'left'}:calc(100% + var(--ani-gap));top:-34px" data-animal-info="${animal.key}" aria-label="${esc(animal.name)}">${QQ_ANIMALS.svg(animal.key, { state: 'idle' })}</button>` : '';
+        const decoHTML = (k === aniAt ? aniHTML : '') + (k !== decoAt ? '' : `<div class="deco-buddy ${decoLocked ? 'locked' : ''}" style="${x > 0 ? 'right' : 'left'}:calc(100% + var(--deco-gap));top:-86px">${M.kid(decoBuddy, UNIT_ACT[ui % UNIT_ACT.length])}</div>`);
         if (it.kind === 'chest') {
           const opened = S.chests.includes(it.id); const open = S.done[it.after] || S.settings.unlockAll;
           return `<div class="node-wrap" style="transform:translateX(${x}px)">${decoHTML}<button class="chest-node ${opened ? 'opened' : open ? 'ready' : 'locked'}" data-chest="${it.id}" data-open="${open ? 1 : 0}" aria-label="Treasure chest">${chestSVG(opened)}</button></div>`;

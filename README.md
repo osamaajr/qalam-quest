@@ -71,6 +71,7 @@ index.html        the game
 teacher.html      printable teacher guide (generated from the same data)
 js/content.js     ALL curriculum: units, lessons, exercises, verified Qur'an text
 js/mascot.js      Zaid & Huda (illustrated pose sheets in assets/characters; animations in css/mascot.css, preview at tools/mascot-sheet.html)
+js/animals.js     Qur'an animals (pose sheets in assets/animals; preview at tools/animals-sheet.html)
 js/app.js         game engine: state, streaks, quests, sounds, screens, exercises
 css/style.css     visual system
 tools/verify.js   checks every Qur'an quote against tools/quran-source/
@@ -78,6 +79,7 @@ RESEARCH.md       why it's built this way (pedagogy, tajwīd sources, Duolingo r
 ```
 
 - **Run locally:** `python3 -m http.server` and open http://localhost:8000. Double-clicking `index.html` also works.
+- **Change the character or animal art:** put the new sheet in `tools/ref/poses/<name>-poses.png` (same grid) and run `python3 tools/pack_poses.py`. It removes cut-out specks, lines every pose up on one baseline in an even grid, writes the `.webp` sheets and updates the sheet sizes in the CSS.
 - **Verify the Qur'an text:** `node tools/verify.js`
 - **Re-record audio after changing content:** `pip install edge-tts gTTS faster-whisper praat-parselmouth`, then `node tools/make-audio.js` (see the top of `tools/build_audio.py` for the rules). Qur'an words use the matching Quran.com word recitation; letter names are kept only if speech recognition hears exactly that name; syllables only if their vowel measures right (and ج as a real "j"); words only if understood well. The build trims quiet margins and normalizes peaks. Unverified sounds are listed in `tools/audio-silent.json`.
 - **Record real voices (Qalam Studio):** run `python3 tools/record_server.py` and open http://localhost:8765/tools/record.html. Record any letter name, syllable or word; saved recordings replace the computer voice immediately and are protected from `make-audio.js`. Commit `assets/audio`, `js/audio-manifest.js` and `tools/human-recorded.json` to publish them.

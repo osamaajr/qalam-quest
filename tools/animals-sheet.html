@@ -15,9 +15,10 @@
   .card h3 { margin: 0; font-size: 12.5px; display: flex; justify-content: space-between; gap: 6px; }
   .card h3 .ar { font-family: "Amiri", "Geeza Pro", serif; font-size: 15px; font-weight: 400; }
   .row { display: flex; align-items: flex-end; justify-content: space-between; }
-  .cell { text-align: center; font-size: 10px; opacity: .85; }
-  .cell .animal { width: 98px; display: block; }
-  .cell.sm .animal { width: 56px; }
+  .row { gap: 4px; }
+  .cell { flex: 1 1 0; min-width: 0; text-align: center; font-size: 10px; opacity: .85; }
+  .cell .animal { width: 100%; display: block; }
+  .cell.sm { flex: .55 1 0; }
   .zoom { display: flex; flex-wrap: wrap; gap: 12px; }
   .zoom .animal { width: var(--z, 320px); }
   .zoom .cell .animal { width: var(--z, 110px); }
