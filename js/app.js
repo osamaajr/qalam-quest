@@ -871,23 +871,26 @@
     requestAnimationFrame(() => sheet.classList.add('show'));
     document.getElementById('foot').classList.add('hidden');
     const cont = document.getElementById('cont');
+    const lesson = L;
+    const advance = () => {
+      if (L !== lesson) return;
+      if (L.test && L.test.lives <= 0) { finishTest(false); return; }
+      if (!L.test && !S.settings.classMode && !L.practice && S.hearts <= 0) { outOfHearts(L.f, false); return; }
+      nextExercise();
+    };
     if (comboMilestone) {
       cont.disabled = true;
-      const lesson = L;
       setTimeout(() => {
         if (L !== lesson || !cont.isConnected) return;
         comboBurst(lesson.combo, () => {
           if (L !== lesson || !cont.isConnected) return;
-          cont.disabled = false;
-          cont.focus({ preventScroll: true });
+          advance();
         });
       }, 250);
     }
     cont.onclick = () => {
       Sfx.play('tap');
-      if (L.test && L.test.lives <= 0) { finishTest(false); return; }
-      if (!L.test && !S.settings.classMode && !L.practice && S.hearts <= 0) { outOfHearts(L.f, false); return; }
-      nextExercise();
+      advance();
     };
     if (!comboMilestone) cont.focus({ preventScroll: true });
   }

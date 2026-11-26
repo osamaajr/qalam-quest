@@ -22,15 +22,21 @@ async function boot(state) {
   await sleep(400);
 }
 const base = (extra) => Object.assign({ onboarded: true, toured: true, buddy: 'huda', name: 'QA', settings: { sound: false, tts: false, classMode: true, unlockAll: true, theme: 'light' } }, extra || {});
+async function continueOrAdvance(before) {
+  const ready = await until(() => !q('#lb') || W.__qqEx !== before || q('.modal-bg') || (q('#sheet #cont') && !q('#cont').disabled), 8000);
+  if (!ready) throw Error('feedback did not advance after ' + before.type);
+  const cont = q('#sheet #cont');
+  if (W.__qqEx === before && cont && !cont.disabled) cont.click();
+}
 async function solve(wrong) {
   const ex = W.__qqEx;
   if (ex.type === 'teach') { q('#check').click(); return; }
   if (ex.type === 'mcq' || ex.type === 'listen') qa('.opt').find((b) => (wrong ? b.querySelector('.t').textContent !== ex.correct : b.querySelector('.t').textContent === ex.correct)).click();
   if (ex.type === 'tap') { const w = qa('.wd'); const i = ex.byIndex ? ex.answers[0] : ex.words.indexOf(ex.answers[0]); w[wrong ? (i + 1) % w.length : i].click(); }
   if (ex.type === 'build') for (const x of ex.target) { const tile = qa('#bank .tile').find((b) => b.textContent === x && !b.classList.contains('used')); if (!tile) throw Error('missing build tile ' + JSON.stringify(x) + ' in ' + JSON.stringify(qa('#bank .tile').map((b) => [b.textContent, b.className])) + ' for ' + JSON.stringify(ex.target)); tile.click(); }
-  if (ex.type === 'match') { for (const p of ex.pairs) { const L = qa('.mt[data-s=L]').find((b) => b.textContent === p[0] && !b.classList.contains('good')); if (!L) throw Error('missing match left ' + JSON.stringify(p) + ' in ' + JSON.stringify(qa('.mt[data-s=L]').map((b) => [b.textContent, b.className]))); L.click(); const R = q(`.mt[data-s=R][data-i="${L.dataset.i}"]`); if (!R) throw Error('missing match right for ' + L.dataset.i); R.click(); } await until(() => q('#sheet #cont') && !q('#cont').disabled, 8000); q('#cont').click(); return; }
-  if (ex.type === 'sort') { for (let k = 0; k < ex.items.length; k++) { await until(() => q('.sort-card:not([class*=fly]) .g')); const it = ex.items.find((x) => x.t === q('.sort-card:not([class*=fly]) .g').textContent); qa('.bucket')[it.b].click(); await until(() => !q('.sort-card[class*=fly]')); } await until(() => q('#sheet #cont') && !q('#cont').disabled, 8000); q('#cont').click(); return; }
-  q('#check').click(); await until(() => q('#sheet #cont') && !q('#cont').disabled, 8000); q('#cont').click();
+  if (ex.type === 'match') { for (const p of ex.pairs) { const L = qa('.mt[data-s=L]').find((b) => b.textContent === p[0] && !b.classList.contains('good')); if (!L) throw Error('missing match left ' + JSON.stringify(p) + ' in ' + JSON.stringify(qa('.mt[data-s=L]').map((b) => [b.textContent, b.className]))); L.click(); const R = q(`.mt[data-s=R][data-i="${L.dataset.i}"]`); if (!R) throw Error('missing match right for ' + L.dataset.i); R.click(); } await continueOrAdvance(ex); return; }
+  if (ex.type === 'sort') { for (let k = 0; k < ex.items.length; k++) { await until(() => q('.sort-card:not([class*=fly]) .g')); const it = ex.items.find((x) => x.t === q('.sort-card:not([class*=fly]) .g').textContent); qa('.bucket')[it.b].click(); await until(() => !q('.sort-card[class*=fly]')); } await continueOrAdvance(ex); return; }
+  q('#check').click(); await continueOrAdvance(ex);
 }
 async function playLesson(id, wrongAt) {
   q('[data-tab=learn]').click(); await sleep(100);
