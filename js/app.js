@@ -379,7 +379,7 @@
   function sidenavHTML() {
     return `<aside class="sidenav"><a class="logo-link" href="#" data-tab="learn" aria-label="Qalam home">${logoSVG(false)}<span class="logo-mini">${window.QQLogo ? QQLogo.icon() : ''}</span></a>
       ${NAV.map((n) => `<button class="nav-item ${tab === n.id ? 'on' : ''}" data-tab="${n.id}">${n.avatar ? avatarHTML(34) : IMG(n.icon)}<span>${n.label}</span></button>`).join('')}
-      <div class="side-promo">${M.kid(S.buddy === 'zaid' ? 'huda' : 'zaid', 'dates')}<b>Teaching a class?</b><p>Every lesson, answer and Qur’an reference in one place.</p><button class="link-btn" data-tab="more">Teacher corner</button></div></aside>`;
+</aside>`;
   }
   function mtabsHTML() {
     return `<nav class="mtabs">${NAV.filter((n) => !n.desktopOnly).map((n) => `<button class="mtab ${tab === n.id ? 'on' : ''}" data-tab="${n.id}" aria-label="${n.label}">${n.avatar ? avatarHTML(34) : IMG(n.icon)}</button>`).join('')}</nav>`;
@@ -653,7 +653,6 @@
   function moreView() {
     return `<div class="page"><div class="page-hero c-violet">${M.kid(S.buddy === 'zaid' ? 'huda' : 'zaid', 'quran')}<div><h1>Teacher & parent corner</h1><p>Tools for using Qalam with a class or at home.</p></div></div>
       <div class="card">${switchRow('classMode', 'Class mode: unlimited hearts', 'Mistakes never stop a lesson — good for class')}${switchRow('unlockAll', 'Unlock every lesson', 'Jump to any lesson to preview or teach it')}
-        <div class="setting"><div class="row">${IMG('book')}<div><b>Teacher guide</b><small>Every lesson, answer and Qur’an reference on one printable page</small></div></div><a class="btn btn-sm btn-violet" href="teacher.html">Open</a></div>
         <div class="setting"><div class="row">${IMG('bulb')}<div><b>Show the tour again</b><small>A quick walk-through of the app</small></div></div><button class="btn btn-sm btn-ghost" id="retour">Show</button></div>
         <div class="setting"><div class="row">${IMG('gear')}<div><b>Start again</b><small>Erase progress on this device</small></div></div><button class="btn btn-sm btn-red" id="reset">Reset</button></div></div>
       <p class="muted" style="text-align:center;font-size:13px;margin-top:24px">Qalam · made for Didsbury Mosque · progress is saved only on this device</p></div>`;
