@@ -237,8 +237,17 @@
     if (id) {
       const a = new Audio(`assets/audio/${id}.mp3`);
       a.playbackRate = slow ? 0.65 : 1; a.preservesPitch = true;
-      if (btn) { btn.classList.add('playing'); a.onended = a.onpause = a.onerror = () => { if (curAudio === a || !curAudio) btn.classList.remove('playing'); }; }
-      a.play().catch(() => { if (btn) btn.classList.remove('playing'); });
+      const done = () => { if (btn && (curAudio === a || !curAudio)) btn.classList.remove('playing'); };
+      if (btn) { btn.classList.add('playing'); a.onended = a.onpause = done; }
+      // A clip that fails to load (a dropped connection, a file still syncing) is fetched once more
+      // before giving up, so a hiccup never leaves the child without the sound.
+      let retried = false;
+      a.onerror = () => {
+        if (retried || curAudio !== a) { done(); return; }
+        retried = true; a.src = `assets/audio/${id}.mp3?retry=${Date.now()}`;
+        a.play().catch(done);
+      };
+      a.play().catch((e) => { if (e && e.name === 'NotAllowedError') done(); });
       curAudio = a; return;
     }
   }
@@ -540,7 +549,7 @@
     pop.querySelector('.btn').onclick = () => { if (!unlocked) return; Sfx.play('tap'); startLesson(f); };
   }
   function animalCard(a) {
-    return `<div class="animal-card">${QQ_ANIMALS.svg(a.key, { state: 'happy' })}<div><span class="ac-name">${esc(a.name)} · <span class="ar">${esc(a.ar)}</span></span><p>${esc(a.fact)}</p><small>Qur’an ${esc(a.refLabel)}</small></div></div>`;
+    return `<div class="animal-card">${QQ_ANIMALS.svg(a.key, { state: 'happy' })}<div><span class="ac-name">${esc(a.name)} · <span class="ar">${esc(a.ar)}</span></span><p>${esc(a.fact)}</p><small>Surah ${esc(a.refLabel)}</small></div></div>`;
   }
   function animalPopup(key) {
     const a = QQ_ANIMALS.LIST.find((x) => x.key === key); if (!a) return;
@@ -1135,12 +1144,7 @@
     const mm = `${Math.floor(r.secs / 60)}:${String(r.secs % 60).padStart(2, '0')}`;
     const friend = S.buddy === 'zaid' ? 'huda' : 'zaid';
     shellScreen(`<div class="finish-scene">
-        <span class="finish-rays" aria-hidden="true"></span>
-        <span class="finish-spark one" aria-hidden="true">${IMG('sparkles')}</span>
-        <span class="finish-spark two" aria-hidden="true">${IMG('sparkles')}</span>
-        <span class="finish-spark three" aria-hidden="true">${IMG('sparkles')}</span>
         <div class="finish-kids">${M.kid(S.buddy, 'happy')}${M.kid(friend, 'happy')}</div>
-        <span class="finish-ground" aria-hidden="true"></span>
       </div>
       <h1 class="finish-title">${practice ? 'Hearts refilled!' : 'Lesson complete!'}</h1>
       <p class="finish-message">${practice ? 'Your hearts are full and you are ready to keep learning.' : r.perfect ? 'Perfect work — every answer right!' : 'You did it! Every step makes you a stronger reader.'}</p>

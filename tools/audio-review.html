@@ -38,7 +38,7 @@ const marks = (() => { try { return JSON.parse(localStorage.getItem(KEY)) || {};
 const saveMarks = () => { try { localStorage.setItem(KEY, JSON.stringify(marks)); } catch (e) {} document.getElementById('n').textContent = Object.keys(marks).length; };
 const nameOf = Object.fromEntries(Object.entries(C.SAY_NAME).map(([k, v]) => [v.normalize('NFC'), k]));
 const letters = (t) => t.replace(/[ً-ٰٟ\s]/g, '').length;
-function who(t) { const s = SRC[t] || ''; return s.startsWith('qari') ? 'Qāriʾ recitation' : s.startsWith('teach') ? 'Teacher voice' : s.startsWith('hamed') || s.startsWith('zariyah') ? 'Native Arabic teacher' : s.startsWith('human') ? 'Human alphabet recording' : s.startsWith('joined') ? 'Joined letters' : s ? s : '—'; }
+function who(t) { const s = SRC[t] || ''; return s.startsWith('qari') ? 'Qāriʾ recitation' : s.startsWith('teach') ? 'Teacher voice' + ((/heard ([\d.]+)/.exec(s) || [])[1] ? ' · heard ' + Math.round(/heard ([\d.]+)/.exec(s)[1] * 100) + '%' : '') : s.startsWith('hamed') || s.startsWith('zariyah') ? 'Native Arabic teacher' : s.startsWith('human') ? 'Human alphabet recording' : s.startsWith('joined') ? 'Joined letters' : s ? s : '—'; }
 let cur, queue = [];
 function play(btn) {
   if (cur) cur.pause(); document.querySelectorAll('.playing').forEach((x) => x.classList.remove('playing'));
@@ -58,7 +58,10 @@ function card(t) {
   try { SILENT = await (await fetch('audio-silent.json', { cache: 'no-store' })).json(); } catch (e) {}
   const all = [...new Set(Object.keys(A).concat(SILENT))];
   const names = Object.values(C.SAY_NAME).map((x) => x.normalize('NFC'));
+  // clips the speech-recognition check heard least clearly when they were made: listen to these first
+  const unsure = all.filter((t) => { const m = /heard ([\d.]+)/.exec(SRC[t] || ''); return m && +m[1] < 0.75; }).sort();
   const sections = [
+    ['Listen to these first (least certain)', unsure],
     ['Letter names (alphabet order)', names],
     ['Syllables', all.filter((t) => !names.includes(t) && !t.includes(' ') && letters(t) <= 2).sort()],
     ['Practice words', all.filter((t) => !names.includes(t) && !t.includes(' ') && letters(t) > 2 && !(SRC[t] || '').startsWith('qari')).sort()],
@@ -68,7 +71,7 @@ function card(t) {
   document.getElementById('sections').innerHTML = sections.map(([h, list], i) => `<h2>${h} · ${list.length} <button class="ghost" data-sec="${i}" style="padding:4px 10px;font-size:12px;margin-left:8px">▶ play all</button></h2><div class="grid" data-grid="${i}">${list.map(card).join('')}</div>`).join('');
   document.querySelectorAll('.play[data-id]').forEach((b) => b.onclick = () => { queue = []; play(b); });
   document.querySelectorAll('[data-sec]').forEach((b) => b.onclick = () => { queue = [...document.querySelectorAll(`[data-grid="${b.dataset.sec}"] .play[data-id]`)]; play(queue.shift()); });
-  document.getElementById('all').onclick = () => document.querySelector('[data-sec="0"]').click();
+  document.getElementById('all').onclick = () => document.querySelector('[data-sec="1"]').click();
   document.getElementById('stop').onclick = () => { queue = []; if (cur) cur.pause(); };
   document.querySelectorAll('.item').forEach((it) => {
     const t = it.dataset.t, cb = it.querySelector('input[type=checkbox]'), tx = it.querySelector('input[type=text]');

@@ -63,7 +63,7 @@ def anchor(p, kind):
     return float(xs.mean()), float(my1)
 
 
-def build(name, kind, cols, rows):
+def measure(name, kind, cols, rows):
     im = np.array(Image.open(os.path.join(SRC, name + '-poses.png')).convert('RGBA'))
     ps = poses(im, cols, rows)
     ext = []
@@ -74,6 +74,12 @@ def build(name, kind, cols, rows):
     half = int(np.ceil(max(max(e[0], e[1]) for e in ext))) + PAD
     up = int(np.ceil(max(e[2] for e in ext))) + PAD
     down = int(np.ceil(max(e[3] for e in ext))) + PAD
+    return ps, (half, up, down)
+
+
+def build(name, kind, cols, rows, cell=None):
+    ps, own = measure(name, kind, cols, rows)
+    half, up, down = cell or own
     cw, ch = 2 * half, up + down
     sheet = Image.new('RGBA', (cw * cols, ch * rows), (0, 0, 0, 0))
     for k, p in enumerate(ps):
@@ -114,7 +120,9 @@ def put(path, rules):
     open(path, 'w').write(s)
 
 
-atlas = {n: build(n, *v) for n, v in SHEETS.items()}
+# Zaid and Huda share one cell size, so at the same CSS width they are drawn at the same scale.
+kid_cell = tuple(max(c) for c in zip(*(measure(n, *SHEETS[n])[1] for n in ('zaid', 'huda'))))
+atlas = {n: build(n, *v, cell=kid_cell if v[0] == 'characters' else None) for n, v in SHEETS.items()}
 kids, animals = [], []
 for n, (kind, cols, rows) in SHEETS.items():
     a = atlas[n]; url = f"url('../assets/{kind}/{n}-poses.webp')"

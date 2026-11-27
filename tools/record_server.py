@@ -39,6 +39,7 @@ class Handler(SimpleHTTPRequestHandler):
 
     def end_headers(self):
         self.send_header('Cache-Control', 'no-store')
+        self.send_header('Accept-Ranges', 'bytes')
         super().end_headers()
 
     def send_json(self, code, obj):
@@ -48,7 +49,30 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         if urlparse(self.path).path == '/api/human':
             return self.send_json(200, read_human())
+        rng = self.headers.get('Range')
+        if rng and self.send_range(rng): return
         return super().do_GET()
+
+    def send_range(self, rng):
+        """Byte-range replies (206). Safari and iOS only play audio from servers that support them."""
+        path = self.translate_path(self.path)
+        m = re.match(r'bytes=(\d*)-(\d*)$', rng.strip())
+        if not m or not os.path.isfile(path): return False
+        size = os.path.getsize(path)
+        start, end = m.group(1), m.group(2)
+        if start == '': start, end = max(0, size - int(end or 0)), size - 1   # suffix range: last N bytes
+        else: start, end = int(start), min(int(end) if end else size - 1, size - 1)
+        if start >= size or start > end:
+            self.send_response(416); self.send_header('Content-Range', f'bytes */{size}'); self.end_headers(); return True
+        self.send_response(206)
+        self.send_header('Content-Type', self.guess_type(path))
+        self.send_header('Accept-Ranges', 'bytes')
+        self.send_header('Content-Range', f'bytes {start}-{end}/{size}')
+        self.send_header('Content-Length', str(end - start + 1))
+        self.end_headers()
+        with open(path, 'rb') as f:
+            f.seek(start); self.wfile.write(f.read(end - start + 1))
+        return True
 
     def do_POST(self):
         u = urlparse(self.path)
