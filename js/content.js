@@ -229,7 +229,7 @@
       s.push(MCQ(`Which one says “${tr(ls[3], v)}”?`, syl(ls[3], v), known.length > 1 ? known.filter((x) => x !== v).map((x) => syl(ls[3], x)) : distract(EASY, ls[3], 2).map((x) => syl(x, v)), { arOptions: true }));
       s.push(MATCH(ls.slice(0, 5).map((c) => [syl(c, v), tr(c, v)])));
       s.push(LISTEN(syl(ls[4], v), syl(ls[4], v), known.length > 1 ? known.filter((x) => x !== v).map((x) => syl(ls[4], x)) : distract(EASY, ls[4], 2).map((x) => syl(x, v)), `Which one says “${tr(ls[4], v)}”?`));
-      info.words.forEach((w) => s.push(BUILD(`Build the word “${w.say}”`, w.tiles, w.extra, { gloss: w.gloss })));
+      info.words.forEach((w) => s.push(BUILD(`Build the word “${w.say}”`, w.tiles, w.extra, { gloss: w.gloss, quranRef: w.ref ? ref(w.ref) : undefined })));
       s.push(MCQ(info.q.prompt, info.q.correct, info.q.wrong, info.q.o || {}));
       return s;
     };
@@ -247,7 +247,7 @@
       { id: 'u2l1', title: 'Fatḥa says “a”', glyphs: 'بَ', steps: harakaLesson('a', ['a'], {
         teach: { kicker: 'NEW MARK', big: 'ـَ', title: 'Fatḥa', sub: 'A little line ON TOP of the letter. It says “a”.', tip: 'Your mouth opens wide for fatḥa — fatḥa means “opening”!', mood: 'talk' },
         teach2: { kicker: 'TRY IT', bigRow: ['بَ', 'تَ', 'مَ'], title: 'ba · ta · ma', sub: 'Letter + fatḥa = a sound!', say: 'بَ تَ مَ' },
-        words: [{ say: 'ka-ta-ba', gloss: 'he wrote', tiles: ['كَ', 'تَ', 'بَ'], extra: ['مَ'] }, { say: 'kha-la-qa', gloss: 'he created — from Sūrat al-Falaq (113:2)', tiles: ['خَ', 'لَ', 'قَ'], extra: ['دَ'] }],
+        words: [{ say: 'ka-ta-ba', gloss: 'he wrote', tiles: ['كَ', 'تَ', 'بَ'], extra: ['مَ'] }, { say: 'kha-la-qa', gloss: 'he created', ref: '113:2', tiles: ['خَ', 'لَ', 'قَ'], extra: ['دَ'] }],
         q: { prompt: 'Where does fatḥa sit?', correct: 'On top of the letter', wrong: ['Under the letter', 'Next to the letter'] },
       }) },
       { id: 'u2l2', title: 'Kasra says “i”', glyphs: 'بِ', steps: harakaLesson('i', ['a', 'i'], {
@@ -267,8 +267,8 @@
         const items = sample(EASY, 6).map((c, i) => { const v = ['a', 'i', 'u'][i % 3]; return { t: syl(c, v), b: i % 3 }; });
         s.push(SORT('Which sound does it make?', [{ label: '“a” fatḥa' }, { label: '“i” kasra' }, { label: '“u” ḍamma' }], items));
         sample(EASY, 3).forEach((c) => { const v = pick(['a', 'i', 'u']); s.push(MCQ(`What does ${syl(c, v)} say?`, tr(c, v), ['a', 'i', 'u'].filter((x) => x !== v).map((x) => tr(c, x)), { big: syl(c, v) })); });
-        s.push(T({ kicker: 'QUR’AN WORD', bigQ: 'حَسَدَ', title: 'ḥa-sa-da', sub: 'Three letters, three fatḥas — you can read it!', tip: 'From Sūrat al-Falaq (113:5).', quranRef: ref('113:5') }));
-        s.push(BUILD('Build the Qur’an word “wa-qa-ba”', ['وَ', 'قَ', 'بَ'], ['قُ', 'بِ'], { gloss: 'it settles (darkness) — Sūrat al-Falaq 113:3' }));
+        s.push(T({ kicker: 'QUR’AN WORD', bigQ: 'حَسَدَ', title: 'ḥa-sa-da', sub: 'Three letters, three fatḥas — you can read it!', tip: 'Read it slowly: ḥa… sa… da!', quranRef: ref('113:5') }));
+        s.push(BUILD('Build the Qur’an word “wa-qa-ba”', ['وَ', 'قَ', 'بَ'], ['قُ', 'بِ'], { gloss: 'it settles (darkness)', quranRef: ref('113:3') }));
         s.push(MATCH(sample(EASY, 5).map((c, i) => { const v = ['a', 'i', 'u', 'a', 'i'][i]; return [syl(c, v), tr(c, v)]; })));
         const c = pick(EASY); const v = pick(['a', 'i', 'u']);
         s.push(LISTEN(syl(c, v), syl(c, v), ['a', 'i', 'u'].filter((x) => x !== v).map((x) => syl(c, x)), `Which one says “${tr(c, v)}”?`));
@@ -293,7 +293,7 @@
         MCQ('What does بٌ say?', 'bun', ['bu', 'bin']),
         MCQ('What does بٍ say?', 'bin', ['bi', 'ban']),
         MCQ('Which one says “dun”?', 'دٌ', ['دُ', 'دٍ'], { arOptions: true }),
-        T({ kicker: 'QUR’AN WORD', bigQ: 'أَحَدٌ', title: 'a-ḥa-dun', sub: '“One” — the last word of 112:1. See the double ḍamma?', quranRef: ref('112:1') }),
+        T({ kicker: 'QUR’AN WORD', bigQ: 'أَحَدٌ', title: 'a-ḥa-dun', sub: '“One” — the last word of the āyah. See the double ḍamma?', quranRef: ref('112:1') }),
         MCQ('How do you read أَحَدٌ?', 'a-ḥa-dun', ['a-ḥa-du', 'a-ḥa-din']),
         MATCH([['كٌ', 'kun'], ['مٍ', 'min'], ['نً', 'nan'], ['لٌ', 'lun'], ['رٍ', 'rin']]),
         MCQ('Where does tanwīn appear?', 'At the END of a word', ['At the start', 'In the middle']),
@@ -310,7 +310,7 @@
         SORT('Short or long?', [{ label: 'Short' }, { label: 'Long (madd)' }], [['بَ', 0], ['مِ', 0], ['تُ', 0], ['مَا', 1], ['فِي', 1], ['نُو', 1]].map(([t, b]) => ({ t, b }))),
         LISTEN('فِي', 'فِي', ['فِ', 'فَا'], 'Which one says “fee”?'),
         BUILD('Build “noo-run” (light)', ['نُو', 'رٌ'], ['نَا', 'رُ'], { gloss: 'light' }),
-        T({ kicker: 'QUR’AN WORD', bigQ: 'ٱلدِّينِ', title: 'ad-deen', sub: 'Kasra + ي = a stretchy “ee”. From Al-Fātiḥah 1:4.', quranRef: ref('1:4') }),
+        T({ kicker: 'QUR’AN WORD', bigQ: 'ٱلدِّينِ', title: 'ad-deen', sub: 'Kasra + ي = a stretchy “ee”.', quranRef: ref('1:4') }),
       ] },
       { id: 'u3l3', title: 'Long & short challenge', glyphs: 'مَا مِي', review: true, steps: () => [
         MATCH([['مَا', 'maa'], ['مِي', 'mee'], ['مُو', 'moo'], ['مَ', 'ma'], ['مٌ', 'mun']]),
@@ -342,13 +342,13 @@
         MCQ('What does قُلْ say?', 'qul', ['qu-lu', 'qu']),
         MCQ('Which one says “lam”?', 'لَمْ', ['لَمَ', 'لِمْ'], { arOptions: true }),
         MATCH([['أَبْ', 'ab'], ['قُلْ', 'qul'], ['مِنْ', 'min'], ['عَنْ', '‘an'], ['هَلْ', 'hal']]),
-        BUILD('Build “ya-lid” — from 112:3', ['يَ', 'لِ', 'دْ'], ['دُ'], { gloss: 'he begets — from Sūrat al-Ikhlāṣ' }),
+        BUILD('Build “ya-lid”', ['يَ', 'لِ', 'دْ'], ['دُ'], { gloss: 'he begets', quranRef: ref('112:3') }),
         LISTEN('قُلْ', 'قُلْ', ['قُلُ', 'قَالَ'], 'Which one says “qul”?'),
         TAP('Tap the word that ENDS with a sukūn', '112:1', ['قُلْ'], 'قُلْ ends with a little circle — say “qul”.'),
       ] },
       { id: 'u4l2', title: 'Shadda: say it twice', glyphs: 'رَبِّ', steps: () => [
         T({ kicker: 'NEW MARK', big: 'ـّ', title: 'Shadda', sub: 'A little “w” on top: say the letter TWICE.', tip: 'بّ = بْ + بَ  →  “bba”', mood: 'talk' }),
-        T({ kicker: 'QUR’AN WORD', bigQ: 'رَبِّ', title: 'rab-bi', sub: '“Lord of…” — from Al-Fātiḥah 1:2', quranRef: ref('1:2') }),
+        T({ kicker: 'QUR’AN WORD', bigQ: 'رَبِّ', title: 'rab-bi', sub: '“Lord of…”', quranRef: ref('1:2') }),
         MCQ('How do you read رَبِّ?', 'rab-bi', ['ra-bi', 'rab']),
         MCQ('What does shadda tell you?', 'Say the letter twice', ['Stop the sound', 'Stretch for 2 counts']),
         MCQ('Which one has a shadda?', 'إِنَّ', ['إِنْ', 'إِنَ'], { arOptions: true }),
@@ -389,7 +389,7 @@
         T({ kicker: 'MOON LETTERS', bigQ: 'ٱلْقَمَرُ', title: 'al-qamar · the moon', sub: 'Before a MOON letter, you can HEAR the ل. It has a sukūn.', tip: 'The moon is bright — so the ل shines clearly!', mood: 'happy' }),
         T({ kicker: 'REMEMBER THEM', bigRow: MOON.slice(0, 7), title: '14 moon letters', sub: 'Memory phrase: اِبْغِ حَجَّكَ وَخَفْ عَقِيمَهُ', tip: 'Every letter in that phrase is a moon letter!' }),
         MCQ('In ٱلْقَمَرُ, do we hear the ل?', 'Yes — clearly', ['No — it’s silent']),
-        T({ kicker: 'QUR’AN WORD', bigQ: 'ٱلْحَمْدُ', title: 'al-ḥamdu · the praise', sub: 'ح is a moon letter, so we say “al”. From 1:2.', quranRef: ref('1:2') }),
+        T({ kicker: 'QUR’AN WORD', bigQ: 'ٱلْحَمْدُ', title: 'al-ḥamdu · the praise', sub: 'ح is a moon letter, so we say “al”.', quranRef: ref('1:2') }),
         MCQ('What sits on the ل before a moon letter?', 'A sukūn ـْ', ['A shadda ـّ', 'Nothing']),
         MCQ('Which of these is a moon letter?', 'ق', ['ش', 'ر', 'ن'], { arOptions: true }),
         TAP('Tap the word with a moon letter after ال', '113:1', ['ٱلْفَلَقِ'], 'ٱلْفَلَقِ — ف is a moon letter: “al-falaq”.'),
@@ -434,7 +434,7 @@
     lessons: [
       { id: 'u6l1', title: 'Ghunna: the nose hum', glyphs: 'إِنَّ', steps: () => [
         T({ kicker: 'NEW SOUND', bigRow: ['نّ', 'مّ'], title: 'Ghunna', sub: 'When ن or م has a shadda, hum through your nose for 2 counts.', tip: 'Try it: pinch your nose and say “innn” — feel the buzz!', mood: 'talk' }),
-        T({ kicker: 'QUR’AN WORD', bigQ: 'إِنَّ', title: 'in-nnna', sub: 'From Al-Kawthar 108:3. Hold the hum: 1… 2…', quranRef: ref('108:3') }),
+        T({ kicker: 'QUR’AN WORD', bigQ: 'إِنَّ', title: 'in-nnna', sub: 'Hold the hum: 1… 2…', quranRef: ref('108:3') }),
         MCQ('How long is a ghunna?', '2 counts', ['1 count', '6 counts']),
         MCQ('Which letters get ghunna when they have a shadda?', 'ن and م', ['ب and ت', 'ل and ر']),
         MCQ('Which word has a ghunna?', 'ٱلنَّاسِ', ['قُلْ', 'رَبِّ'], { arOptions: true, quranRef: ref('114:1') }),
@@ -445,18 +445,18 @@
       { id: 'u6l2', title: 'Iẓhār: say it clearly', glyphs: 'ء ه ع ح غ خ', steps: () => [
         T({ kicker: 'NOON SAKINAH', bigRow: ['نْ', 'ـٌ', 'ـٍ', 'ـً'], title: 'Noon with sukūn & tanwīn', sub: 'Tanwīn has a hidden “n” — so both follow the SAME rules.', mood: 'talk' }),
         T({ kicker: 'RULE 1 · IẒHĀR', bigRow: ['ء', 'ه', 'ع', 'ح', 'غ', 'خ'], title: 'Clear!', sub: 'Before these 6 THROAT letters, say the noon clearly — no extra hum.', tip: 'They all come from your throat. Touch your neck and say them!' }),
-        T({ kicker: 'QUR’AN EXAMPLE', bigQ: 'مِّنْ خَوْفٍۭ', title: 'min khawf', sub: 'نْ before خ → clear noon. From Quraysh 106:4.', quranRef: ref('106:4') }),
+        T({ kicker: 'QUR’AN EXAMPLE', bigQ: 'مِّنْ خَوْفٍۭ', title: 'min khawf', sub: 'نْ before خ → clear noon.', quranRef: ref('106:4') }),
         MCQ('Which letter makes the noon CLEAR?', 'ع', ['ب', 'ك', 'ر'], { arOptions: true }),
         MCQ('Where do the iẓhār letters come from?', 'The throat', ['The lips', 'The nose']),
         TAP('Tap the noon that is read CLEARLY', '106:4', [5], 'مِّنْ before خَوْفٍ — خ is a throat letter, so the noon is clear.', { byIndex: true }),
-        T({ kicker: 'INSIDE A WORD', bigQ: 'أَنْعَمْتَ', title: 'an-‘amta', sub: 'نْ before ع — clear again! From Al-Fātiḥah 1:7.', quranRef: ref('1:7') }),
+        T({ kicker: 'INSIDE A WORD', bigQ: 'أَنْعَمْتَ', title: 'an-‘amta', sub: 'نْ before ع — clear again!', quranRef: ref('1:7') }),
         SORT('Throat letter (iẓhār) or not?', [{ label: 'Throat letter' }, { label: 'Not throat' }], [['ء', 0], ['ه', 0], ['ح', 0], ['غ', 0], ['ب', 1], ['س', 1], ['م', 1], ['ك', 1]].map(([t, b]) => ({ t, b }))),
       ] },
       { id: 'u6l3', title: 'Idghām: merge!', glyphs: 'يرملون', steps: () => [
         T({ kicker: 'RULE 2 · IDGHĀM', bigRow: ['ي', 'ر', 'م', 'ل', 'و', 'ن'], title: '“Yarmaloon” — merge!', sub: 'Before these 6 letters, the noon melts into the next letter.', tip: 'Memory word: يَرْمَلُونَ', mood: 'talk' }),
         T({ kicker: 'PATTERN SPOTTED!', bigRow: ['ي', 'ن', 'م', 'و'], title: 'With ghunna: يَنْمُو', sub: 'Merge AND hum. But with ل and ر — merge with NO hum.', mood: 'happy' }),
-        T({ kicker: 'QUR’AN EXAMPLE', bigQ: 'مِّن مَّسَدٍۭ', title: 'mim-masad', sub: 'نْ merges into م with a hum. From Al-Masad 111:5.', tip: 'See the shadda on مَّ? That shows the merge!', quranRef: ref('111:5') }),
-        T({ kicker: 'QUR’AN EXAMPLE', bigQ: 'يَكُن لَّهُۥ', title: 'ya-kul-lahu', sub: 'نْ merges into ل with NO hum. From Al-Ikhlāṣ 112:4.', quranRef: ref('112:4') }),
+        T({ kicker: 'QUR’AN EXAMPLE', bigQ: 'مِّن مَّسَدٍۭ', title: 'mim-masad', sub: 'نْ merges into م with a hum.', tip: 'See the shadda on مَّ? That shows the merge!', quranRef: ref('111:5') }),
+        T({ kicker: 'QUR’AN EXAMPLE', bigQ: 'يَكُن لَّهُۥ', title: 'ya-kul-lahu', sub: 'نْ merges into ل with NO hum.', quranRef: ref('112:4') }),
         MCQ('Idghām WITHOUT ghunna happens before…', 'ل and ر', ['ي and و', 'ب and م']),
         MCQ('What happens in مِّن رَّبِّهِمْ?', 'The noon merges into ر — no hum', ['The noon is read clearly', 'The noon becomes م'], { quranRef: ref('2:5') }),
         TAP('Tap the word the noon merges INTO (with ghunna)', '111:5', ['مَّسَدٍۭ'], 'مِّن + مَّسَدٍ → the noon disappears into the م, with a hum.'),
@@ -465,7 +465,7 @@
       ] },
       { id: 'u6l4', title: 'Iqlāb: the flip', glyphs: 'مِنۢ بَعْدِ', steps: () => [
         T({ kicker: 'RULE 3 · IQLĀB', bigRow: ['نْ', '→', 'م'], title: 'Flip!', sub: 'Before ب, the noon flips into a hidden م — with a hum.', tip: 'Only ONE letter does this: ب', mood: 'talk' }),
-        T({ kicker: 'SPOT THE TINY MEEM', bigQ: 'مِنۢ بَعْدِ', title: 'mim ba‘di', sub: 'See the tiny م above the noon? The muṣḥaf shows you the flip! From 98:4.', quranRef: ref('98:4'), mood: 'happy' }),
+        T({ kicker: 'SPOT THE TINY MEEM', bigQ: 'مِنۢ بَعْدِ', title: 'mim ba‘di', sub: 'See the tiny م above the noon? The muṣḥaf shows you the flip!', quranRef: ref('98:4'), mood: 'happy' }),
         MCQ('Which letter causes iqlāb?', 'ب', ['ت', 'ن', 'م'], { arOptions: true }),
         MCQ('In iqlāb, the noon turns into…', 'a hidden م', ['a ل', 'nothing']),
         TAP('Tap the word with iqlāb', '104:4', ['لَيُنۢبَذَنَّ'], 'لَيُنۢبَذَنَّ — نْ before ب, with a tiny م on top.'),
@@ -473,7 +473,7 @@
         MCQ('Does iqlāb have a ghunna?', 'Yes — 2 counts', ['No']),
       ] },
       { id: 'u6l5', title: 'Ikhfā’ & the big four', glyphs: 'مِن شَرِّ', review: true, steps: () => [
-        T({ kicker: 'RULE 4 · IKHFĀ’', bigQ: 'مِن شَرِّ', title: 'Hide!', sub: 'Before the other 15 letters, the noon is half-hidden with a soft hum. From Al-Falaq 113:2.', tip: 'ت ث ج د ذ ز س ش ص ض ط ظ ف ق ك', quranRef: ref('113:2'), mood: 'talk' }),
+        T({ kicker: 'RULE 4 · IKHFĀ’', bigQ: 'مِن شَرِّ', title: 'Hide!', sub: 'Before the other 15 letters, the noon is half-hidden with a soft hum.', tip: 'ت ث ج د ذ ز س ش ص ض ط ظ ف ق ك', quranRef: ref('113:2'), mood: 'talk' }),
         MCQ('How many letters make ikhfā’?', '15', ['6', '1']),
         TAP('Tap the noon that is HIDDEN (ikhfā’)', '106:4', [2], 'مِّن before جُوعٍ — ج is an ikhfā’ letter.', { byIndex: true }),
         TAP('Tap the noon that is CLEAR (iẓhār)', '106:4', [5], 'مِّنْ before خَوْفٍ — خ is a throat letter.', { byIndex: true }),
@@ -529,7 +529,7 @@
         T({ kicker: 'PATTERN SPOTTED!', bigRow: ['هُوَ', 'هِيَ'], title: 'huwa = he · hiya = she', sub: 'Boy words go with هُوَ, girl words with هِيَ', mood: 'happy' }),
         MCQ('Which one is the girl word?', 'طَالِبَة', ['طَالِب'], { arOptions: true, gloss: 'student' }),
         MCQ('How do you make مُسْلِم feminine?', 'مُسْلِمَة', ['مُسْلِمُو', 'مُسْلِمِي'], { arOptions: true }),
-        T({ kicker: 'QUR’AN WORD', bigQ: 'رِحْلَةَ', title: 'riḥla · a journey', sub: 'Ends in ة → a feminine word. From Quraysh 106:2.', quranRef: ref('106:2') }),
+        T({ kicker: 'QUR’AN WORD', bigQ: 'رِحْلَةَ', title: 'riḥla · a journey', sub: 'Ends in ة → a feminine word.', quranRef: ref('106:2') }),
         TAP('Tap the word ending in ة', '106:2', ['رِحْلَةَ'], 'رِحْلَةَ ends in ة — feminine.'),
         SORT('Boy word or girl word?', [{ label: 'Masculine (هُوَ)' }, { label: 'Feminine (هِيَ)' }], [['كِتَاب', 0], ['بَيْت', 0], ['مُعَلِّم', 0], ['مَدْرَسَة', 1], ['شَجَرَة', 1], ['مُعَلِّمَة', 1]].map(([t, b]) => ({ t, b }))),
         MCQ('Words ending in ة are usually…', 'Feminine', ['Masculine', 'Verbs']),
@@ -550,7 +550,7 @@
         T({ kicker: 'PATTERN SPOTTED!', bigRow: ['كَتَبَ', 'كِتَاب', 'كَاتِب'], title: 'wrote · book · writer', sub: 'Same root letters ك ت ب — all about WRITING!', mood: 'happy' }),
         MCQ('Which 3 letters are the root of كِتَاب?', 'ك ت ب', ['ك ت ا', 'ت ا ب'], { arOptions: true }),
         MCQ('Odd one out: which is NOT from the ك ت ب family?', 'قَلَم', ['كِتَاب', 'كَتَبَ', 'كَاتِب'], { arOptions: true }),
-        T({ kicker: 'QUR’AN ROOT', bigRow: ['خَلَقَ', 'خَالِق'], title: 'Root: خ ل ق', sub: 'he created · Creator', tip: 'خَلَقَ appears in 96:1 and 113:2!', quranRef: ref('113:2') }),
+        T({ kicker: 'QUR’AN ROOT', bigRow: ['خَلَقَ', 'خَالِق'], title: 'Root: خ ل ق', sub: 'he created · Creator', tip: 'You’ll meet خَلَقَ again in Sūrat al-ʿAlaq (96:1)!', quranRef: ref('113:2') }),
         MCQ('What is the root of خَلَقَ?', 'خ ل ق', ['خ ل', 'ل ق ا'], { arOptions: true }),
         MCQ('نَعْبُدُ (we worship) and عَبْد (servant) share which root?', 'ع ب د', ['ن ع ب', 'ب د ن'], { arOptions: true, quranRef: ref('1:5') }),
         SORT('Which root family?', [{ label: 'ك ت ب (write)' }, { label: 'ع ل م (know)' }], [['كَتَبَ', 0], ['كِتَاب', 0], ['كَاتِب', 0], ['عَلِمَ', 1], ['عِلْم', 1], ['عَالِم', 1]].map(([t, b]) => ({ t, b }))),

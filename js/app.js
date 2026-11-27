@@ -1051,7 +1051,7 @@
     build(w, ex, ctx) {
       const tiles = ex.tiles.map((t, i) => ({ t, i }));
       let line = [];
-      w.innerHTML = `<h2 class="ex-prompt">${rich(ex.prompt)}</h2>${ex.gloss ? `<p class="gloss" style="margin-top:-8px">“${rich(ex.gloss)}”</p>` : ''}
+      w.innerHTML = `<h2 class="ex-prompt">${rich(ex.prompt)}</h2>${refTag(ex.quranRef)}${ex.gloss ? `<p class="gloss" style="margin-top:-8px">“${rich(ex.gloss)}”</p>` : ''}
         <div class="build-preview" id="pv"></div><div class="build-line" id="line"></div><div class="bank" id="bank">${tiles.map((x) => `<button class="tile" data-i="${x.i}">${esc(x.t)}</button>`).join('')}</div>`;
       const pv = w.querySelector('#pv'), lineEl = w.querySelector('#line'), bank = w.querySelector('#bank');
       const draw = () => {
