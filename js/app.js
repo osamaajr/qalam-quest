@@ -887,7 +887,10 @@
       if (!L.test && !S.settings.classMode && !L.practice && S.hearts <= 0) { outOfHearts(L.f, false); return; }
       nextExercise();
     };
-    if (comboMilestone) {
+    // The "x in a row" celebration only plays between questions: after the last one the lesson-complete
+    // screen celebrates instead (the combo bonus still counts).
+    const celebrate = comboMilestone && L.queue.length > 0;
+    if (celebrate) {
       cont.disabled = true;
       setTimeout(() => {
         if (L !== lesson || !cont.isConnected) return;
@@ -901,7 +904,7 @@
       Sfx.play('tap');
       advance();
     };
-    if (!comboMilestone) cont.focus({ preventScroll: true });
+    if (!celebrate) cont.focus({ preventScroll: true });
   }
   function comboBurst(n, onEnd) {
     Sfx.play('combo');

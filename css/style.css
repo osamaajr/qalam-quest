@@ -466,11 +466,11 @@ img { -webkit-user-drag: none; user-select: none; }
 .sheet p .ar, .sheet p .qr { font-size: 1.4em; }
 
 .combo-burst { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; overflow: hidden; padding: 24px; background: var(--bg); }
-.combo-burst::before { content: ''; position: absolute; width: min(110vmin, 980px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(255,184,0,.26), rgba(255,184,0,.08) 42%, transparent 68%); animation: combo-glow 1.6s ease-out both; }
+.combo-burst::before { content: ''; position: absolute; width: min(80vmin, 560px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(255,184,0,.26), rgba(255,184,0,.08) 42%, transparent 68%); animation: combo-glow 1.6s ease-out both; }
 .combo-burst-inner { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; text-align: center; animation: burst 1.6s ease forwards; }
-.combo-burst .kid { width: min(82vw, 60vh, 580px); }
-.combo-burst b { font-size: clamp(48px, 10vw, 96px); line-height: 1.1; font-weight: 900; color: var(--orange); -webkit-text-stroke: 6px var(--bg); paint-order: stroke; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
-.combo-burst b .ico { width: clamp(58px, 10vw, 110px); height: clamp(58px, 10vw, 110px); }
+.combo-burst .kid { width: min(52vw, 36vh, 280px); }
+.combo-burst b { font-size: clamp(30px, 6vw, 50px); line-height: 1.1; font-weight: 900; color: var(--orange); -webkit-text-stroke: 5px var(--bg); paint-order: stroke; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; }
+.combo-burst b .ico { width: clamp(36px, 6vw, 58px); height: clamp(36px, 6vw, 58px); }
 @keyframes burst { 0% { opacity: 0; transform: translateY(24px) scale(.5); } 15% { opacity: 1; transform: scale(1.08); } 25% { transform: none; } 80% { opacity: 1; } 100% { opacity: 0; transform: translateY(-20px) scale(.95); } }
 @keyframes combo-glow { from { opacity: 0; transform: scale(.6); } 20%, 75% { opacity: 1; } to { opacity: 0; transform: scale(1.05); } }
 
