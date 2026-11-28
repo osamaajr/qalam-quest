@@ -208,7 +208,16 @@
   // ======================= READ ALOUD =======================
   // Recorded clips (assets/audio, made by tools/make-audio.js) work everywhere; the
   // browser's own Arabic voice is only a fallback for anything without a clip.
+  // Qur'an words: the qāriʾ's recitation (assets/audio/<id>.mp3). Every other sound is in the voice of the child's
+  // buddy (assets/audio/zaid|huda/<id>.mp3): each was checked against its exact pronunciation (tools/audio).
   const AUDIO = window.QQ_AUDIO || {};
+  const BUDDY_AUDIO = window.QQ_AUDIO_BUDDY || {};
+  const clipFor = (k) => {
+    const mine = S.buddy === 'zaid' ? 'zaid' : 'huda', other = mine === 'zaid' ? 'huda' : 'zaid';
+    if (BUDDY_AUDIO[mine] && BUDDY_AUDIO[mine][k]) return `assets/audio/${mine}/${BUDDY_AUDIO[mine][k]}.mp3`;
+    if (BUDDY_AUDIO[other] && BUDDY_AUDIO[other][k]) return `assets/audio/${other}/${BUDDY_AUDIO[other][k]}.mp3`;
+    return AUDIO[k] ? `assets/audio/${AUDIO[k]}.mp3` : null;
+  };
   const audioKey = (t) => String(t).normalize('NFC').trim();
   // Only ever our recorded natural-voice clips — never the browser's robotic built-in voice.
   let curAudio = null;
@@ -228,14 +237,14 @@
     if (parts.length > 1 && parts.every((p) => NAMES[p])) return parts.map((p) => NAMES[p]).join(' ');
     return k;
   };
-  const canSpeak = (t) => S.settings.tts && !!sayable(t) && !!AUDIO[audioKey(sayable(t))];
+  const canSpeak = (t) => S.settings.tts && !!sayable(t) && !!clipFor(audioKey(sayable(t)));
   function speak(text, slow, btn) {
     if (!S.settings.tts || !text) return;
     text = sayable(text); if (!text) return;
-    const id = AUDIO[audioKey(text)];
+    const src = clipFor(audioKey(text));
     if (curAudio) { curAudio.pause(); curAudio = null; }
-    if (id) {
-      const a = new Audio(`assets/audio/${id}.mp3`);
+    if (src) {
+      const a = new Audio(src);
       a.playbackRate = slow ? 0.65 : 1; a.preservesPitch = true;
       const done = () => { if (btn && (curAudio === a || !curAudio)) btn.classList.remove('playing'); };
       if (btn) { btn.classList.add('playing'); a.onended = a.onpause = done; }
@@ -244,7 +253,7 @@
       let retried = false;
       a.onerror = () => {
         if (retried || curAudio !== a) { done(); return; }
-        retried = true; a.src = `assets/audio/${id}.mp3?retry=${Date.now()}`;
+        retried = true; a.src = `${src}?retry=${Date.now()}`;
         a.play().catch(done);
       };
       a.play().catch((e) => { if (e && e.name === 'NotAllowedError') done(); });

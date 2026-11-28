@@ -1,0 +1,321 @@
+[
+ {
+  "buddy": "zaid",
+  "text": "دٍ",
+  "want": "دِن",
+  "takes": [
+   "voice-pick/cand/zaid-313ce3fd65-0.mp3",
+   "voice-pick/cand/zaid-313ce3fd65-1.mp3",
+   "voice-pick/cand/zaid-313ce3fd65-2.mp3",
+   "voice-pick/cand/zaid-313ce3fd65-3.mp3"
+  ]
+ },
+ {
+  "buddy": "zaid",
+  "text": "دُونٌ",
+  "want": "دُۥۥنُن",
+  "takes": [
+   "voice-pick/cand/zaid-fbea94be76-0.mp3",
+   "voice-pick/cand/zaid-fbea94be76-1.mp3",
+   "voice-pick/cand/zaid-fbea94be76-2.mp3",
+   "voice-pick/cand/zaid-fbea94be76-3.mp3"
+  ]
+ },
+ {
+  "buddy": "zaid",
+  "text": "ذَ",
+  "want": "ذَ",
+  "takes": [
+   "voice-pick/cand/zaid-f08e596e77-0.mp3",
+   "voice-pick/cand/zaid-f08e596e77-1.mp3",
+   "voice-pick/cand/zaid-f08e596e77-2.mp3",
+   "voice-pick/cand/zaid-f08e596e77-3.mp3"
+  ]
+ },
+ {
+  "buddy": "zaid",
+  "text": "طَالِب",
+  "want": "طَاالِب",
+  "takes": [
+   "voice-pick/cand/zaid-86a43d617f-0.mp3",
+   "voice-pick/cand/zaid-86a43d617f-1.mp3",
+   "voice-pick/cand/zaid-86a43d617f-2.mp3",
+   "voice-pick/cand/zaid-86a43d617f-3.mp3"
+  ]
+ },
+ {
+  "buddy": "zaid",
+  "text": "قَاف",
+  "want": "قَااف",
+  "takes": [
+   "voice-pick/cand/zaid-ada551165c-0.mp3",
+   "voice-pick/cand/zaid-ada551165c-1.mp3",
+   "voice-pick/cand/zaid-ada551165c-2.mp3",
+   "voice-pick/cand/zaid-ada551165c-3.mp3"
+  ]
+ },
+ {
+  "buddy": "zaid",
+  "text": "قُ",
+  "want": "قُ",
+  "takes": [
+   "voice-pick/cand/zaid-7084c042fd-0.mp3",
+   "voice-pick/cand/zaid-7084c042fd-1.mp3",
+   "voice-pick/cand/zaid-7084c042fd-2.mp3",
+   "voice-pick/cand/zaid-7084c042fd-3.mp3"
+  ]
+ },
+ {
+  "buddy": "zaid",
+  "text": "لْ",
+  "want": "ل",
+  "takes": [
+   "voice-pick/cand/zaid-2d9b32749e-0.mp3",
+   "voice-pick/cand/zaid-2d9b32749e-1.mp3",
+   "voice-pick/cand/zaid-2d9b32749e-2.mp3",
+   "voice-pick/cand/zaid-2d9b32749e-3.mp3"
+  ]
+ },
+ {
+  "buddy": "zaid",
+  "text": "ٱلصَّيْفِ",
+  "want": "ءَصصَيفِ",
+  "takes": [
+   "voice-pick/cand/zaid-ca0129c498-0.mp3",
+   "voice-pick/cand/zaid-ca0129c498-1.mp3",
+   "voice-pick/cand/zaid-ca0129c498-2.mp3",
+   "voice-pick/cand/zaid-ca0129c498-3.mp3"
+  ]
+ },
+ {
+  "buddy": "zaid",
+  "text": "بَا بِي بُو",
+  "want": "بَاابِۦۦبُۥۥ",
+  "takes": [
+   "voice-pick/cand/zaid-7570ae3f23-0.mp3",
+   "voice-pick/cand/zaid-7570ae3f23-1.mp3",
+   "voice-pick/cand/zaid-7570ae3f23-2.mp3",
+   "voice-pick/cand/zaid-7570ae3f23-3.mp3"
+  ]
+ },
+ {
+  "buddy": "zaid",
+  "text": "نُ",
+  "want": "نُ",
+  "takes": [
+   "voice-pick/cand/zaid-35548ef661-0.mp3",
+   "voice-pick/cand/zaid-35548ef661-1.mp3",
+   "voice-pick/cand/zaid-35548ef661-2.mp3",
+   "voice-pick/cand/zaid-35548ef661-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "بٌ",
+  "want": "بُن",
+  "takes": [
+   "voice-pick/cand/huda-3216d1ef6b-0.mp3",
+   "voice-pick/cand/huda-3216d1ef6b-1.mp3",
+   "voice-pick/cand/huda-3216d1ef6b-2.mp3",
+   "voice-pick/cand/huda-3216d1ef6b-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "تِ",
+  "want": "تِ",
+  "takes": [
+   "voice-pick/cand/huda-ecbc66cf6b-0.mp3",
+   "voice-pick/cand/huda-ecbc66cf6b-1.mp3",
+   "voice-pick/cand/huda-ecbc66cf6b-2.mp3",
+   "voice-pick/cand/huda-ecbc66cf6b-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "خَ",
+  "want": "خَ",
+  "takes": [
+   "voice-pick/cand/huda-314d20965b-0.mp3",
+   "voice-pick/cand/huda-314d20965b-1.mp3",
+   "voice-pick/cand/huda-314d20965b-2.mp3",
+   "voice-pick/cand/huda-314d20965b-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "رٌ",
+  "want": "رُن",
+  "takes": [
+   "voice-pick/cand/huda-e99189e2bd-0.mp3",
+   "voice-pick/cand/huda-e99189e2bd-1.mp3",
+   "voice-pick/cand/huda-e99189e2bd-2.mp3",
+   "voice-pick/cand/huda-e99189e2bd-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "رُ",
+  "want": "رُ",
+  "takes": [
+   "voice-pick/cand/huda-e2a4059525-0.mp3",
+   "voice-pick/cand/huda-e2a4059525-1.mp3",
+   "voice-pick/cand/huda-e2a4059525-2.mp3",
+   "voice-pick/cand/huda-e2a4059525-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "عَ",
+  "want": "عَ",
+  "takes": [
+   "voice-pick/cand/huda-40fa11ec92-0.mp3",
+   "voice-pick/cand/huda-40fa11ec92-1.mp3",
+   "voice-pick/cand/huda-40fa11ec92-2.mp3",
+   "voice-pick/cand/huda-40fa11ec92-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "عِلْم",
+  "want": "عِلم",
+  "takes": [
+   "voice-pick/cand/huda-261e75d77e-0.mp3",
+   "voice-pick/cand/huda-261e75d77e-1.mp3",
+   "voice-pick/cand/huda-261e75d77e-2.mp3",
+   "voice-pick/cand/huda-261e75d77e-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "فِ",
+  "want": "فِ",
+  "takes": [
+   "voice-pick/cand/huda-c7f392deef-0.mp3",
+   "voice-pick/cand/huda-c7f392deef-1.mp3",
+   "voice-pick/cand/huda-c7f392deef-2.mp3",
+   "voice-pick/cand/huda-c7f392deef-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "كٍ",
+  "want": "كِن",
+  "takes": [
+   "voice-pick/cand/huda-c099855c53-0.mp3",
+   "voice-pick/cand/huda-c099855c53-1.mp3",
+   "voice-pick/cand/huda-c099855c53-2.mp3",
+   "voice-pick/cand/huda-c099855c53-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "لُ",
+  "want": "لُ",
+  "takes": [
+   "voice-pick/cand/huda-4fa06a5ae4-0.mp3",
+   "voice-pick/cand/huda-4fa06a5ae4-1.mp3",
+   "voice-pick/cand/huda-4fa06a5ae4-2.mp3",
+   "voice-pick/cand/huda-4fa06a5ae4-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "مُ",
+  "want": "مُ",
+  "takes": [
+   "voice-pick/cand/huda-a41bdb0b77-0.mp3",
+   "voice-pick/cand/huda-a41bdb0b77-1.mp3",
+   "voice-pick/cand/huda-a41bdb0b77-2.mp3",
+   "voice-pick/cand/huda-a41bdb0b77-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "مِي",
+  "want": "مِۦۦ",
+  "takes": [
+   "voice-pick/cand/huda-e8017dd47c-0.mp3",
+   "voice-pick/cand/huda-e8017dd47c-1.mp3",
+   "voice-pick/cand/huda-e8017dd47c-2.mp3",
+   "voice-pick/cand/huda-e8017dd47c-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "نً",
+  "want": "نَن",
+  "takes": [
+   "voice-pick/cand/huda-76200aa52a-0.mp3",
+   "voice-pick/cand/huda-76200aa52a-1.mp3",
+   "voice-pick/cand/huda-76200aa52a-2.mp3",
+   "voice-pick/cand/huda-76200aa52a-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "نُو",
+  "want": "نُۥۥ",
+  "takes": [
+   "voice-pick/cand/huda-58364d6b5f-0.mp3",
+   "voice-pick/cand/huda-58364d6b5f-1.mp3",
+   "voice-pick/cand/huda-58364d6b5f-2.mp3",
+   "voice-pick/cand/huda-58364d6b5f-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "نُون",
+  "want": "نُۥۥن",
+  "takes": [
+   "voice-pick/cand/huda-a4647fa3ab-0.mp3",
+   "voice-pick/cand/huda-a4647fa3ab-1.mp3",
+   "voice-pick/cand/huda-a4647fa3ab-2.mp3",
+   "voice-pick/cand/huda-a4647fa3ab-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "هَ",
+  "want": "هَ",
+  "takes": [
+   "voice-pick/cand/huda-f27e4b76e3-0.mp3",
+   "voice-pick/cand/huda-f27e4b76e3-1.mp3",
+   "voice-pick/cand/huda-f27e4b76e3-2.mp3",
+   "voice-pick/cand/huda-f27e4b76e3-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "هُ",
+  "want": "هُ",
+  "takes": [
+   "voice-pick/cand/huda-e5003bc21b-0.mp3",
+   "voice-pick/cand/huda-e5003bc21b-1.mp3",
+   "voice-pick/cand/huda-e5003bc21b-2.mp3",
+   "voice-pick/cand/huda-e5003bc21b-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "بَا بِي بُو",
+  "want": "بَاابِۦۦبُۥۥ",
+  "takes": [
+   "voice-pick/cand/huda-7570ae3f23-0.mp3",
+   "voice-pick/cand/huda-7570ae3f23-1.mp3",
+   "voice-pick/cand/huda-7570ae3f23-2.mp3",
+   "voice-pick/cand/huda-7570ae3f23-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "نُ",
+  "want": "نُ",
+  "takes": [
+   "voice-pick/cand/huda-35548ef661-0.mp3",
+   "voice-pick/cand/huda-35548ef661-1.mp3",
+   "voice-pick/cand/huda-35548ef661-2.mp3",
+   "voice-pick/cand/huda-35548ef661-3.mp3"
+  ]
+ }
+]

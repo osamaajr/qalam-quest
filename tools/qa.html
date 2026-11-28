@@ -93,7 +93,8 @@ async function playLesson(id, wrongAt) {
   } catch (e) { log('HARNESS ERROR: ' + e.message + '\n' + e.stack); }
   // audio: every clip in the manifest loads and can play in this browser
   try {
-    const A = W.QQ_AUDIO || {}; const ids = [...new Set(Object.values(A))]; let ok = 0, bad = [];
+    const A = W.QQ_AUDIO || {}, B = W.QQ_AUDIO_BUDDY || {};
+    const ids = [...new Set(Object.values(A).concat(...Object.entries(B).map(([b, m]) => Object.values(m).map((i) => b + '/' + i))))]; let ok = 0, bad = [];
     const one = (id) => new Promise((res) => {
       const a = new Audio('../assets/audio/' + id + '.mp3'); a.preload = 'auto';
       const t = setTimeout(() => { bad.push(id + ' (timeout)'); res(); }, 20000);

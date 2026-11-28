@@ -8,14 +8,14 @@ and vowel sequence is identical (a madd may be off by one count).
   python3 tools/audio/check.py                   grade every clip in js/audio-manifest.js
   python3 tools/audio/check.py --only بَ,بُو      grade some
 
-Setup (once):  python3 -m venv tools/.audio-cache/venv && tools/.audio-cache/venv/bin/pip install -r tools/audio/requirements.txt
-then run with tools/.audio-cache/venv/bin/python. The model (Apache-2.0, 83 MB) is fetched into tools/.audio-cache.
+Setup (once):  python3 -m venv ~/Library/Caches/qalam-audio/venv && ~/Library/Caches/qalam-audio/venv/bin/pip install -r tools/audio/requirements.txt
+then run with ~/Library/Caches/qalam-audio/venv/bin/python. The model (Apache-2.0, 83 MB) is fetched into ~/Library/Caches/qalam-audio.
 """
 import json, os, re, subprocess, sys, unicodedata, urllib.request
 import numpy as np
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-CACHE = os.path.join(ROOT, 'tools', '.audio-cache')
+CACHE = os.path.expanduser('~/Library/Caches/qalam-audio')   # outside iCloud-synced folders: never offloaded
 TAJWEED = os.path.join(CACHE, 'tajweed')
 MODEL_URL = 'https://huggingface.co/Hisnlabs/tajweed-v2/resolve/main/onnx/model-fp32.onnx'
 
@@ -101,22 +101,54 @@ def pcm16k(path):
     return np.frombuffer(r.stdout, np.float32)
 
 
-def hear(path):
+LEAD_TEXT = 'قُلْ'   # a real recitation (Quran.com word audio) played first: the model was trained on recitation, and a
+                     # lone half-second syllable gives it too little to settle on; after a known word it hears far better
+_lead = None
+
+
+def _lead_pcm():
+    global _lead
+    if _lead is None:
+        cached = os.path.join(CACHE, 'lead.mp3')
+        if not os.path.exists(cached):
+            s = open(os.path.join(ROOT, 'js/audio-manifest.js'), encoding='utf-8').read()
+            man = json.loads(s[s.index('{'):s.rindex('}') + 1])
+            subprocess.run(['cp', os.path.join(ROOT, 'assets/audio', man[LEAD_TEXT] + '.mp3'), cached], check=True)
+        _lead = np.concatenate([pcm16k(cached), np.zeros(int(16000 * 0.25), np.float32)])
+    return _lead
+
+
+def hear(path, context=True):
+    """-> (heard script, mean confidence, symbol times in seconds from the start of the clip)"""
+    x = pcm16k(os.path.abspath(path))
+    lead = _lead_pcm() if context else np.zeros(0, np.float32)
     cwd = os.getcwd(); os.chdir(TAJWEED)
     try:
-        heard, probs, _ = inference.hear(pcm16k(path), model='onnx/model-fp32.onnx')
+        heard, probs, times = inference.hear(np.concatenate([lead, x]), model='onnx/model-fp32.onnx')
     finally:
         os.chdir(cwd)
-    return heard, (float(np.mean(probs)) if probs else 0.0)
+    off = len(lead) / 16000
+    k = 0
+    if context:                                   # drop what was heard of the lead word
+        while k < len(times) - 1 and times[k] < off - 0.05: k += 1
+    return heard[k:], (float(np.mean(probs[k:])) if probs[k:] else 0.0), [t - off for t in times[k:]]
 
 
-def check(text, path, quran=False):
-    """-> dict(verdict ok|madd|wrong, heard, want, conf)"""
-    heard, conf = hear(path)
+BREATH = 'هحع'
+
+
+def check(text, path, quran=False, context=True):
+    """-> dict(verdict ok|madd|wrong, heard, want, conf, times)"""
+    heard, conf, times = hear(path, context)
     wants = [target(text)] + ([pause_form(text)] if quran else [])
-    verdicts = [compare(w, heard) for w in wants]
+    if wants[0].endswith('ه') and tidy(text).endswith('ة'):     # a final ة on its own: a soft h, or t, or barely heard
+        wants += [wants[0][:-1] + 'ت', wants[0][:-1] + 'ح', wants[0][:-1]]
+    h = heard
+    if h and h[-1] in BREATH and not any(w.endswith(h[-1]) for w in wants):   # a breath after the last vowel
+        h = h[:-1]
+    verdicts = [compare(w, h) for w in wants]
     best = min(range(len(wants)), key=lambda i: ['ok', 'madd', 'wrong'].index(verdicts[i]))
-    return dict(verdict=verdicts[best], heard=heard, want=wants[best], conf=round(conf, 3))
+    return dict(verdict=verdicts[best], heard=heard, want=wants[best], conf=round(conf, 3), times=times)
 
 
 if __name__ == '__main__':
@@ -128,8 +160,8 @@ if __name__ == '__main__':
     for text, cid in man.items():
         if only and text not in only: continue
         kind = (src.get(text) or '').split(' ')[0]
-        r = check(text, os.path.join(ROOT, 'assets/audio', cid + '.mp3'), quran=kind == 'qari')
-        r.update(text=text, kind=kind); rows.append(r)
+        r = check(text, os.path.join(ROOT, 'assets/audio', cid + '.mp3'), quran=kind == 'qari', context=kind != 'qari')
+        r.pop('times'); r.update(text=text, kind=kind); rows.append(r)
         print(f"{r['verdict']:6} {kind:8} {text:14} heard {r['heard']:18} want {r['want']}", flush=True)
     from collections import Counter
     print('\n'.join(f'{k}: {dict(Counter(r["verdict"] for r in rows if r["kind"] == k))}' for k in sorted({r['kind'] for r in rows})))

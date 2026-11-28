@@ -3,87 +3,102 @@
 <title>Qalam audio review</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Noto+Naskh+Arabic:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  :root { --blue:#2B59FF; --blue-d:#1B3FD4; --red:#FF4B5C; --green:#12B886; --ink:#26233A; --muted:#8E8AA6; --line:#E7E5F0; --soft:#F7F6FB; }
+  :root { --blue:#2B59FF; --blue-d:#1B3FD4; --red:#FF4B5C; --green:#12B886; --ink:#26233A; --muted:#8E8AA6; --line:#E7E5F0; --soft:#F7F6FB; --zaid:#1B3FD4; --huda:#7A2C5A; }
   * { box-sizing: border-box; } body { margin:0; font-family:Nunito,system-ui,sans-serif; font-weight:700; color:var(--ink); background:var(--soft); }
   header { position:sticky; top:0; z-index:5; background:#fff; border-bottom:2px solid var(--line); padding:14px 22px; display:flex; flex-wrap:wrap; gap:10px 18px; align-items:center; }
   header h1 { margin:0; font-size:22px; font-weight:900; } header p { margin:0; color:var(--muted); font-size:14px; flex:1; min-width:260px; }
   button { font:inherit; font-weight:900; border:0; border-radius:12px; padding:9px 14px; cursor:pointer; }
   .main-btn { background:var(--blue); color:#fff; box-shadow:0 3px 0 var(--blue-d); }
   .ghost { background:#fff; color:var(--blue); border:2px solid var(--line); }
-  main { max-width:1100px; margin:0 auto; padding:16px 20px 80px; }
+  main { max-width:1150px; margin:0 auto; padding:16px 20px 80px; }
   h2 { font-size:15px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin:26px 0 10px; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:10px; }
+  h2.ear { color:var(--red); }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:10px; }
   .item { background:#fff; border:2px solid var(--line); border-radius:16px; padding:10px 12px; display:flex; flex-direction:column; gap:6px; }
   .item.bad { border-color:var(--red); background:#FFF5F6; } .item.playing { border-color:var(--blue); }
-  .row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
   .ar { font-family:'Noto Naskh Arabic',serif; font-size:32px; line-height:1.4; direction:rtl; }
+  .plays { display:flex; gap:6px; flex-wrap:wrap; }
+  .play { height:38px; padding:0 12px; color:#fff; font-size:13px; box-shadow:0 3px 0 rgba(0,0,0,.2); }
+  .play.zaid { background:var(--zaid); } .play.huda { background:var(--huda); } .play.qari { background:var(--green); }
   .src { font-size:11px; color:var(--muted); letter-spacing:.3px; }
-  .play { width:44px; height:40px; background:var(--blue); color:#fff; box-shadow:0 3px 0 var(--blue-d); font-size:16px; }
   label { font-size:13px; display:flex; gap:6px; align-items:center; color:var(--red); cursor:pointer; }
   input[type=text] { font:inherit; font-weight:700; font-size:13px; border:2px solid var(--line); border-radius:10px; padding:6px 8px; width:100%; }
   .item:not(.bad) input[type=text] { display:none; }
+  .ok-btn { background:#E7F8F1; color:var(--green); border:2px solid #BDEBDA; padding:6px 10px; font-size:12px; }
+  .ok-btn.on { background:var(--green); color:#fff; }
   #out { white-space:pre-wrap; background:#fff; border:2px solid var(--line); border-radius:14px; padding:12px; font-size:14px; display:none; }
-  .silent { opacity:.55; } .silent .play { background:#C9C6D6; box-shadow:none; cursor:default; }
+  .silent { opacity:.55; }
 </style></head><body>
 <header><h1>🎧 Qalam audio review</h1>
-  <p>Tap ▶ to hear exactly what the game plays. Tick <b>Fix this</b> on anything wrong and add a note (e.g. “sounds robotic”, “wrong vowel”). Your marks are saved in this browser. When done, press <b>Copy list</b> and paste it to Claude.</p>
-  <button class="main-btn" id="all">▶ Play section</button><button class="ghost" id="stop">■ Stop</button><button class="main-btn" id="copy">Copy list (<span id="n">0</span>)</button><button class="ghost" id="clear">Clear marks</button></header>
+  <p>Every sound as the game plays it: <b style="color:var(--zaid)">Anas</b> when the child picks Zaid, <b style="color:var(--huda)">Habibah</b> when they pick Huda, the <b style="color:var(--green)">qāriʾ</b> for Qur'an words. Each teacher clip passed a strict pronunciation check. Tick <b>Fix this</b> on anything wrong; in <b>Needs your ear</b>, press <b>✓ This one</b> on a correct take. Then press <b>Copy list</b> and paste it to Claude.</p>
+  <button class="ghost" id="stop">■ Stop</button><button class="main-btn" id="copy">Copy list (<span id="n">0</span>)</button><button class="ghost" id="clear">Clear marks</button></header>
 <main><div id="out"></div><div id="sections"></div></main>
 <script src="../js/content.js"></script><script src="../js/audio-manifest.js"></script>
 <script>
-const C = window.QQ_CONTENT, A = window.QQ_AUDIO || {};
-let SRC = {}, SILENT = [];
-const KEY = 'qalam-audio-review';
-const marks = (() => { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } })();
-const saveMarks = () => { try { localStorage.setItem(KEY, JSON.stringify(marks)); } catch (e) {} document.getElementById('n').textContent = Object.keys(marks).length; };
+const C = window.QQ_CONTENT, Q = window.QQ_AUDIO || {}, B = window.QQ_AUDIO_BUDDY || {};
+const VOICE = { zaid: 'Anas', huda: 'Habibah' };
+let SRC = {}, SILENT = [], EAR = [];
+const KEY = 'qalam-audio-review-2';
+const store = (() => { try { return JSON.parse(localStorage.getItem(KEY)) || { marks: {}, picks: {} }; } catch (e) { return { marks: {}, picks: {} }; } })();
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} document.getElementById('n').textContent = Object.keys(store.marks).length + Object.keys(store.picks).length; };
 const nameOf = Object.fromEntries(Object.entries(C.SAY_NAME).map(([k, v]) => [v.normalize('NFC'), k]));
-const letters = (t) => t.replace(/[ً-ٰٟ\s]/g, '').length;
-function who(t) { const s = SRC[t] || ''; return s.startsWith('qari') ? 'Qāriʾ recitation' : s.startsWith('eleven') ? 'ElevenLabs teacher · passed the pronunciation check' : s.startsWith('teach') ? 'Teacher voice' + ((/heard ([\d.]+)/.exec(s) || [])[1] ? ' · heard ' + Math.round(/heard ([\d.]+)/.exec(s)[1] * 100) + '%' : '') : s.startsWith('hamed') || s.startsWith('zariyah') ? 'Native Arabic teacher' : s.startsWith('human') ? 'Human alphabet recording' : s.startsWith('joined') ? 'Joined letters' : s ? s : '—'; }
-let cur, queue = [];
+const letters = (t) => t.replace(/[ً-ٰٟۭۢ\s]/g, '').length;
+let cur, curItem;
 function play(btn) {
   if (cur) cur.pause(); document.querySelectorAll('.playing').forEach((x) => x.classList.remove('playing'));
-  const it = btn.closest('.item'); it.classList.add('playing');
-  cur = new Audio('../assets/audio/' + btn.dataset.id + '.mp3?' + Date.now());
-  cur.onended = () => { it.classList.remove('playing'); if (queue.length) setTimeout(() => play(queue.shift()), 350); };
-  cur.play(); it.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  curItem = btn.closest('.item'); curItem.classList.add('playing');
+  cur = new Audio(btn.dataset.src + '?' + Date.now()); cur.onended = () => curItem.classList.remove('playing'); cur.play();
 }
+const btns = (t) => (Q[t] ? `<button class="play qari" data-src="../assets/audio/${Q[t]}.mp3">▶ Qāriʾ</button>` : '')
+  + ['zaid', 'huda'].filter((b) => B[b] && B[b][t]).map((b) => `<button class="play ${b}" data-src="../assets/audio/${b}/${B[b][t]}.mp3">▶ ${VOICE[b]}</button>`).join('');
 function card(t) {
-  const id = A[t]; const m = marks[t];
-  return `<div class="item ${m ? 'bad' : ''} ${id ? '' : 'silent'}" data-t="${t}"><div class="row"><span class="ar">${t}</span><button class="play" ${id ? `data-id="${id}"` : 'disabled'}>▶</button></div>
-    <span class="src">${id ? who(t) : 'Silent in the game'}${nameOf[t] ? ' · letter ' + nameOf[t] : ''}</span>
-    <label><input type="checkbox" ${m ? 'checked' : ''}> Fix this</label><input type="text" placeholder="What's wrong?" value="${m ? (m.note || '').replace(/"/g, '&quot;') : ''}"></div>`;
+  const has = Q[t] || ['zaid', 'huda'].some((b) => B[b] && B[b][t]); const m = store.marks[t];
+  const how = Q[t] ? 'Qāriʾ recitation (Quran.com)' : ['zaid', 'huda'].filter((b) => B[b] && B[b][t]).map((b) => VOICE[b]).join(' + ') || 'Silent in the game';
+  return `<div class="item ${m ? 'bad' : ''} ${has ? '' : 'silent'}" data-t="${t}"><span class="ar">${t}</span><div class="plays">${btns(t)}</div>
+    <span class="src">${how}${nameOf[t] ? ' · letter ' + nameOf[t] : ''}</span>
+    <label><input type="checkbox" ${m ? 'checked' : ''}> Fix this</label><input type="text" placeholder="What's wrong? (which voice?)" value="${m ? (m.note || '').replace(/"/g, '&quot;') : ''}"></div>`;
+}
+function earCard(e, i) {
+  const pick = store.picks[e.buddy + ' ' + e.text];
+  return `<div class="item" data-ear="${i}"><span class="ar">${e.text}</span><span class="src">${VOICE[e.buddy]} (${e.buddy === 'zaid' ? 'Zaid' : 'Huda'}) · the checker wasn't sure</span><div class="plays">`
+    + e.takes.map((f, k) => `<span style="display:inline-flex;gap:4px;align-items:center"><button class="play ${e.buddy}" data-src="${f}">▶ take ${k + 1}</button><button class="ok-btn ${pick === f ? 'on' : ''}" data-pick="${i}" data-f="${f}">✓ This one</button></span>`).join('')
+    + `</div></div>`;
 }
 (async () => {
   try { SRC = await (await fetch('audio-sources.json', { cache: 'no-store' })).json(); } catch (e) {}
   try { SILENT = await (await fetch('audio-silent.json', { cache: 'no-store' })).json(); } catch (e) {}
-  const all = [...new Set(Object.keys(A).concat(SILENT))];
+  try { EAR = await (await fetch('audio-needs-ear.json', { cache: 'no-store' })).json(); } catch (e) {}
+  const all = [...new Set(Object.keys(Q).concat(...['zaid', 'huda'].map((b) => Object.keys(B[b] || {}))).concat(SILENT))];
   const names = Object.values(C.SAY_NAME).map((x) => x.normalize('NFC'));
-  // clips the speech-recognition check heard least clearly when they were made: listen to these first
-  const unsure = all.filter((t) => { const m = /heard ([\d.]+)/.exec(SRC[t] || ''); return m && +m[1] < 0.75; }).sort();
   const sections = [
-    ['Listen to these first (least certain)', unsure],
     ['Letter names (alphabet order)', names],
-    ['Syllables', all.filter((t) => !names.includes(t) && !t.includes(' ') && letters(t) <= 2).sort()],
-    ['Practice words', all.filter((t) => !names.includes(t) && !t.includes(' ') && letters(t) > 2 && !(SRC[t] || '').startsWith('qari')).sort()],
-    ['Qur’an words (qāriʾ)', all.filter((t) => (SRC[t] || '').startsWith('qari')).sort()],
-    ['Spelled groups & phrases', all.filter((t) => t.includes(' ')).sort()],
+    ['Syllables', all.filter((t) => !names.includes(t) && !t.includes(' ') && letters(t) <= 2 && !Q[t]).sort()],
+    ['Practice words', all.filter((t) => !names.includes(t) && !t.includes(' ') && letters(t) > 2 && !Q[t]).sort()],
+    ['Qur’an words (qāriʾ)', all.filter((t) => Q[t]).sort()],
+    ['Spelled groups & phrases', all.filter((t) => t.includes(' ') && !Q[t]).sort()],
   ];
-  document.getElementById('sections').innerHTML = sections.map(([h, list], i) => `<h2>${h} · ${list.length} <button class="ghost" data-sec="${i}" style="padding:4px 10px;font-size:12px;margin-left:8px">▶ play all</button></h2><div class="grid" data-grid="${i}">${list.map(card).join('')}</div>`).join('');
-  document.querySelectorAll('.play[data-id]').forEach((b) => b.onclick = () => { queue = []; play(b); });
-  document.querySelectorAll('[data-sec]').forEach((b) => b.onclick = () => { queue = [...document.querySelectorAll(`[data-grid="${b.dataset.sec}"] .play[data-id]`)]; play(queue.shift()); });
-  document.getElementById('all').onclick = () => document.querySelector('[data-sec="1"]').click();
-  document.getElementById('stop').onclick = () => { queue = []; if (cur) cur.pause(); };
-  document.querySelectorAll('.item').forEach((it) => {
+  document.getElementById('sections').innerHTML = (EAR.length ? `<h2 class="ear">Needs your ear · ${EAR.length}</h2><div class="grid">${EAR.map(earCard).join('')}</div>` : '')
+    + sections.map(([h, list]) => `<h2>${h} · ${list.length}</h2><div class="grid">${list.map(card).join('')}</div>`).join('');
+  document.querySelectorAll('.play').forEach((b) => b.onclick = () => play(b));
+  document.querySelectorAll('[data-pick]').forEach((b) => b.onclick = () => {
+    const e = EAR[b.dataset.pick], k = e.buddy + ' ' + e.text;
+    if (store.picks[k] === b.dataset.f) delete store.picks[k]; else store.picks[k] = b.dataset.f;
+    b.closest('.item').querySelectorAll('.ok-btn').forEach((x) => x.classList.toggle('on', store.picks[k] === x.dataset.f)); save();
+  });
+  document.getElementById('stop').onclick = () => { if (cur) cur.pause(); };
+  document.querySelectorAll('.item[data-t]').forEach((it) => {
     const t = it.dataset.t, cb = it.querySelector('input[type=checkbox]'), tx = it.querySelector('input[type=text]');
-    cb.onchange = () => { if (cb.checked) marks[t] = { note: tx.value }; else delete marks[t]; it.classList.toggle('bad', cb.checked); saveMarks(); if (cb.checked) tx.focus(); };
-    tx.oninput = () => { if (marks[t]) { marks[t].note = tx.value; saveMarks(); } };
+    cb.onchange = () => { if (cb.checked) store.marks[t] = { note: tx.value }; else delete store.marks[t]; it.classList.toggle('bad', cb.checked); save(); if (cb.checked) tx.focus(); };
+    tx.oninput = () => { if (store.marks[t]) { store.marks[t].note = tx.value; save(); } };
   });
   document.getElementById('copy').onclick = async () => {
-    const txt = 'Audio to fix:\n' + Object.entries(marks).map(([t, m]) => `- ${t}${nameOf[t] ? ' (letter ' + nameOf[t] + ')' : ''}: ${m.note || 'sounds wrong'}`).join('\n');
-    const out = document.getElementById('out'); out.style.display = 'block'; out.textContent = txt;
-    try { await navigator.clipboard.writeText(txt); document.getElementById('copy').firstChild.textContent = 'Copied! ('; } catch (e) {}
+    const lines = ['Audio review:'];
+    for (const [k, f] of Object.entries(store.picks)) { const [b, ...t] = k.split(' '); lines.push(`- approve ${b} ${t.join(' ')} take ${f.match(/-(\d+)\.mp3$/)[1]}`); }
+    for (const [t, m] of Object.entries(store.marks)) lines.push(`- fix ${t}${nameOf[t] ? ' (letter ' + nameOf[t] + ')' : ''}: ${m.note || 'sounds wrong'}`);
+    const out = document.getElementById('out'); out.style.display = 'block'; out.textContent = lines.join('\n');
+    try { await navigator.clipboard.writeText(lines.join('\n')); } catch (e) {}
   };
-  document.getElementById('clear').onclick = () => { if (!confirm('Clear all your marks?')) return; for (const k in marks) delete marks[k]; saveMarks(); document.querySelectorAll('.item').forEach((it) => { it.classList.remove('bad'); it.querySelector('input[type=checkbox]').checked = false; it.querySelector('input[type=text]').value = ''; }); };
-  saveMarks();
+  document.getElementById('clear').onclick = () => { if (!confirm('Clear all your marks?')) return; store.marks = {}; store.picks = {}; save(); location.reload(); };
+  save();
 })();
 </script></body></html>
