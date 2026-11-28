@@ -134,14 +134,15 @@ def polish(src, dst, check, start=0.0):
     e = _env(y); sr = 16000; s = int(start * sr)
     loud = np.nonzero(e[s:] > e.max() * 0.015)[0]
     if not len(loud) or e.max() < 1e-4: return False
-    st = max(start, (s + loud.min()) / sr - 0.04); en = min(len(y) / sr, (s + loud.max()) / sr + 0.06)
+    on = np.nonzero(e[s:] > e.max() * 0.03)[0]               # the sound starts here: no silence before it
+    st = max(start, (s + on.min()) / sr - 0.015); en = min(len(y) / sr, (s + loud.max()) / sr + 0.04)
     seg = y[int(st * sr):int(en * sr)]
     if len(seg) < 800: return False
     es = _env(seg); body = seg[es > es.max() * 0.1]
     rms = float(np.sqrt(np.mean(body ** 2))) if len(body) else 1e-3; peak = float(np.abs(seg).max())
     g = min(10 ** (-19 / 20) / max(rms, 1e-6), 10 ** (-1.5 / 20) / max(peak, 1e-6))
-    af = (f'atrim={st:.3f}:{en:.3f},asetpts=PTS-STARTPTS,highpass=f=70,volume={g:.4f},afade=t=in:d=0.012,'
-          f'areverse,afade=t=in:d=0.07,areverse,adelay=50,apad=pad_dur=0.15')
+    af = (f'atrim={st:.3f}:{en:.3f},asetpts=PTS-STARTPTS,highpass=f=70,volume={g:.4f},afade=t=in:d=0.008,'
+          f'areverse,afade=t=in:d=0.06,areverse')
     r = subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', src, '-af', af, '-ar', '44100', '-ac', '1', '-b:a', '96k', dst], capture_output=True)
     return r.returncode == 0 and os.path.exists(dst) and os.path.getsize(dst) > 800
 
@@ -239,7 +240,7 @@ def cmd_pick(vid):
 
 
 BUDDY_DIR = {b: os.path.join(OUT, b) for b in ('zaid', 'huda')}
-GAP = 0.25   # pause between the sounds of a drill (بَ ، بِ ، بُ)
+GAP = 0.35   # pause between the sounds of a drill (بَ ، بِ ، بُ)
 
 
 def join(files, dst):
@@ -300,6 +301,65 @@ def cmd_build(voices, only=None, takes=10, dry=False, fresh=False):
     write_review()
     for b in voices:
         n = sum(1 for t in singles + drills if t in state[b]); print(f'{b}: {n}/{len(singles) + len(drills)} sounds ready')
+
+
+TRIMS = [(0.010, 0.020, 0.005, 0.06), (0.006, 0.045, 0.003, 0.12)]   # (onset level, margin, end level, margin)
+
+
+def trim(src, dst, level=0.010, before=0.020, end_level=0.005, after=0.06, pad=0.0):
+    """copy src to dst without the silence before and after the sound (levels relative to the loudest part)"""
+    import numpy as np, check
+    y = check.pcm16k(src)
+    if len(y) < 800: return False
+    e = _env(y, win=0.01); sr = 16000
+    on = np.nonzero(e > e.max() * level)[0]; loud = np.nonzero(e > e.max() * end_level)[0]
+    if not len(on): return False
+    st = max(0.0, on.min() / sr - before); en = min(len(y) / sr, loud.max() / sr + after)
+    r = subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', src, '-af', f'atrim={st:.3f}:{en:.3f},asetpts=PTS-STARTPTS,afade=t=in:d=0.005,'
+                        f'areverse,afade=t=in:d=0.04,areverse' + (f',apad=pad_dur={pad}' if pad else ''), '-ar', '44100', '-ac', '1', '-b:a', '96k', dst], capture_output=True)
+    return r.returncode == 0 and os.path.getsize(dst) > 500
+
+
+def tighten(text, src, dst, checked=True):
+    """the tightest trim of src that still passes the check (a soft first or last consonant must not be cut);
+    if none does, only the silent pad before the sound is removed. -> which trim was used"""
+    import check
+    for i, (lv, bf, el, af) in enumerate(TRIMS):
+        if not trim(src, dst, lv, bf, el, af): continue
+        if not checked or check.check(text, dst)['verdict'] == 'ok': return i
+    import numpy as np
+    y = check.pcm16k(src); dur = len(y) / 16000
+    a = 0.05 if np.abs(y[:int(0.045 * 16000)]).max() < 2e-3 else 0.0          # cut only a pad that is pure silence
+    z = dur - 0.14 if np.abs(y[-int(0.13 * 16000):]).max() < 2e-3 else dur
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', src, '-af', f'atrim={a}:{z:.3f},asetpts=PTS-STARTPTS',
+                    '-ar', '44100', '-ac', '1', '-b:a', '96k', dst], check=True)
+    return 'pad only'
+
+
+def cmd_tighten():
+    """trim every installed clip from its original take, then re-join the drills from the trimmed pieces"""
+    import check, glob
+    from collections import Counter
+    st = json.load(open(os.path.join(HERE, 'build.json'), encoding='utf-8'))
+    vids = {'zaid': 'R6nda3uM038xEEKi7GFl', 'huda': 'w4LX7bK479eHGM1k15Em'}
+    used = Counter()
+    for b, m in st.items():
+        for t, i in m.items():
+            if check.is_drill(check.parts_of(t)) or 'take' not in i: continue
+            src = os.path.join(CACHE, vids[b], f"{cid(t)}-{i['take']}{SUFFIX}.mp3")
+            k = tighten(t, src, os.path.join(BUDDY_DIR[b], i['id'] + '.mp3'), checked=i['how'] != 'approved by ear')
+            used[k] += 1
+            if k == 'pad only': print('  kept nearly as is:', b, t)
+        for t, i in m.items():
+            pieces = check.parts_of(t)
+            if check.is_drill(pieces) and all(p in m for p in pieces):
+                join([os.path.join(BUDDY_DIR[b], m[p]['id'] + '.mp3') for p in pieces], os.path.join(BUDDY_DIR[b], i['id'] + '.mp3'))
+    orig = os.path.join(CACHE, 'qari-orig'); os.makedirs(orig, exist_ok=True)
+    for t, i in read_json_js(os.path.join(ROOT, 'js/audio-manifest.js')).items():   # the qāriʾ: never re-checked, loose trim
+        f = os.path.join(OUT, i + '.mp3'); o = os.path.join(orig, i + '.mp3')
+        if not os.path.exists(o): subprocess.run(['cp', f, o], check=True)
+        lv, bf, el, af = TRIMS[-1]; trim(o, f, lv, bf, el, af)
+    print('trims used:', dict(used))
 
 
 def write_review(report=None):
@@ -377,4 +437,4 @@ if __name__ == '__main__':
     voices = dict(v.split('=') for v in a[a.index('--voices') + 1].split(',')) if '--voices' in a else \
         {'zaid': 'R6nda3uM038xEEKi7GFl', 'huda': 'w4LX7bK479eHGM1k15Em'}      # Anas for Zaid, Habibah for Huda
     sys.path.insert(0, HERE)
-    {'voices': lambda: cmd_voices([x for x in a[1:] if not x.startswith('--')] or None), 'pick': lambda: cmd_pick(a[1]), 'build': lambda: cmd_build(voices, only, takes, '--dry' in a, '--fresh' in a), 'approve': lambda: cmd_approve(a[1], a[2], a[3]), 'review': lambda: write_review()}[a[0]]()
+    {'voices': lambda: cmd_voices([x for x in a[1:] if not x.startswith('--')] or None), 'pick': lambda: cmd_pick(a[1]), 'build': lambda: cmd_build(voices, only, takes, '--dry' in a, '--fresh' in a), 'approve': lambda: cmd_approve(a[1], a[2], a[3]), 'review': lambda: write_review(), 'tighten': cmd_tighten}[a[0]]()

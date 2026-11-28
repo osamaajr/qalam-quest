@@ -27,7 +27,7 @@ def pieces(raw):
 
 def main(texts):
     ear_path = os.path.join(eleven.ROOT, 'tools', 'audio-needs-ear.json')
-    ear = []                                                # only what still needs a decision
+    ear = [e for e in json.load(open(ear_path, encoding='utf-8')) if e['text'] not in texts]
     cand = os.path.join(eleven.ROOT, 'tools', 'voice-pick', 'cand')
     for text in texts:
         ar = check.tidy(text)

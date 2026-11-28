@@ -968,7 +968,7 @@
         <div class="tip-row">${M.kid(S.buddy, ex.mood || 'talk')}<div class="bubble">${ex.tip ? rich(ex.tip) : C.pick(['Look closely!', 'Can you see it?', 'Say it out loud!', 'Easy peasy!'])}</div></div>`;
       bindSpeak(w);
       const k = w.querySelector('.tip-row .kid'); setTimeout(() => k && M.setMood(k, ex.mood === 'happy' ? 'dance' : 'idle'), 2600);
-      const say = ex.say || ex.bigQ; if (canSpeak(say)) setTimeout(() => speak(say, false, w.querySelector('[data-say]')), 400);
+      const say = ex.say || ex.bigQ; if (canSpeak(say)) setTimeout(() => speak(say, false, w.querySelector('[data-say]')), 120);
       return {};
     },
     mcq(w, ex, ctx) {
@@ -994,7 +994,7 @@
     listen(w, ex, ctx) {
       const c = RENDER.mcq(w, { ...ex, big: null }, ctx);
       w.querySelector('.ex-prompt').insertAdjacentHTML('afterend', `<div style="display:flex;justify-content:center;align-items:flex-end;gap:16px"><button class="speak big-speak" data-say="${esc(ex.say)}" aria-label="Play sound">${V.speaker}</button><button class="speak slow-speak" data-say="${esc(ex.say)}" data-slow="1" aria-label="Play slowly">${IMG('turtle')}</button></div>`);
-      bindSpeak(w); setTimeout(() => speak(ex.say, false, w.querySelector('.big-speak')), 350);
+      bindSpeak(w); setTimeout(() => speak(ex.say, false, w.querySelector('.big-speak')), 120);
       return c;
     },
     match(w, ex, ctx) {

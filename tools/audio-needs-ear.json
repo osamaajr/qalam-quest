@@ -1,1 +1,57 @@
-[]
+[
+ {
+  "buddy": "zaid",
+  "text": "سُو",
+  "want": "سُۥۥ",
+  "takes": [
+   "voice-pick/cand/zaid-67ae427203-0.mp3",
+   "voice-pick/cand/zaid-67ae427203-1.mp3",
+   "voice-pick/cand/zaid-67ae427203-2.mp3",
+   "voice-pick/cand/zaid-67ae427203-3.mp3"
+  ]
+ },
+ {
+  "buddy": "zaid",
+  "text": "وَاو",
+  "want": "وَااو",
+  "takes": [
+   "voice-pick/cand/zaid-41a7badb05-0.mp3",
+   "voice-pick/cand/zaid-41a7badb05-1.mp3",
+   "voice-pick/cand/zaid-41a7badb05-2.mp3",
+   "voice-pick/cand/zaid-41a7badb05-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "سِ",
+  "want": "سِ",
+  "takes": [
+   "voice-pick/cand/huda-48428bcc7b-0.mp3",
+   "voice-pick/cand/huda-48428bcc7b-1.mp3",
+   "voice-pick/cand/huda-48428bcc7b-2.mp3",
+   "voice-pick/cand/huda-48428bcc7b-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "لْ",
+  "want": "ل",
+  "takes": [
+   "voice-pick/cand/huda-2d9b32749e-0.mp3",
+   "voice-pick/cand/huda-2d9b32749e-1.mp3",
+   "voice-pick/cand/huda-2d9b32749e-2.mp3",
+   "voice-pick/cand/huda-2d9b32749e-3.mp3"
+  ]
+ },
+ {
+  "buddy": "huda",
+  "text": "خَا",
+  "want": "خَاا",
+  "takes": [
+   "voice-pick/cand/huda-ed6564c827-0.mp3",
+   "voice-pick/cand/huda-ed6564c827-1.mp3",
+   "voice-pick/cand/huda-ed6564c827-2.mp3",
+   "voice-pick/cand/huda-ed6564c827-3.mp3"
+  ]
+ }
+]
