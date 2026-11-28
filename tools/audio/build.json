@@ -731,6 +731,60 @@
   "بَا بِي بُو": {
    "id": "7570ae3f23",
    "how": "joined from checked sounds"
+  },
+  "خَ": {
+   "id": "314d20965b",
+   "how": "approved by ear",
+   "take": 1
+  },
+  "لُ": {
+   "id": "4fa06a5ae4",
+   "how": "approved by ear",
+   "take": 1
+  },
+  "نُو": {
+   "id": "58364d6b5f",
+   "how": "approved by ear",
+   "take": 0
+  },
+  "نُون": {
+   "id": "a4647fa3ab",
+   "how": "approved by ear",
+   "take": 1
+  },
+  "بَا دَال نُون": {
+   "id": "3a9b72a82f",
+   "how": "joined from checked sounds"
+  },
+  "نُ": {
+   "id": "35548ef661",
+   "how": "approved by ear",
+   "take": 0
+  },
+  "مِيم": {
+   "id": "a3ebb01c21",
+   "how": "approved by ear",
+   "take": 1
+  },
+  "مُ": {
+   "id": "a41bdb0b77",
+   "how": "approved by ear",
+   "take": 0
+  },
+  "أَبْ": {
+   "id": "eded93bc73",
+   "how": "approved by ear",
+   "take": 1
+  },
+  "قُلُ": {
+   "id": "276887435a",
+   "how": "checked: cut from a longer take (heard قُلُ)",
+   "take": 141
+  },
+  "رٌ": {
+   "id": "e99189e2bd",
+   "how": "checked: cut from a longer take (heard رُن)",
+   "take": 230
   }
  },
  "zaid": {
@@ -1517,6 +1571,26 @@
   "بَا بِي بُو": {
    "id": "7570ae3f23",
    "how": "joined from checked sounds"
+  },
+  "ٱلصَّيْفِ": {
+   "id": "ca0129c498",
+   "how": "approved by ear",
+   "take": 0
+  },
+  "لْ": {
+   "id": "2d9b32749e",
+   "how": "approved by ear",
+   "take": 0
+  },
+  "قُلُ": {
+   "id": "276887435a",
+   "how": "checked: cut from a longer take (heard قُلُ)",
+   "take": 122
+  },
+  "رٌ": {
+   "id": "e99189e2bd",
+   "how": "checked: cut from a longer take (heard رُن)",
+   "take": 234
   }
  }
 }

@@ -38,7 +38,7 @@
 const C = window.QQ_CONTENT, Q = window.QQ_AUDIO || {}, B = window.QQ_AUDIO_BUDDY || {};
 const VOICE = { zaid: 'Anas', huda: 'Habibah' };
 let SRC = {}, SILENT = [], EAR = [], OLD = {};
-const KEY = 'qalam-audio-review-2';
+const KEY = 'qalam-audio-review-3';
 const store = (() => { try { return JSON.parse(localStorage.getItem(KEY)) || { marks: {}, picks: {} }; } catch (e) { return { marks: {}, picks: {} }; } })();
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} document.getElementById('n').textContent = Object.keys(store.marks).length + Object.keys(store.picks).length; };
 const nameOf = Object.fromEntries(Object.entries(C.SAY_NAME).map(([k, v]) => [v.normalize('NFC'), k]));
