@@ -1,1394 +1,622 @@
 {
- "zaid": {
-  "أَبْ": {
-   "id": "eded93bc73",
-   "how": "checked: heard ءَبڇ",
-   "take": 0,
-   "form": "/ʔab/"
-  },
+ "huda": {
   "أَلِف": {
    "id": "fddf097a24",
    "how": "checked: heard ءَلِف",
-   "take": 1,
-   "form": "أَلِف"
+   "take": 0,
+   "form": "قُلْ: أَلِف."
   },
   "إِنَ": {
    "id": "6d60c5fe0d",
    "how": "checked: heard ءِنَ",
-   "take": 0,
-   "form": "/ʔina/"
-  },
-  "بٌ": {
-   "id": "3216d1ef6b",
-   "how": "checked: heard بُن",
-   "take": 0,
-   "form": "/bun/"
+   "take": 4,
+   "form": "قُلْ: إِنَ."
   },
   "بٍ": {
    "id": "57ad67b26c",
    "how": "checked: heard بِن",
-   "take": 0,
-   "form": "/bin/"
+   "take": 4,
+   "form": "قُلْ: بٍ."
   },
   "بَ": {
    "id": "d431deab71",
-   "how": "checked: heard بَع",
-   "take": 0,
-   "form": "/ba/"
+   "how": "checked: heard بَه",
+   "take": 2,
+   "form": "قُلْ: بَ!"
   },
   "بَا": {
    "id": "52dff1df97",
-   "how": "checked: heard بَاا",
-   "take": 4,
-   "form": "/baː/!"
+   "how": "checked: heard بَا",
+   "take": 0,
+   "form": "قُلْ: بَا."
   },
   "بَابٌ": {
    "id": "b7831c1d13",
    "how": "checked: heard بَاابُن",
-   "take": 3,
-   "form": "بَابٌ!"
+   "take": 0,
+   "form": "قُلْ: بَابٌ."
   },
   "بَيْت": {
    "id": "b4766f858f",
    "how": "checked: heard بَيت",
-   "take": 4,
-   "form": "/bajt/!"
+   "take": 9,
+   "form": "بَيْت"
   },
   "بُ": {
    "id": "db369760ad",
-   "how": "checked: heard بُ",
+   "how": "checked: heard بُه",
    "take": 1,
-   "form": "بُ"
+   "form": "اِقْرَأْ مَعِي: بُ."
   },
   "بِ": {
    "id": "3d7326a9ba",
-   "how": "checked: heard بِ",
+   "how": "checked: heard بِه",
    "take": 0,
-   "form": "/bi/"
+   "form": "قُلْ: بِ."
   },
   "تَ": {
    "id": "6670f319d7",
-   "how": "checked: heard تَع",
+   "how": "checked: heard تَه",
    "take": 0,
-   "form": "/ta/"
+   "form": "قُلْ: تَ."
   },
   "تَا": {
    "id": "63a1e74a55",
    "how": "checked: heard تَا",
-   "take": 6,
-   "form": "«تَا»"
+   "take": 3,
+   "form": "هَيَّا نَقُولُ: تَا."
   },
   "تُ": {
    "id": "7d3d35190d",
    "how": "checked: heard تُ",
-   "take": 6,
-   "form": "«تُ»"
+   "take": 0,
+   "form": "قُلْ: تُ."
   },
   "تِ": {
    "id": "ecbc66cf6b",
    "how": "checked: heard تِ",
    "take": 4,
-   "form": "/ti/!"
+   "form": "قُلْ: تِ."
   },
-  "جُ": {
-   "id": "43abf3ef53",
-   "how": "checked: heard جُ",
-   "take": 6,
-   "form": "«جُ»"
+  "جَ": {
+   "id": "9759387956",
+   "how": "checked: heard جَ",
+   "take": 0,
+   "form": "قُلْ: جَ."
   },
   "جِ": {
    "id": "2c87e1b89f",
    "how": "checked: heard جِه",
-   "take": 1,
+   "take": 9,
    "form": "جِ"
   },
   "جِيم": {
    "id": "13c9ccc946",
-   "how": "checked: heard جِۦم",
-   "take": 0,
-   "form": "/dʒiːm/"
+   "how": "checked: heard جِۦۦم",
+   "take": 2,
+   "form": "قُلْ: جِيم!"
   },
   "حَ": {
    "id": "5f387e8e0b",
    "how": "checked: heard حَ",
-   "take": 1,
+   "take": 9,
    "form": "حَ"
   },
   "حَا": {
    "id": "b831568acb",
    "how": "checked: heard حَا",
    "take": 1,
-   "form": "حَا"
+   "form": "اِقْرَأْ مَعِي: حَا."
   },
   "حَسُنَ": {
    "id": "81de2b3baf",
    "how": "checked: heard حَسُنَ",
-   "take": 3,
-   "form": "حَسُنَ!"
-  },
-  "خَ": {
-   "id": "314d20965b",
-   "how": "checked: heard خَه",
-   "take": 4,
-   "form": "/xɑ/!"
+   "take": 0,
+   "form": "قُلْ: حَسُنَ."
   },
   "دٌ": {
    "id": "2992554a25",
    "how": "checked: heard دُن",
-   "take": 7,
-   "form": "/dun/ ..."
+   "take": 8,
+   "form": "قُلْ: /dun/!"
   },
   "دَ": {
    "id": "a3d77da278",
-   "how": "checked: heard دَ",
+   "how": "checked: heard دَه",
    "take": 0,
-   "form": "/da/"
+   "form": "قُلْ: دَ."
   },
   "دَال": {
    "id": "a679fba2a2",
-   "how": "checked: heard دَال",
-   "take": 3,
-   "form": "دَال!"
+   "how": "checked: heard دَاال",
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: دَال."
   },
   "دَيْنٌ": {
    "id": "7e55a86884",
    "how": "checked: heard دَينُن",
    "take": 0,
-   "form": "/dajnun/"
+   "form": "قُلْ: دَيْنٌ."
   },
   "دُ": {
    "id": "d9b353b6b8",
    "how": "checked: heard دُه",
-   "take": 1,
-   "form": "دُ"
+   "take": 2,
+   "form": "قُلْ: دُ!"
   },
   "دِ": {
    "id": "9f6c1f31ca",
-   "how": "checked: heard دِ",
-   "take": 0,
-   "form": "/di/"
+   "how": "checked: heard دِه",
+   "take": 7,
+   "form": "اِقْرَأْ مَعِي: دِ."
   },
   "دِينٌ": {
    "id": "09cce50404",
    "how": "checked: heard دِۦۦنُن",
-   "take": 3,
-   "form": "دِينٌ!"
+   "take": 0,
+   "form": "قُلْ: دِينٌ."
   },
   "دْ": {
    "id": "6b954c3951",
-   "how": "checked: heard دڇ",
-   "take": 1,
-   "form": "دْ"
+   "how": "checked: heard ده",
+   "take": 0,
+   "form": "قُلْ: دْ."
   },
   "ذَال": {
    "id": "61f1315ed9",
    "how": "checked: heard ذَال",
    "take": 0,
-   "form": "/ðaːl/"
+   "form": "قُلْ: ذَال."
   },
   "ذَهَبَ": {
    "id": "4407353011",
    "how": "checked: heard ذَهَبَ",
-   "take": 0,
-   "form": "/ðahaba/"
+   "take": 3,
+   "form": "هَيَّا نَقُولُ: ذَهَبَ."
   },
   "ذِ": {
    "id": "06d0f2d25d",
    "how": "checked: heard ذِه",
-   "take": 1,
-   "form": "ذِ"
+   "take": 0,
+   "form": "قُلْ: ذِ."
   },
   "رَ": {
    "id": "191edc4446",
    "how": "checked: heard رَ",
    "take": 0,
-   "form": "/ra/"
+   "form": "قُلْ: رَ."
   },
   "رَا": {
    "id": "0bd9a20ac3",
    "how": "checked: heard رَاا",
-   "take": 2,
-   "form": "/raː/."
+   "take": 0,
+   "form": "قُلْ: رَا."
   },
   "رَبُّنَا": {
    "id": "c7f9468913",
    "how": "checked: heard رَببُنَاا",
-   "take": 4,
-   "form": "/rabbunaː/!"
-  },
-  "رَبِّي": {
-   "id": "5b47a5a540",
-   "how": "checked: heard رَببِۦ",
    "take": 0,
-   "form": "/rabbiː/"
-  },
-  "رُ": {
-   "id": "e2a4059525",
-   "how": "checked: heard رُ",
-   "take": 2,
-   "form": "/ru/."
-  },
-  "رِ": {
-   "id": "490c376a4c",
-   "how": "checked: heard رِه",
-   "take": 5,
-   "form": "رِ،"
-  },
-  "سَ": {
-   "id": "7fe1ea7b0a",
-   "how": "checked: heard سَ",
-   "take": 2,
-   "form": "/sa/."
-  },
-  "سَا": {
-   "id": "75e26210d3",
-   "how": "checked: heard سَا",
-   "take": 6,
-   "form": "«سَا»"
-  },
-  "سَمِعَ": {
-   "id": "698f9b8de7",
-   "how": "checked: heard سَمِعَ",
-   "take": 0,
-   "form": "/samiʕa/"
-  },
-  "سُ": {
-   "id": "f48613ace1",
-   "how": "checked: heard سُ",
-   "take": 1,
-   "form": "سُ"
-  },
-  "سِ": {
-   "id": "48428bcc7b",
-   "how": "checked: heard سِ",
-   "take": 0,
-   "form": "/si/"
-  },
-  "سِي": {
-   "id": "34834f701e",
-   "how": "checked: heard سِۦۦ",
-   "take": 0,
-   "form": "/siː/"
-  },
-  "سِين": {
-   "id": "bbeceabf84",
-   "how": "checked: heard سِۦۦن",
-   "take": 3,
-   "form": "سِين!"
-  },
-  "شَجَرَة": {
-   "id": "70ba41852f",
-   "how": "checked: heard شَجَرَ",
-   "take": 2,
-   "form": "/ʃadʒarah/."
-  },
-  "صَاد": {
-   "id": "6c6589e03a",
-   "how": "checked: heard صَادڇ",
-   "take": 5,
-   "form": "صَاد،"
-  },
-  "ضَاد": {
-   "id": "ffddaefa2b",
-   "how": "checked: heard ضَادڇ",
-   "take": 4,
-   "form": "/dˤɑːd/!"
-  },
-  "طَا": {
-   "id": "88e75a0bff",
-   "how": "checked: heard طَاا",
-   "take": 3,
-   "form": "طَا!"
-  },
-  "طَالِبَة": {
-   "id": "bcceb90221",
-   "how": "checked: heard طَالِبَ",
-   "take": 1,
-   "form": "طَالِبَة"
-  },
-  "ظَا": {
-   "id": "4aa7a799ab",
-   "how": "checked: heard ظَا",
-   "take": 1,
-   "form": "ظَا"
-  },
-  "عَ": {
-   "id": "40fa11ec92",
-   "how": "checked: heard عَه",
-   "take": 3,
-   "form": "عَ!"
-  },
-  "عَالِم": {
-   "id": "da98c57ee3",
-   "how": "checked: heard عَالِم",
-   "take": 0,
-   "form": "/ʕaːlim/"
-  },
-  "عَلِمَ": {
-   "id": "ec66fddf78",
-   "how": "checked: heard عَلِمَ",
-   "take": 0,
-   "form": "/ʕalima/"
-  },
-  "عَنْ": {
-   "id": "883beb6f61",
-   "how": "checked: heard عَن",
-   "take": 0,
-   "form": "/ʕan/"
-  },
-  "عِلْم": {
-   "id": "261e75d77e",
-   "how": "checked: heard عِلم",
-   "take": 2,
-   "form": "/ʕilm/."
-  },
-  "غَيْن": {
-   "id": "ab126af943",
-   "how": "checked: heard غَين",
-   "take": 3,
-   "form": "غَيْن!"
-  },
-  "فَ": {
-   "id": "974f76d02d",
-   "how": "checked: heard فَ",
-   "take": 0,
-   "form": "/fa/"
-  },
-  "فَا": {
-   "id": "459c62a3fe",
-   "how": "checked: heard فَاا",
-   "take": 8,
-   "form": "/faː/"
-  },
-  "فُ": {
-   "id": "a0b184720b",
-   "how": "checked: heard فُ",
-   "take": 1,
-   "form": "فُ"
-  },
-  "فِ": {
-   "id": "c7f392deef",
-   "how": "checked: heard فِه",
-   "take": 1,
-   "form": "فِ"
-  },
-  "قَ": {
-   "id": "b8ad739dba",
-   "how": "checked: heard قَ",
-   "take": 0,
-   "form": "/qɑ/"
-  },
-  "قَلَم": {
-   "id": "d339e2317b",
-   "how": "checked: heard قَلَم",
-   "take": 0,
-   "form": "/qɑlam/"
-  },
-  "قَلَمٌ": {
-   "id": "c5cd3bad9c",
-   "how": "checked: heard قَلَمُن",
-   "take": 0,
-   "form": "/qɑlamun/"
-  },
-  "قُلُ": {
-   "id": "276887435a",
-   "how": "checked: heard قُلُ",
-   "take": 0,
-   "form": "/qulu/"
-  },
-  "قِ": {
-   "id": "a38e1b277b",
-   "how": "checked: heard قِه",
-   "take": 1,
-   "form": "قِ"
-  },
-  "كٍ": {
-   "id": "c099855c53",
-   "how": "checked: heard كِن",
-   "take": 9,
-   "form": "كٍ"
-  },
-  "كَ": {
-   "id": "1b8031bb34",
-   "how": "checked: heard كَ",
-   "take": 0,
-   "form": "/ka/"
-  },
-  "كَاف": {
-   "id": "9df474331a",
-   "how": "checked: heard كَااف",
-   "take": 9,
-   "form": "كَاف"
-  },
-  "كَتَبَ": {
-   "id": "1a31c3cbb8",
-   "how": "checked: heard كَتَبَ",
-   "take": 0,
-   "form": "/kataba/"
-  },
-  "كَرُمَ": {
-   "id": "67f714bd24",
-   "how": "checked: heard كَرُمَ",
-   "take": 0,
-   "form": "/karuma/"
-  },
-  "كُ": {
-   "id": "6f94d563d6",
-   "how": "checked: heard كُ",
-   "take": 6,
-   "form": "«كُ»"
-  },
-  "كِ": {
-   "id": "d51eedf081",
-   "how": "checked: heard كِه",
-   "take": 1,
-   "form": "كِ"
-  },
-  "كِتَاب": {
-   "id": "110b12ce5d",
-   "how": "checked: heard كِتَابڇ",
-   "take": 6,
-   "form": "«كِتَاب»"
-  },
-  "كِتَابٌ": {
-   "id": "edbacf7ab4",
-   "how": "checked: heard كِتَاابُن",
-   "take": 1,
-   "form": "كِتَابٌ"
-  },
-  "لَ": {
-   "id": "c4e931ac03",
-   "how": "checked: heard لَ",
-   "take": 0,
-   "form": "/la/"
-  },
-  "لَام": {
-   "id": "2d379987d4",
-   "how": "checked: heard لَاام",
-   "take": 8,
-   "form": "/laːm/"
-  },
-  "لَمَ": {
-   "id": "df832e58f0",
-   "how": "checked: heard لَمَ",
-   "take": 0,
-   "form": "/lama/"
-  },
-  "لُ": {
-   "id": "4fa06a5ae4",
-   "how": "checked: heard لُه",
-   "take": 3,
-   "form": "لُ!"
-  },
-  "لِ": {
-   "id": "dbb8df58f4",
-   "how": "checked: heard لِ",
-   "take": 0,
-   "form": "/li/"
-  },
-  "لِمْ": {
-   "id": "d53fd330c0",
-   "how": "checked: heard لِم",
-   "take": 0,
-   "form": "/lim/"
-  },
-  "مٌ": {
-   "id": "536476d7b2",
-   "how": "checked: heard مُن",
-   "take": 7,
-   "form": "/mun/ ..."
-  },
-  "مٍ": {
-   "id": "b258c39916",
-   "how": "checked: heard مِن",
-   "take": 0,
-   "form": "/min/"
-  },
-  "مَ": {
-   "id": "377f54ce9e",
-   "how": "checked: heard مَ",
-   "take": 0,
-   "form": "/ma/"
-  },
-  "مَدْرَسَة": {
-   "id": "3ad9a6ac42",
-   "how": "checked: heard مَدڇرَسَ",
-   "take": 0,
-   "form": "/madrasah/"
-  },
-  "مُ": {
-   "id": "a41bdb0b77",
-   "how": "checked: heard مُ",
-   "take": 1,
-   "form": "مُ"
-  },
-  "مُسْلِمَة": {
-   "id": "b32396161d",
-   "how": "checked: heard مُسلِمَه",
-   "take": 0,
-   "form": "/muslimah/"
-  },
-  "مُسْلِمُو": {
-   "id": "b00875eb1c",
-   "how": "checked: heard مُسلِمُۥۥ",
-   "take": 1,
-   "form": "مُسْلِمُو"
-  },
-  "مُسْلِمِي": {
-   "id": "4173c3a81d",
-   "how": "checked: heard مُسلِمِۦۦ",
-   "take": 1,
-   "form": "مُسْلِمِي"
-  },
-  "مُعَلِّم": {
-   "id": "b5bf746ced",
-   "how": "checked: heard مُعَللِم",
-   "take": 0,
-   "form": "/muʕallim/"
-  },
-  "مُعَلِّمَة": {
-   "id": "78cf081294",
-   "how": "checked: heard مُعَللِمَ",
-   "take": 0,
-   "form": "/muʕallimah/"
-  },
-  "مِ": {
-   "id": "e43a63ddfb",
-   "how": "checked: heard مِه",
-   "take": 3,
-   "form": "مِ!"
-  },
-  "مِي": {
-   "id": "e8017dd47c",
-   "how": "checked: heard مِۦۦ",
-   "take": 8,
-   "form": "/miː/"
-  },
-  "مِيم": {
-   "id": "a3ebb01c21",
-   "how": "checked: heard مِۦم",
-   "take": 0,
-   "form": "/miːm/"
-  },
-  "نَ": {
-   "id": "40c8cf0fb4",
-   "how": "checked: heard نَ",
-   "take": 2,
-   "form": "/na/."
-  },
-  "نَا": {
-   "id": "1bb231a52c",
-   "how": "checked: heard نَا",
-   "take": 0,
-   "form": "/naː/"
-  },
-  "نُو": {
-   "id": "58364d6b5f",
-   "how": "checked: heard نُۥ",
-   "take": 8,
-   "form": "/nuː/"
-  },
-  "نُورٌ": {
-   "id": "6f670ffb7f",
-   "how": "checked: heard نُۥۥرُن",
-   "take": 5,
-   "form": "نُورٌ،"
-  },
-  "نُون": {
-   "id": "a4647fa3ab",
-   "how": "checked: heard نُۥۥن",
-   "take": 1,
-   "form": "نُون"
-  },
-  "هَ": {
-   "id": "f27e4b76e3",
-   "how": "checked: heard هَ",
-   "take": 2,
-   "form": "/ha/."
-  },
-  "هَا": {
-   "id": "c3f9210524",
-   "how": "checked: heard هَا",
-   "take": 3,
-   "form": "هَا!"
-  },
-  "هُ": {
-   "id": "e5003bc21b",
-   "how": "checked: heard هُ",
-   "take": 5,
-   "form": "هُ،"
-  },
-  "وَ": {
-   "id": "f847ca2b36",
-   "how": "checked: heard وَ",
-   "take": 1,
-   "form": "وَ"
-  },
-  "يَا": {
-   "id": "43f41f7a68",
-   "how": "checked: heard يَا",
-   "take": 0,
-   "form": "/jaː/"
-  },
-  "ٱلْقَمَرُ": {
-   "id": "10a5d3c9e1",
-   "how": "checked: heard ءَلقَمَرُ",
-   "take": 4,
-   "form": "/ʔalqɑmaru/!"
-  },
-  "ٱلْكِتَٰبُ": {
-   "id": "4851a31913",
-   "how": "checked: heard ءَلكِتَابُ",
-   "take": 0,
-   "form": "/ʔalkitaːbu/"
-  },
-  "مِنْ قُلْ لَمْ": {
-   "id": "ef39172809",
-   "how": "checked: heard مِنقُللَم",
-   "take": 1,
-   "form": "مِنْ قُلْ لَمْ"
-  },
-  "جَ": {
-   "id": "9759387956",
-   "how": "checked: heard جَ",
-   "take": 0,
-   "form": "/dʒa/"
-  },
-  "رً": {
-   "id": "39dbc7c906",
-   "how": "checked: heard رَن",
-   "take": 0,
-   "form": "/ran/"
-  },
-  "رٌ": {
-   "id": "e99189e2bd",
-   "how": "checked: heard رُن",
-   "take": 9,
-   "form": "رٌ"
-  },
-  "فِي": {
-   "id": "eca34af797",
-   "how": "checked: heard فِۦۦ",
-   "take": 0,
-   "form": "/fiː/"
-  },
-  "كٌ": {
-   "id": "51122c85cb",
-   "how": "checked: heard كُن",
-   "take": 5,
-   "form": "كٌ،"
-  },
-  "نً": {
-   "id": "76200aa52a",
-   "how": "checked: heard نَن",
-   "take": 0,
-   "form": "/nan/"
-  },
-  "يَ": {
-   "id": "7ff1508cbd",
-   "how": "checked: heard يَه",
-   "take": 1,
-   "form": "يَ"
-  },
-  "يَكُن لَّهُۥ": {
-   "id": "93a57fbfb4",
-   "how": "checked: heard يَكُللَهُۥۥ",
-   "take": 0,
-   "form": "/jakullahuː/"
-  },
-  "بً": {
-   "id": "162b01201e",
-   "how": "checked: heard بَن",
-   "take": 0,
-   "form": "/ban/"
-  },
-  "بَ بِ": {
-   "id": "867a266250",
-   "how": "joined from checked sounds"
-  },
-  "بَ بِ بُ": {
-   "id": "06b4b3179e",
-   "how": "joined from checked sounds"
-  },
-  "بَ تَ مَ": {
-   "id": "e677d3539c",
-   "how": "joined from checked sounds"
-  },
-  "بَا دَال نُون": {
-   "id": "3a9b72a82f",
-   "how": "joined from checked sounds"
-  },
-  "تَا أَلِف بَا": {
-   "id": "0d570cb64b",
-   "how": "joined from checked sounds"
-  },
-  "كَاف تَا أَلِف": {
-   "id": "9bfa2b5bfa",
-   "how": "joined from checked sounds"
-  },
-  "كَاف تَا بَا": {
-   "id": "e149bcc5cb",
-   "how": "joined from checked sounds"
-  },
-  "بً بٍ بٌ": {
-   "id": "ff8a3858ec",
-   "how": "joined from checked sounds"
-  }
- },
- "huda": {
-  "أَبْ": {
-   "id": "eded93bc73",
-   "how": "checked: heard ءَبڇ",
-   "take": 0,
-   "form": "/ʔab/"
-  },
-  "أَلِف": {
-   "id": "fddf097a24",
-   "how": "checked: heard ءَلِف",
-   "take": 8,
-   "form": "/ʔalif/"
-  },
-  "إِنَ": {
-   "id": "6d60c5fe0d",
-   "how": "checked: heard ءِنَ",
-   "take": 0,
-   "form": "/ʔina/"
-  },
-  "بٍ": {
-   "id": "57ad67b26c",
-   "how": "checked: heard بِن",
-   "take": 9,
-   "form": "بٍ"
-  },
-  "بَ": {
-   "id": "d431deab71",
-   "how": "checked: heard بَه",
-   "take": 6,
-   "form": "«بَ»"
-  },
-  "بَا": {
-   "id": "52dff1df97",
-   "how": "checked: heard بَا",
-   "take": 4,
-   "form": "/baː/!"
-  },
-  "بَابٌ": {
-   "id": "b7831c1d13",
-   "how": "checked: heard بَابُن",
-   "take": 3,
-   "form": "بَابٌ!"
-  },
-  "بَيْت": {
-   "id": "b4766f858f",
-   "how": "checked: heard بَيت",
-   "take": 0,
-   "form": "/bajt/"
-  },
-  "بُ": {
-   "id": "db369760ad",
-   "how": "checked: heard بُ",
-   "take": 0,
-   "form": "/bu/"
-  },
-  "بِ": {
-   "id": "3d7326a9ba",
-   "how": "checked: heard بِ",
-   "take": 9,
-   "form": "بِ"
-  },
-  "تَ": {
-   "id": "6670f319d7",
-   "how": "checked: heard تَع",
-   "take": 0,
-   "form": "/ta/"
-  },
-  "تَا": {
-   "id": "63a1e74a55",
-   "how": "checked: heard تَا",
-   "take": 6,
-   "form": "«تَا»"
-  },
-  "تُ": {
-   "id": "7d3d35190d",
-   "how": "checked: heard تُ",
-   "take": 0,
-   "form": "/tu/"
-  },
-  "جُ": {
-   "id": "43abf3ef53",
-   "how": "checked: heard جُ",
-   "take": 9,
-   "form": "جُ"
-  },
-  "جِ": {
-   "id": "2c87e1b89f",
-   "how": "checked: heard جِ",
-   "take": 0,
-   "form": "/dʒi/"
-  },
-  "جِيم": {
-   "id": "13c9ccc946",
-   "how": "checked: heard جِۦۦم",
-   "take": 0,
-   "form": "/dʒiːm/"
-  },
-  "حَ": {
-   "id": "5f387e8e0b",
-   "how": "checked: heard حَ",
-   "take": 2,
-   "form": "/ħa/."
-  },
-  "حَا": {
-   "id": "b831568acb",
-   "how": "checked: heard حَا",
-   "take": 3,
-   "form": "حَا!"
-  },
-  "حَسُنَ": {
-   "id": "81de2b3baf",
-   "how": "checked: heard حَسُنَ",
-   "take": 2,
-   "form": "/ħasuna/."
-  },
-  "دٌ": {
-   "id": "2992554a25",
-   "how": "checked: heard دُن",
-   "take": 7,
-   "form": "/dun/ ..."
-  },
-  "دَ": {
-   "id": "a3d77da278",
-   "how": "checked: heard دَ",
-   "take": 0,
-   "form": "/da/"
-  },
-  "دَال": {
-   "id": "a679fba2a2",
-   "how": "checked: heard دَال",
-   "take": 5,
-   "form": "دَال،"
-  },
-  "دَيْنٌ": {
-   "id": "7e55a86884",
-   "how": "checked: heard دَينُن",
-   "take": 0,
-   "form": "/dajnun/"
-  },
-  "دُ": {
-   "id": "d9b353b6b8",
-   "how": "checked: heard دُ",
-   "take": 1,
-   "form": "دُ"
-  },
-  "دُونٌ": {
-   "id": "fbea94be76",
-   "how": "checked: heard دُۥۥنُن",
-   "take": 1,
-   "form": "دُونٌ"
-  },
-  "دِ": {
-   "id": "9f6c1f31ca",
-   "how": "checked: heard دِ",
-   "take": 8,
-   "form": "/di/"
-  },
-  "دِينٌ": {
-   "id": "09cce50404",
-   "how": "checked: heard دِۦۦنُن",
-   "take": 3,
-   "form": "دِينٌ!"
-  },
-  "دْ": {
-   "id": "6b954c3951",
-   "how": "checked: heard دڇ",
-   "take": 3,
-   "form": "دْ!"
-  },
-  "ذَ": {
-   "id": "f08e596e77",
-   "how": "checked: heard ذَع",
-   "take": 3,
-   "form": "ذَ!"
-  },
-  "ذَال": {
-   "id": "61f1315ed9",
-   "how": "checked: heard ذَال",
-   "take": 1,
-   "form": "ذَال"
-  },
-  "ذَهَبَ": {
-   "id": "4407353011",
-   "how": "checked: heard ذَهَبَ",
-   "take": 9,
-   "form": "ذَهَبَ"
-  },
-  "ذِ": {
-   "id": "06d0f2d25d",
-   "how": "checked: heard ذِ",
-   "take": 1,
-   "form": "ذِ"
-  },
-  "رَ": {
-   "id": "191edc4446",
-   "how": "checked: heard رَ",
-   "take": 2,
-   "form": "/ra/."
-  },
-  "رَا": {
-   "id": "0bd9a20ac3",
-   "how": "checked: heard رَا",
-   "take": 0,
-   "form": "/raː/"
-  },
-  "رَبُّنَا": {
-   "id": "c7f9468913",
-   "how": "checked: heard رَببُنَاا",
-   "take": 3,
-   "form": "رَبُّنَا!"
+   "form": "قُلْ: رَبُّنَا."
   },
   "رَبِّي": {
    "id": "5b47a5a540",
    "how": "checked: heard رَببِۦۦ",
    "take": 0,
-   "form": "/rabbiː/"
+   "form": "قُلْ: رَبِّي."
   },
-  "رِ": {
-   "id": "490c376a4c",
-   "how": "checked: heard رِه",
-   "take": 1,
-   "form": "رِ"
+  "رُ": {
+   "id": "e2a4059525",
+   "how": "checked: heard رُ",
+   "take": 7,
+   "form": "اِقْرَأْ مَعِي: رُ."
   },
   "سَ": {
    "id": "7fe1ea7b0a",
-   "how": "checked: heard سَع",
+   "how": "checked: heard سَ",
    "take": 0,
-   "form": "/sa/"
+   "form": "قُلْ: سَ."
   },
   "سَا": {
    "id": "75e26210d3",
    "how": "checked: heard سَا",
-   "take": 8,
-   "form": "/saː/"
+   "take": 4,
+   "form": "قُلْ: سَا."
   },
   "سَمِعَ": {
    "id": "698f9b8de7",
    "how": "checked: heard سَمِعَ",
-   "take": 0,
-   "form": "/samiʕa/"
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: سَمِعَ."
   },
   "سُ": {
    "id": "f48613ace1",
    "how": "checked: heard سُ",
-   "take": 6,
-   "form": "«سُ»"
-  },
-  "سِ": {
-   "id": "48428bcc7b",
-   "how": "checked: heard سِ",
-   "take": 2,
-   "form": "/si/."
+   "take": 5,
+   "form": "قُلْ: /su/."
   },
   "سِي": {
    "id": "34834f701e",
    "how": "checked: heard سِۦۦ",
-   "take": 2,
-   "form": "/siː/."
-  },
-  "سِين": {
-   "id": "bbeceabf84",
-   "how": "checked: heard سِۦۦن",
-   "take": 6,
-   "form": "«سِين»"
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: سِي."
   },
   "شَجَرَة": {
    "id": "70ba41852f",
    "how": "checked: heard شَجَرَ",
    "take": 0,
-   "form": "/ʃadʒarah/"
+   "form": "قُلْ: شَجَرَة."
   },
   "صَاد": {
    "id": "6c6589e03a",
    "how": "checked: heard صَادڇ",
    "take": 1,
-   "form": "صَاد"
+   "form": "اِقْرَأْ مَعِي: صَاد."
   },
   "ضَاد": {
    "id": "ffddaefa2b",
    "how": "checked: heard ضَادڇ",
    "take": 0,
-   "form": "/dˤɑːd/"
+   "form": "قُلْ: ضَاد."
   },
   "طَا": {
    "id": "88e75a0bff",
    "how": "checked: heard طَاا",
-   "take": 2,
-   "form": "/tˤɑː/."
-  },
-  "طَالِب": {
-   "id": "86a43d617f",
-   "how": "checked: heard طَاالِبڇ",
-   "take": 1,
-   "form": "طَالِب"
+   "take": 0,
+   "form": "قُلْ: طَا."
   },
   "طَالِبَة": {
    "id": "bcceb90221",
-   "how": "checked: heard طَالِبَ",
-   "take": 5,
-   "form": "طَالِبَة،"
+   "how": "checked: heard طَاالِبَه",
+   "take": 0,
+   "form": "قُلْ: طَالِبَة."
   },
   "ظَا": {
    "id": "4aa7a799ab",
    "how": "checked: heard ظَاا",
    "take": 0,
-   "form": "/ðˤɑː/"
+   "form": "قُلْ: ظَا."
+  },
+  "عَ": {
+   "id": "40fa11ec92",
+   "how": "checked: heard عَ",
+   "take": 7,
+   "form": "اِقْرَأْ مَعِي: عَ."
   },
   "عَالِم": {
    "id": "da98c57ee3",
    "how": "checked: heard عَاالِم",
-   "take": 6,
-   "form": "«عَالِم»"
+   "take": 0,
+   "form": "قُلْ: عَالِم."
   },
   "عَلِمَ": {
    "id": "ec66fddf78",
-   "how": "checked: heard عَلِمَ",
+   "how": "checked: heard عَلِمَه",
    "take": 0,
-   "form": "/ʕalima/"
+   "form": "قُلْ: عَلِمَ."
   },
   "عَنْ": {
    "id": "883beb6f61",
    "how": "checked: heard عَن",
    "take": 0,
-   "form": "/ʕan/"
+   "form": "قُلْ: عَنْ."
   },
   "غَيْن": {
    "id": "ab126af943",
    "how": "checked: heard غَين",
-   "take": 1,
+   "take": 9,
    "form": "غَيْن"
   },
   "فَ": {
    "id": "974f76d02d",
-   "how": "checked: heard فَ",
-   "take": 9,
-   "form": "فَ"
+   "how": "checked: heard فَه",
+   "take": 2,
+   "form": "قُلْ: فَ!"
   },
   "فَا": {
    "id": "459c62a3fe",
-   "how": "checked: heard فَا",
-   "take": 8,
-   "form": "/faː/"
+   "how": "checked: heard فَاا",
+   "take": 7,
+   "form": "اِقْرَأْ مَعِي: فَا."
   },
   "فُ": {
    "id": "a0b184720b",
-   "how": "checked: heard فُ",
-   "take": 9,
-   "form": "فُ"
-  },
-  "قَ": {
-   "id": "b8ad739dba",
-   "how": "checked: heard قَع",
+   "how": "checked: heard فُه",
    "take": 0,
-   "form": "/qɑ/"
+   "form": "قُلْ: فُ."
   },
-  "قَاف": {
-   "id": "ada551165c",
-   "how": "checked: heard قَاف",
-   "take": 9,
-   "form": "قَاف"
-  },
-  "قَلَم": {
-   "id": "d339e2317b",
-   "how": "checked: heard قَلَم",
+  "فِ": {
+   "id": "c7f392deef",
+   "how": "checked: heard فِه",
    "take": 0,
-   "form": "/qɑlam/"
-  },
-  "قَلَمٌ": {
-   "id": "c5cd3bad9c",
-   "how": "checked: heard قَلَمُن",
-   "take": 0,
-   "form": "/qɑlamun/"
-  },
-  "قُ": {
-   "id": "7084c042fd",
-   "how": "checked: heard قُ",
-   "take": 5,
-   "form": "قُ،"
-  },
-  "قُلُ": {
-   "id": "276887435a",
-   "how": "checked: heard قُلُ",
-   "take": 0,
-   "form": "/qulu/"
-  },
-  "قِ": {
-   "id": "a38e1b277b",
-   "how": "checked: heard قِ",
-   "take": 4,
-   "form": "/qi/!"
-  },
-  "كَ": {
-   "id": "1b8031bb34",
-   "how": "checked: heard كَ",
-   "take": 0,
-   "form": "/ka/"
-  },
-  "كَاف": {
-   "id": "9df474331a",
-   "how": "checked: heard كَااف",
-   "take": 8,
-   "form": "/kaːf/"
-  },
-  "كَتَبَ": {
-   "id": "1a31c3cbb8",
-   "how": "checked: heard كَتَبَ",
-   "take": 0,
-   "form": "/kataba/"
-  },
-  "كَرُمَ": {
-   "id": "67f714bd24",
-   "how": "checked: heard كَرُمَ",
-   "take": 5,
-   "form": "كَرُمَ،"
-  },
-  "كُ": {
-   "id": "6f94d563d6",
-   "how": "checked: heard كُ",
-   "take": 0,
-   "form": "/ku/"
-  },
-  "كِ": {
-   "id": "d51eedf081",
-   "how": "checked: heard كِ",
-   "take": 2,
-   "form": "/ki/."
-  },
-  "كِتَاب": {
-   "id": "110b12ce5d",
-   "how": "checked: heard كِتَااب",
-   "take": 6,
-   "form": "«كِتَاب»"
-  },
-  "كِتَابٌ": {
-   "id": "edbacf7ab4",
-   "how": "checked: heard كِتَابُن",
-   "take": 0,
-   "form": "/kitaːbun/"
-  },
-  "لَ": {
-   "id": "c4e931ac03",
-   "how": "checked: heard لَع",
-   "take": 0,
-   "form": "/la/"
-  },
-  "لَام": {
-   "id": "2d379987d4",
-   "how": "checked: heard لَام",
-   "take": 3,
-   "form": "لَام!"
-  },
-  "لَمَ": {
-   "id": "df832e58f0",
-   "how": "checked: heard لَمَ",
-   "take": 0,
-   "form": "/lama/"
-  },
-  "لِ": {
-   "id": "dbb8df58f4",
-   "how": "checked: heard لِه",
-   "take": 5,
-   "form": "لِ،"
-  },
-  "لِمْ": {
-   "id": "d53fd330c0",
-   "how": "checked: heard لِم",
-   "take": 0,
-   "form": "/lim/"
-  },
-  "لْ": {
-   "id": "2d9b32749e",
-   "how": "checked: heard ل",
-   "take": 9,
-   "form": "لْ"
-  },
-  "مٌ": {
-   "id": "536476d7b2",
-   "how": "checked: heard مُن",
-   "take": 4,
-   "form": "/mun/!"
-  },
-  "مٍ": {
-   "id": "b258c39916",
-   "how": "checked: heard مِن",
-   "take": 9,
-   "form": "مٍ"
-  },
-  "مَ": {
-   "id": "377f54ce9e",
-   "how": "checked: heard مَ",
-   "take": 0,
-   "form": "/ma/"
-  },
-  "مَدْرَسَة": {
-   "id": "3ad9a6ac42",
-   "how": "checked: heard مَدرَسَ",
-   "take": 0,
-   "form": "/madrasah/"
-  },
-  "مُسْلِمَة": {
-   "id": "b32396161d",
-   "how": "checked: heard مُسلِمَ",
-   "take": 1,
-   "form": "مُسْلِمَة"
-  },
-  "مُسْلِمُو": {
-   "id": "b00875eb1c",
-   "how": "checked: heard مُسلِمُۥۥ",
-   "take": 4,
-   "form": "/muslimuː/!"
-  },
-  "مُسْلِمِي": {
-   "id": "4173c3a81d",
-   "how": "checked: heard مُسلِمِۦۦ",
-   "take": 4,
-   "form": "/muslimiː/!"
-  },
-  "مُعَلِّم": {
-   "id": "b5bf746ced",
-   "how": "checked: heard مُعَللِم",
-   "take": 0,
-   "form": "/muʕallim/"
-  },
-  "مُعَلِّمَة": {
-   "id": "78cf081294",
-   "how": "checked: heard مُعَللِمَه",
-   "take": 0,
-   "form": "/muʕallimah/"
-  },
-  "مِ": {
-   "id": "e43a63ddfb",
-   "how": "checked: heard مِ",
-   "take": 0,
-   "form": "/mi/"
-  },
-  "مِيم": {
-   "id": "a3ebb01c21",
-   "how": "checked: heard مِۦۦم",
-   "take": 1,
-   "form": "مِيم"
-  },
-  "نَ": {
-   "id": "40c8cf0fb4",
-   "how": "checked: heard نَ",
-   "take": 4,
-   "form": "/na/!"
-  },
-  "نَا": {
-   "id": "1bb231a52c",
-   "how": "checked: heard نَا",
-   "take": 0,
-   "form": "/naː/"
-  },
-  "نُورٌ": {
-   "id": "6f670ffb7f",
-   "how": "checked: heard نُۥرُن",
-   "take": 0,
-   "form": "/nuːrun/"
-  },
-  "هَا": {
-   "id": "c3f9210524",
-   "how": "checked: heard هَاا",
-   "take": 8,
-   "form": "/haː/"
-  },
-  "وَ": {
-   "id": "f847ca2b36",
-   "how": "checked: heard وَ",
-   "take": 2,
-   "form": "/wa/."
-  },
-  "يَا": {
-   "id": "43f41f7a68",
-   "how": "checked: heard يَا",
-   "take": 0,
-   "form": "/jaː/"
-  },
-  "ٱلصَّيْفِ": {
-   "id": "ca0129c498",
-   "how": "checked: heard ءَصصَيفِ",
-   "take": 1,
-   "form": "ٱلصَّيْفِ"
-  },
-  "ٱلْقَمَرُ": {
-   "id": "10a5d3c9e1",
-   "how": "checked: heard ءَلقَمَرُ",
-   "take": 0,
-   "form": "/ʔalqɑmaru/"
-  },
-  "ٱلْكِتَٰبُ": {
-   "id": "4851a31913",
-   "how": "checked: heard ءَلكِتَاابُ",
-   "take": 4,
-   "form": "/ʔalkitaːbu/!"
-  },
-  "مِنْ قُلْ لَمْ": {
-   "id": "ef39172809",
-   "how": "checked: heard مِنقُللَم",
-   "take": 1,
-   "form": "مِنْ قُلْ لَمْ"
-  },
-  "جَ": {
-   "id": "9759387956",
-   "how": "checked: heard جَع",
-   "take": 0,
-   "form": "/dʒa/"
-  },
-  "دٍ": {
-   "id": "313ce3fd65",
-   "how": "checked: heard دِن",
-   "take": 9,
-   "form": "دٍ"
-  },
-  "رً": {
-   "id": "39dbc7c906",
-   "how": "checked: heard رَن",
-   "take": 7,
-   "form": "/ran/ ..."
+   "form": "قُلْ: فِ."
   },
   "فِي": {
    "id": "eca34af797",
    "how": "checked: heard فِۦۦ",
    "take": 0,
-   "form": "/fiː/"
+   "form": "قُلْ: فِي."
+  },
+  "قَ": {
+   "id": "b8ad739dba",
+   "how": "checked: heard قَ",
+   "take": 3,
+   "form": "هَيَّا نَقُولُ: قَ."
+  },
+  "قَلَم": {
+   "id": "d339e2317b",
+   "how": "checked: heard قَلَم",
+   "take": 0,
+   "form": "قُلْ: قَلَم."
+  },
+  "قَلَمٌ": {
+   "id": "c5cd3bad9c",
+   "how": "checked: heard قَلَمُن",
+   "take": 3,
+   "form": "هَيَّا نَقُولُ: قَلَمٌ."
+  },
+  "قِ": {
+   "id": "a38e1b277b",
+   "how": "checked: heard قِ",
+   "take": 0,
+   "form": "قُلْ: قِ."
   },
   "كٌ": {
    "id": "51122c85cb",
    "how": "checked: heard كُن",
-   "take": 0,
-   "form": "/kun/"
+   "take": 4,
+   "form": "قُلْ: كٌ."
   },
-  "مِن شَرِّ": {
-   "id": "3bd6d7fca0",
-   "how": "checked: heard مِںںںشَررِ",
+  "كَ": {
+   "id": "1b8031bb34",
+   "how": "checked: heard كَه",
+   "take": 0,
+   "form": "قُلْ: كَ."
+  },
+  "كَاف": {
+   "id": "9df474331a",
+   "how": "checked: heard كَااف",
+   "take": 2,
+   "form": "قُلْ: كَاف!"
+  },
+  "كَتَبَ": {
+   "id": "1a31c3cbb8",
+   "how": "checked: heard كَتَبَ",
+   "take": 0,
+   "form": "قُلْ: كَتَبَ."
+  },
+  "كَرُمَ": {
+   "id": "67f714bd24",
+   "how": "checked: heard كَرُمَ",
+   "take": 0,
+   "form": "قُلْ: كَرُمَ."
+  },
+  "كُ": {
+   "id": "6f94d563d6",
+   "how": "checked: heard كُ",
+   "take": 0,
+   "form": "قُلْ: كُ."
+  },
+  "كِتَاب": {
+   "id": "110b12ce5d",
+   "how": "checked: heard كِتَاابڇ",
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: كِتَاب."
+  },
+  "كِتَابٌ": {
+   "id": "edbacf7ab4",
+   "how": "checked: heard كِتَاابُن",
+   "take": 0,
+   "form": "قُلْ: كِتَابٌ."
+  },
+  "لَ": {
+   "id": "c4e931ac03",
+   "how": "checked: heard لَه",
+   "take": 0,
+   "form": "قُلْ: لَ."
+  },
+  "لَام": {
+   "id": "2d379987d4",
+   "how": "checked: heard لَام",
+   "take": 0,
+   "form": "قُلْ: لَام."
+  },
+  "لَمَ": {
+   "id": "df832e58f0",
+   "how": "checked: heard لَمَ",
+   "take": 0,
+   "form": "قُلْ: لَمَ."
+  },
+  "لِ": {
+   "id": "dbb8df58f4",
+   "how": "checked: heard لِه",
+   "take": 3,
+   "form": "هَيَّا نَقُولُ: لِ."
+  },
+  "لِمْ": {
+   "id": "d53fd330c0",
+   "how": "checked: heard لِم",
+   "take": 0,
+   "form": "قُلْ: لِمْ."
+  },
+  "مٌ": {
+   "id": "536476d7b2",
+   "how": "checked: heard مُن",
+   "take": 5,
+   "form": "قُلْ: /mun/."
+  },
+  "مٍ": {
+   "id": "b258c39916",
+   "how": "checked: heard مِن",
+   "take": 0,
+   "form": "قُلْ: مٍ."
+  },
+  "مَ": {
+   "id": "377f54ce9e",
+   "how": "checked: heard مَ",
+   "take": 0,
+   "form": "قُلْ: مَ."
+  },
+  "مَدْرَسَة": {
+   "id": "3ad9a6ac42",
+   "how": "checked: heard مَدرَسَه",
+   "take": 4,
+   "form": "قُلْ: مَدْرَسَة."
+  },
+  "مُسْلِمَة": {
+   "id": "b32396161d",
+   "how": "checked: heard مُسلِمَ",
+   "take": 0,
+   "form": "قُلْ: مُسْلِمَة."
+  },
+  "مُسْلِمُو": {
+   "id": "b00875eb1c",
+   "how": "checked: heard مُسلِمُۥ",
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: مُسْلِمُو."
+  },
+  "مُسْلِمِي": {
+   "id": "4173c3a81d",
+   "how": "checked: heard مُسلِمِۦ",
+   "take": 3,
+   "form": "هَيَّا نَقُولُ: مُسْلِمِي."
+  },
+  "مُعَلِّم": {
+   "id": "b5bf746ced",
+   "how": "checked: heard مُعَللِم",
+   "take": 0,
+   "form": "قُلْ: مُعَلِّم."
+  },
+  "مُعَلِّمَة": {
+   "id": "78cf081294",
+   "how": "checked: heard مُعَللِمَه",
+   "take": 5,
+   "form": "قُلْ: /muʕallimah/."
+  },
+  "مِ": {
+   "id": "e43a63ddfb",
+   "how": "checked: heard مِه",
+   "take": 0,
+   "form": "قُلْ: مِ."
+  },
+  "مِنْ قُلْ لَمْ": {
+   "id": "ef39172809",
+   "how": "checked: heard مِنقُللَم",
    "take": 9,
-   "form": "مِن شَرِّ"
+   "form": "مِنْ قُلْ لَمْ"
+  },
+  "مِي": {
+   "id": "e8017dd47c",
+   "how": "checked: heard مِۦ",
+   "take": 0,
+   "form": "قُلْ: مِي."
+  },
+  "نَ": {
+   "id": "40c8cf0fb4",
+   "how": "checked: heard نَ",
+   "take": 2,
+   "form": "قُلْ: نَ!"
+  },
+  "نَا": {
+   "id": "1bb231a52c",
+   "how": "checked: heard نَا",
+   "take": 0,
+   "form": "قُلْ: نَا."
+  },
+  "نُورٌ": {
+   "id": "6f670ffb7f",
+   "how": "checked: heard نُۥۥرُن",
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: نُورٌ."
+  },
+  "هَ": {
+   "id": "f27e4b76e3",
+   "how": "checked: heard هَ",
+   "take": 7,
+   "form": "اِقْرَأْ مَعِي: هَ."
+  },
+  "هَا": {
+   "id": "c3f9210524",
+   "how": "checked: heard هَاا",
+   "take": 7,
+   "form": "اِقْرَأْ مَعِي: هَا."
+  },
+  "هُ": {
+   "id": "e5003bc21b",
+   "how": "checked: heard هُ",
+   "take": 4,
+   "form": "قُلْ: هُ."
+  },
+  "وَ": {
+   "id": "f847ca2b36",
+   "how": "checked: heard وَ",
+   "take": 0,
+   "form": "قُلْ: وَ."
   },
   "يَ": {
    "id": "7ff1508cbd",
    "how": "checked: heard يَ",
    "take": 0,
-   "form": "/ja/"
+   "form": "قُلْ: يَ."
+  },
+  "يَا": {
+   "id": "43f41f7a68",
+   "how": "checked: heard يَاا",
+   "take": 0,
+   "form": "قُلْ: يَا."
   },
   "يَكُن لَّهُۥ": {
    "id": "93a57fbfb4",
-   "how": "checked: heard يَكُللَهُۥ",
-   "take": 5,
-   "form": "يَكُن لَّهُۥ،"
+   "how": "checked: heard يَكُللَهُۥۥ",
+   "take": 2,
+   "form": "قُلْ: يَكُن لَّهُۥ!"
   },
-  "بً": {
-   "id": "162b01201e",
-   "how": "checked: heard بَن",
+  "ٱلْقَمَرُ": {
+   "id": "10a5d3c9e1",
+   "how": "checked: heard ءَلقَمَرُ",
    "take": 7,
-   "form": "/ban/ ..."
+   "form": "اِقْرَأْ مَعِي: ٱلْقَمَرُ."
+  },
+  "ٱلْكِتَٰبُ": {
+   "id": "4851a31913",
+   "how": "checked: heard ءَلكِتَاابُ",
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: ٱلْكِتَٰبُ."
+  },
+  "دُونٌ": {
+   "id": "fbea94be76",
+   "how": "checked: heard دُۥۥنُن",
+   "take": 2,
+   "form": "قُلْ: دُونٌ!"
+  },
+  "ذَ": {
+   "id": "f08e596e77",
+   "how": "checked: heard ذَع",
+   "take": 0,
+   "form": "قُلْ: ذَ."
+  },
+  "طَالِب": {
+   "id": "86a43d617f",
+   "how": "checked: heard طَاالِبڇ",
+   "take": 0,
+   "form": "قُلْ: طَالِب."
+  },
+  "قَاف": {
+   "id": "ada551165c",
+   "how": "checked: heard قَااف",
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: قَاف."
+  },
+  "قُ": {
+   "id": "7084c042fd",
+   "how": "checked: heard قُ",
+   "take": 4,
+   "form": "قُلْ: قُ."
+  },
+  "ٱلصَّيْفِ": {
+   "id": "ca0129c498",
+   "how": "checked: heard ءَصصَيفِ",
+   "take": 9,
+   "form": "ٱلصَّيْفِ"
   },
   "بَ بِ": {
    "id": "867a266250",
@@ -1416,6 +644,878 @@
   },
   "لَام قَاف أَلِف": {
    "id": "42575c2b03",
+   "how": "joined from checked sounds"
+  },
+  "جُ": {
+   "id": "43abf3ef53",
+   "how": "checked: heard جُ",
+   "take": 10,
+   "form": "قُلْ: جُ."
+  },
+  "رً": {
+   "id": "39dbc7c906",
+   "how": "checked: heard رَن",
+   "take": 15,
+   "form": "قُلْ: /ran/."
+  },
+  "رِ": {
+   "id": "490c376a4c",
+   "how": "checked: heard رِ",
+   "take": 12,
+   "form": "قُلْ: رِ!"
+  },
+  "سِين": {
+   "id": "bbeceabf84",
+   "how": "checked: heard سِۦۦن",
+   "take": 14,
+   "form": "قُلْ: سِين."
+  },
+  "عِلْم": {
+   "id": "261e75d77e",
+   "how": "checked: heard عِلم",
+   "take": 14,
+   "form": "قُلْ: عِلْم."
+  },
+  "كٍ": {
+   "id": "c099855c53",
+   "how": "checked: heard كِن",
+   "take": 14,
+   "form": "قُلْ: كٍ."
+  },
+  "كِ": {
+   "id": "d51eedf081",
+   "how": "checked: heard كِ",
+   "take": 10,
+   "form": "قُلْ: كِ."
+  },
+  "بً": {
+   "id": "162b01201e",
+   "how": "checked: heard بَم",
+   "take": 10,
+   "form": "قُلْ: بً."
+  },
+  "بٌ": {
+   "id": "3216d1ef6b",
+   "how": "checked: heard بُم",
+   "take": 2,
+   "form": "قُلْ: بٌ!"
+  },
+  "نً": {
+   "id": "76200aa52a",
+   "how": "checked: heard نَم",
+   "take": 0,
+   "form": "قُلْ: نً."
+  },
+  "دٍ": {
+   "id": "313ce3fd65",
+   "how": "checked: heard دِم",
+   "take": 0,
+   "form": "قُلْ: دٍ."
+  },
+  "بً بٍ بٌ": {
+   "id": "ff8a3858ec",
+   "how": "joined from checked sounds"
+  },
+  "بُو": {
+   "id": "ad19296322",
+   "how": "checked: heard بُۥ",
+   "take": 5,
+   "form": "قُلْ: /buː/."
+  },
+  "بِي": {
+   "id": "d0adcb8baa",
+   "how": "checked: heard بِۦ",
+   "take": 2,
+   "form": "قُلْ: بِي!"
+  },
+  "بَا بِي بُو": {
+   "id": "7570ae3f23",
+   "how": "joined from checked sounds"
+  }
+ },
+ "zaid": {
+  "أَبْ": {
+   "id": "eded93bc73",
+   "how": "checked: heard ءَب",
+   "take": 2,
+   "form": "قُلْ: أَبْ!"
+  },
+  "أَلِف": {
+   "id": "fddf097a24",
+   "how": "checked: heard ءَلِف",
+   "take": 0,
+   "form": "قُلْ: أَلِف."
+  },
+  "بً": {
+   "id": "162b01201e",
+   "how": "checked: heard بَن",
+   "take": 0,
+   "form": "قُلْ: بً."
+  },
+  "بٌ": {
+   "id": "3216d1ef6b",
+   "how": "checked: heard بُن",
+   "take": 3,
+   "form": "هَيَّا نَقُولُ: بٌ."
+  },
+  "بٍ": {
+   "id": "57ad67b26c",
+   "how": "checked: heard بِن",
+   "take": 3,
+   "form": "هَيَّا نَقُولُ: بٍ."
+  },
+  "بَ": {
+   "id": "d431deab71",
+   "how": "checked: heard بَ",
+   "take": 0,
+   "form": "قُلْ: بَ."
+  },
+  "بَا": {
+   "id": "52dff1df97",
+   "how": "checked: heard بَاا",
+   "take": 0,
+   "form": "قُلْ: بَا."
+  },
+  "بَابٌ": {
+   "id": "b7831c1d13",
+   "how": "checked: heard بَاابُن",
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: بَابٌ."
+  },
+  "بَيْت": {
+   "id": "b4766f858f",
+   "how": "checked: heard بَيت",
+   "take": 7,
+   "form": "اِقْرَأْ مَعِي: بَيْت."
+  },
+  "بُ": {
+   "id": "db369760ad",
+   "how": "checked: heard بُه",
+   "take": 4,
+   "form": "قُلْ: بُ."
+  },
+  "بِ": {
+   "id": "3d7326a9ba",
+   "how": "checked: heard بِه",
+   "take": 0,
+   "form": "قُلْ: بِ."
+  },
+  "تَ": {
+   "id": "6670f319d7",
+   "how": "checked: heard تَه",
+   "take": 2,
+   "form": "قُلْ: تَ!"
+  },
+  "تَا": {
+   "id": "63a1e74a55",
+   "how": "checked: heard تَاا",
+   "take": 0,
+   "form": "قُلْ: تَا."
+  },
+  "تُ": {
+   "id": "7d3d35190d",
+   "how": "checked: heard تُ",
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: تُ."
+  },
+  "تِ": {
+   "id": "ecbc66cf6b",
+   "how": "checked: heard تِه",
+   "take": 2,
+   "form": "قُلْ: تِ!"
+  },
+  "جَ": {
+   "id": "9759387956",
+   "how": "checked: heard جَه",
+   "take": 2,
+   "form": "قُلْ: جَ!"
+  },
+  "جُ": {
+   "id": "43abf3ef53",
+   "how": "checked: heard جُ",
+   "take": 0,
+   "form": "قُلْ: جُ."
+  },
+  "جِ": {
+   "id": "2c87e1b89f",
+   "how": "checked: heard جِه",
+   "take": 2,
+   "form": "قُلْ: جِ!"
+  },
+  "جِيم": {
+   "id": "13c9ccc946",
+   "how": "checked: heard جِۦۦم",
+   "take": 0,
+   "form": "قُلْ: جِيم."
+  },
+  "حَ": {
+   "id": "5f387e8e0b",
+   "how": "checked: heard حَ",
+   "take": 3,
+   "form": "هَيَّا نَقُولُ: حَ."
+  },
+  "حَا": {
+   "id": "b831568acb",
+   "how": "checked: heard حَااا",
+   "take": 0,
+   "form": "قُلْ: حَا."
+  },
+  "حَسُنَ": {
+   "id": "81de2b3baf",
+   "how": "checked: heard حَسُنَ",
+   "take": 9,
+   "form": "حَسُنَ"
+  },
+  "خَ": {
+   "id": "314d20965b",
+   "how": "checked: heard خَه",
+   "take": 2,
+   "form": "قُلْ: خَ!"
+  },
+  "دٌ": {
+   "id": "2992554a25",
+   "how": "checked: heard دُن",
+   "take": 5,
+   "form": "قُلْ: /dun/."
+  },
+  "دَ": {
+   "id": "a3d77da278",
+   "how": "checked: heard دَ",
+   "take": 0,
+   "form": "قُلْ: دَ."
+  },
+  "دَال": {
+   "id": "a679fba2a2",
+   "how": "checked: heard دَال",
+   "take": 0,
+   "form": "قُلْ: دَال."
+  },
+  "دَيْنٌ": {
+   "id": "7e55a86884",
+   "how": "checked: heard دَينُن",
+   "take": 0,
+   "form": "قُلْ: دَيْنٌ."
+  },
+  "دُ": {
+   "id": "d9b353b6b8",
+   "how": "checked: heard دُ",
+   "take": 0,
+   "form": "قُلْ: دُ."
+  },
+  "دِ": {
+   "id": "9f6c1f31ca",
+   "how": "checked: heard دِه",
+   "take": 2,
+   "form": "قُلْ: دِ!"
+  },
+  "دِينٌ": {
+   "id": "09cce50404",
+   "how": "checked: heard دِۦۦنُن",
+   "take": 0,
+   "form": "قُلْ: دِينٌ."
+  },
+  "دْ": {
+   "id": "6b954c3951",
+   "how": "checked: heard دڇ",
+   "take": 0,
+   "form": "قُلْ: دْ."
+  },
+  "ذَال": {
+   "id": "61f1315ed9",
+   "how": "checked: heard ذَال",
+   "take": 0,
+   "form": "قُلْ: ذَال."
+  },
+  "ذَهَبَ": {
+   "id": "4407353011",
+   "how": "checked: heard ذَهَبَ",
+   "take": 0,
+   "form": "قُلْ: ذَهَبَ."
+  },
+  "ذِ": {
+   "id": "06d0f2d25d",
+   "how": "checked: heard ذِه",
+   "take": 2,
+   "form": "قُلْ: ذِ!"
+  },
+  "رً": {
+   "id": "39dbc7c906",
+   "how": "checked: heard رَن",
+   "take": 2,
+   "form": "قُلْ: رً!"
+  },
+  "رَ": {
+   "id": "191edc4446",
+   "how": "checked: heard رَ",
+   "take": 2,
+   "form": "قُلْ: رَ!"
+  },
+  "رَا": {
+   "id": "0bd9a20ac3",
+   "how": "checked: heard رَاا",
+   "take": 0,
+   "form": "قُلْ: رَا."
+  },
+  "رَبُّنَا": {
+   "id": "c7f9468913",
+   "how": "checked: heard رَببُنَاا",
+   "take": 0,
+   "form": "قُلْ: رَبُّنَا."
+  },
+  "رَبِّي": {
+   "id": "5b47a5a540",
+   "how": "checked: heard رَببِۦۦ",
+   "take": 0,
+   "form": "قُلْ: رَبِّي."
+  },
+  "رُ": {
+   "id": "e2a4059525",
+   "how": "checked: heard رُ",
+   "take": 4,
+   "form": "قُلْ: رُ."
+  },
+  "رِ": {
+   "id": "490c376a4c",
+   "how": "checked: heard رِه",
+   "take": 8,
+   "form": "قُلْ: /ri/!"
+  },
+  "سَ": {
+   "id": "7fe1ea7b0a",
+   "how": "checked: heard سَ",
+   "take": 0,
+   "form": "قُلْ: سَ."
+  },
+  "سَا": {
+   "id": "75e26210d3",
+   "how": "checked: heard سَا",
+   "take": 0,
+   "form": "قُلْ: سَا."
+  },
+  "سَمِعَ": {
+   "id": "698f9b8de7",
+   "how": "checked: heard سَمِعَ",
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: سَمِعَ."
+  },
+  "سُ": {
+   "id": "f48613ace1",
+   "how": "checked: heard سُ",
+   "take": 5,
+   "form": "قُلْ: /su/."
+  },
+  "سِ": {
+   "id": "48428bcc7b",
+   "how": "checked: heard سِه",
+   "take": 2,
+   "form": "قُلْ: سِ!"
+  },
+  "سِي": {
+   "id": "34834f701e",
+   "how": "checked: heard سِۦۦ",
+   "take": 0,
+   "form": "قُلْ: سِي."
+  },
+  "سِين": {
+   "id": "bbeceabf84",
+   "how": "checked: heard سِۦۦن",
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: سِين."
+  },
+  "شَجَرَة": {
+   "id": "70ba41852f",
+   "how": "checked: heard شَجَرَ",
+   "take": 6,
+   "form": "اِقْرَأْ مَعِي: شَجَرَة."
+  },
+  "صَاد": {
+   "id": "6c6589e03a",
+   "how": "checked: heard صَاادڇ",
+   "take": 0,
+   "form": "قُلْ: صَاد."
+  },
+  "ضَاد": {
+   "id": "ffddaefa2b",
+   "how": "checked: heard ضَاادڇ",
+   "take": 2,
+   "form": "قُلْ: ضَاد!"
+  },
+  "طَا": {
+   "id": "88e75a0bff",
+   "how": "checked: heard طَاا",
+   "take": 0,
+   "form": "قُلْ: طَا."
+  },
+  "طَالِبَة": {
+   "id": "bcceb90221",
+   "how": "checked: heard طَاالِبَه",
+   "take": 0,
+   "form": "قُلْ: طَالِبَة."
+  },
+  "ظَا": {
+   "id": "4aa7a799ab",
+   "how": "checked: heard ظَاا",
+   "take": 0,
+   "form": "قُلْ: ظَا."
+  },
+  "عَ": {
+   "id": "40fa11ec92",
+   "how": "checked: heard عَ",
+   "take": 0,
+   "form": "قُلْ: عَ."
+  },
+  "عَالِم": {
+   "id": "da98c57ee3",
+   "how": "checked: heard عَاالِم",
+   "take": 0,
+   "form": "قُلْ: عَالِم."
+  },
+  "عَلِمَ": {
+   "id": "ec66fddf78",
+   "how": "checked: heard عَلِمَ",
+   "take": 0,
+   "form": "قُلْ: عَلِمَ."
+  },
+  "عَنْ": {
+   "id": "883beb6f61",
+   "how": "checked: heard عَن",
+   "take": 0,
+   "form": "قُلْ: عَنْ."
+  },
+  "عِلْم": {
+   "id": "261e75d77e",
+   "how": "checked: heard عِلم",
+   "take": 0,
+   "form": "قُلْ: عِلْم."
+  },
+  "غَيْن": {
+   "id": "ab126af943",
+   "how": "checked: heard غَين",
+   "take": 3,
+   "form": "هَيَّا نَقُولُ: غَيْن."
+  },
+  "فَ": {
+   "id": "974f76d02d",
+   "how": "checked: heard فَه",
+   "take": 0,
+   "form": "قُلْ: فَ."
+  },
+  "فَا": {
+   "id": "459c62a3fe",
+   "how": "checked: heard فَا",
+   "take": 0,
+   "form": "قُلْ: فَا."
+  },
+  "فُ": {
+   "id": "a0b184720b",
+   "how": "checked: heard فُ",
+   "take": 0,
+   "form": "قُلْ: فُ."
+  },
+  "فِ": {
+   "id": "c7f392deef",
+   "how": "checked: heard فِه",
+   "take": 0,
+   "form": "قُلْ: فِ."
+  },
+  "فِي": {
+   "id": "eca34af797",
+   "how": "checked: heard فِۦۦ",
+   "take": 0,
+   "form": "قُلْ: فِي."
+  },
+  "قَ": {
+   "id": "b8ad739dba",
+   "how": "checked: heard قَه",
+   "take": 0,
+   "form": "قُلْ: قَ."
+  },
+  "قَلَم": {
+   "id": "d339e2317b",
+   "how": "checked: heard قَلَم",
+   "take": 0,
+   "form": "قُلْ: قَلَم."
+  },
+  "قَلَمٌ": {
+   "id": "c5cd3bad9c",
+   "how": "checked: heard قَلَمُن",
+   "take": 4,
+   "form": "قُلْ: قَلَمٌ."
+  },
+  "قِ": {
+   "id": "a38e1b277b",
+   "how": "checked: heard قِ",
+   "take": 0,
+   "form": "قُلْ: قِ."
+  },
+  "كٌ": {
+   "id": "51122c85cb",
+   "how": "checked: heard كُن",
+   "take": 0,
+   "form": "قُلْ: كٌ."
+  },
+  "كٍ": {
+   "id": "c099855c53",
+   "how": "checked: heard كِن",
+   "take": 3,
+   "form": "هَيَّا نَقُولُ: كٍ."
+  },
+  "كَ": {
+   "id": "1b8031bb34",
+   "how": "checked: heard كَه",
+   "take": 0,
+   "form": "قُلْ: كَ."
+  },
+  "كَاف": {
+   "id": "9df474331a",
+   "how": "checked: heard كَااف",
+   "take": 0,
+   "form": "قُلْ: كَاف."
+  },
+  "كَتَبَ": {
+   "id": "1a31c3cbb8",
+   "how": "checked: heard كَتَبَ",
+   "take": 3,
+   "form": "هَيَّا نَقُولُ: كَتَبَ."
+  },
+  "كَرُمَ": {
+   "id": "67f714bd24",
+   "how": "checked: heard كَرُمَ",
+   "take": 9,
+   "form": "كَرُمَ"
+  },
+  "كُ": {
+   "id": "6f94d563d6",
+   "how": "checked: heard كُه",
+   "take": 2,
+   "form": "قُلْ: كُ!"
+  },
+  "كِ": {
+   "id": "d51eedf081",
+   "how": "checked: heard كِه",
+   "take": 0,
+   "form": "قُلْ: كِ."
+  },
+  "كِتَاب": {
+   "id": "110b12ce5d",
+   "how": "checked: heard كِتَاابڇ",
+   "take": 0,
+   "form": "قُلْ: كِتَاب."
+  },
+  "كِتَابٌ": {
+   "id": "edbacf7ab4",
+   "how": "checked: heard كِتَاابُن",
+   "take": 0,
+   "form": "قُلْ: كِتَابٌ."
+  },
+  "لَ": {
+   "id": "c4e931ac03",
+   "how": "checked: heard لَه",
+   "take": 0,
+   "form": "قُلْ: لَ."
+  },
+  "لَام": {
+   "id": "2d379987d4",
+   "how": "checked: heard لَاام",
+   "take": 0,
+   "form": "قُلْ: لَام."
+  },
+  "لَمَ": {
+   "id": "df832e58f0",
+   "how": "checked: heard لَمَ",
+   "take": 0,
+   "form": "قُلْ: لَمَ."
+  },
+  "لُ": {
+   "id": "4fa06a5ae4",
+   "how": "checked: heard لُ",
+   "take": 0,
+   "form": "قُلْ: لُ."
+  },
+  "لِ": {
+   "id": "dbb8df58f4",
+   "how": "checked: heard لِه",
+   "take": 0,
+   "form": "قُلْ: لِ."
+  },
+  "لِمْ": {
+   "id": "d53fd330c0",
+   "how": "checked: heard لِم",
+   "take": 0,
+   "form": "قُلْ: لِمْ."
+  },
+  "مٌ": {
+   "id": "536476d7b2",
+   "how": "checked: heard مُن",
+   "take": 5,
+   "form": "قُلْ: /mun/."
+  },
+  "مٍ": {
+   "id": "b258c39916",
+   "how": "checked: heard مِن",
+   "take": 4,
+   "form": "قُلْ: مٍ."
+  },
+  "مَ": {
+   "id": "377f54ce9e",
+   "how": "checked: heard مَ",
+   "take": 0,
+   "form": "قُلْ: مَ."
+  },
+  "مَدْرَسَة": {
+   "id": "3ad9a6ac42",
+   "how": "checked: heard مَدرَسَه",
+   "take": 0,
+   "form": "قُلْ: مَدْرَسَة."
+  },
+  "مُ": {
+   "id": "a41bdb0b77",
+   "how": "checked: heard مُ",
+   "take": 4,
+   "form": "قُلْ: مُ."
+  },
+  "مُسْلِمَة": {
+   "id": "b32396161d",
+   "how": "checked: heard مُسلِمَ",
+   "take": 0,
+   "form": "قُلْ: مُسْلِمَة."
+  },
+  "مُسْلِمُو": {
+   "id": "b00875eb1c",
+   "how": "checked: heard مُسلِمُۥۥ",
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: مُسْلِمُو."
+  },
+  "مُسْلِمِي": {
+   "id": "4173c3a81d",
+   "how": "checked: heard مُسلِمِۦۦ",
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: مُسْلِمِي."
+  },
+  "مُعَلِّم": {
+   "id": "b5bf746ced",
+   "how": "checked: heard مُعَللِم",
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: مُعَلِّم."
+  },
+  "مُعَلِّمَة": {
+   "id": "78cf081294",
+   "how": "checked: heard مُعَللِمَ",
+   "take": 0,
+   "form": "قُلْ: مُعَلِّمَة."
+  },
+  "مِ": {
+   "id": "e43a63ddfb",
+   "how": "checked: heard مِه",
+   "take": 2,
+   "form": "قُلْ: مِ!"
+  },
+  "مِنْ قُلْ لَمْ": {
+   "id": "ef39172809",
+   "how": "checked: heard مِنقُللَم",
+   "take": 9,
+   "form": "مِنْ قُلْ لَمْ"
+  },
+  "مِي": {
+   "id": "e8017dd47c",
+   "how": "checked: heard مِۦ",
+   "take": 7,
+   "form": "اِقْرَأْ مَعِي: مِي."
+  },
+  "مِيم": {
+   "id": "a3ebb01c21",
+   "how": "checked: heard مِۦۦم",
+   "take": 7,
+   "form": "اِقْرَأْ مَعِي: مِيم."
+  },
+  "نَ": {
+   "id": "40c8cf0fb4",
+   "how": "checked: heard نَ",
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: نَ."
+  },
+  "نَا": {
+   "id": "1bb231a52c",
+   "how": "checked: heard نَاا",
+   "take": 0,
+   "form": "قُلْ: نَا."
+  },
+  "نُورٌ": {
+   "id": "6f670ffb7f",
+   "how": "checked: heard نُۥۥرُن",
+   "take": 0,
+   "form": "قُلْ: نُورٌ."
+  },
+  "هَ": {
+   "id": "f27e4b76e3",
+   "how": "checked: heard هَ",
+   "take": 2,
+   "form": "قُلْ: هَ!"
+  },
+  "هَا": {
+   "id": "c3f9210524",
+   "how": "checked: heard هَا",
+   "take": 0,
+   "form": "قُلْ: هَا."
+  },
+  "هُ": {
+   "id": "e5003bc21b",
+   "how": "checked: heard هُ",
+   "take": 0,
+   "form": "قُلْ: هُ."
+  },
+  "وَ": {
+   "id": "f847ca2b36",
+   "how": "checked: heard وَ",
+   "take": 0,
+   "form": "قُلْ: وَ."
+  },
+  "يَ": {
+   "id": "7ff1508cbd",
+   "how": "checked: heard يَ",
+   "take": 2,
+   "form": "قُلْ: يَ!"
+  },
+  "يَا": {
+   "id": "43f41f7a68",
+   "how": "checked: heard يَاا",
+   "take": 0,
+   "form": "قُلْ: يَا."
+  },
+  "يَكُن لَّهُۥ": {
+   "id": "93a57fbfb4",
+   "how": "checked: heard يَكُللَهُۥۥ",
+   "take": 0,
+   "form": "قُلْ: يَكُن لَّهُۥ."
+  },
+  "ٱلْقَمَرُ": {
+   "id": "10a5d3c9e1",
+   "how": "checked: heard ءَلقَمَرُ",
+   "take": 8,
+   "form": "قُلْ: /ʔalqɑmaru/!"
+  },
+  "ٱلْكِتَٰبُ": {
+   "id": "4851a31913",
+   "how": "checked: heard ءَلكِتَاابُ",
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: ٱلْكِتَٰبُ."
+  },
+  "دُونٌ": {
+   "id": "fbea94be76",
+   "how": "checked: heard دُۥۥنُن",
+   "take": 2,
+   "form": "قُلْ: دُونٌ!"
+  },
+  "ذَ": {
+   "id": "f08e596e77",
+   "how": "checked: heard ذَه",
+   "take": 2,
+   "form": "قُلْ: ذَ!"
+  },
+  "طَالِب": {
+   "id": "86a43d617f",
+   "how": "checked: heard طَاالِبڇ",
+   "take": 1,
+   "form": "اِقْرَأْ مَعِي: طَالِب."
+  },
+  "قَاف": {
+   "id": "ada551165c",
+   "how": "checked: heard قَااف",
+   "take": 2,
+   "form": "قُلْ: قَاف!"
+  },
+  "قُ": {
+   "id": "7084c042fd",
+   "how": "checked: heard قُ",
+   "take": 2,
+   "form": "قُلْ: قُ!"
+  },
+  "نُ": {
+   "id": "35548ef661",
+   "how": "checked: heard نُ",
+   "take": 3,
+   "form": "هَيَّا نَقُولُ: نُ."
+  },
+  "بً بٍ بٌ": {
+   "id": "ff8a3858ec",
+   "how": "joined from checked sounds"
+  },
+  "بَ بِ": {
+   "id": "867a266250",
+   "how": "joined from checked sounds"
+  },
+  "بَ بِ بُ": {
+   "id": "06b4b3179e",
+   "how": "joined from checked sounds"
+  },
+  "بَ تَ مَ": {
+   "id": "e677d3539c",
+   "how": "joined from checked sounds"
+  },
+  "تَا أَلِف بَا": {
+   "id": "0d570cb64b",
+   "how": "joined from checked sounds"
+  },
+  "كَاف تَا أَلِف": {
+   "id": "9bfa2b5bfa",
+   "how": "joined from checked sounds"
+  },
+  "كَاف تَا بَا": {
+   "id": "e149bcc5cb",
+   "how": "joined from checked sounds"
+  },
+  "لَام قَاف أَلِف": {
+   "id": "42575c2b03",
+   "how": "joined from checked sounds"
+  },
+  "إِنَ": {
+   "id": "6d60c5fe0d",
+   "how": "checked: heard ءِنَ",
+   "take": 14,
+   "form": "قُلْ: إِنَ."
+  },
+  "نُو": {
+   "id": "58364d6b5f",
+   "how": "checked: heard نُۥ",
+   "take": 12,
+   "form": "قُلْ: نُو!"
+  },
+  "نُون": {
+   "id": "a4647fa3ab",
+   "how": "checked: heard نُۥن",
+   "take": 13,
+   "form": "هَيَّا نَقُولُ: نُون."
+  },
+  "بَا دَال نُون": {
+   "id": "3a9b72a82f",
+   "how": "joined from checked sounds"
+  },
+  "نً": {
+   "id": "76200aa52a",
+   "how": "checked: heard نَم",
+   "take": 3,
+   "form": "هَيَّا نَقُولُ: نً."
+  },
+  "دٍ": {
+   "id": "313ce3fd65",
+   "how": "checked: heard دِم",
+   "take": 0,
+   "form": "قُلْ: دٍ."
+  },
+  "بِي": {
+   "id": "d0adcb8baa",
+   "how": "checked: heard بِۦۦ",
+   "take": 0,
+   "form": "قُلْ: بِي."
+  },
+  "بُو": {
+   "id": "ad19296322",
+   "how": "checked: heard بُۥ",
+   "take": 5,
+   "form": "قُلْ: /buː/."
+  },
+  "بَا بِي بُو": {
+   "id": "7570ae3f23",
    "how": "joined from checked sounds"
   }
  }

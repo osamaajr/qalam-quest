@@ -55,7 +55,8 @@ BASE = re.compile('[ء-ي]')
 
 def is_drill(parts):
     """letters said one by one (بَ بِ بُ, بَا دَال نُون, بً بٍ بٌ) rather than a phrase whose words join up"""
-    return len(parts) > 1 and all(p in NAMES or len(BASE.findall(p)) == 1 for p in parts)
+    one = lambda p: len(BASE.findall(p)) == 1 or (len(BASE.findall(p)) == 2 and p[-1] in 'اوي')   # بَ or بَا بِي بُو
+    return len(parts) > 1 and all(p in NAMES or one(p) for p in parts)
 
 
 def parts_of(t):
@@ -143,6 +144,8 @@ def check(text, path, quran=False, context=True):
     wants = [target(text)] + ([pause_form(text)] if quran else [])
     if wants[0].endswith('ه') and tidy(text).endswith('ة'):     # a final ة on its own: a soft h, or t, or barely heard
         wants += [wants[0][:-1] + 'ت', wants[0][:-1] + 'ح', wants[0][:-1]]
+    if any(w.endswith('ن') for w in wants):                 # a final nūn (tanwīn, نُون): the model often writes the
+        wants += [w[:-1] + 'م' for w in wants if w.endswith('ن')]   # hum as m; both are nasal, it is the vowel before that teaches
     h = heard
     if h and h[-1] in BREATH and not any(w.endswith(h[-1]) for w in wants):   # a breath after the last vowel
         h = h[:-1]

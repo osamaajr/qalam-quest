@@ -19,7 +19,7 @@
   .ar { font-family:'Noto Naskh Arabic',serif; font-size:32px; line-height:1.4; direction:rtl; }
   .plays { display:flex; gap:6px; flex-wrap:wrap; }
   .play { height:38px; padding:0 12px; color:#fff; font-size:13px; box-shadow:0 3px 0 rgba(0,0,0,.2); }
-  .play.zaid { background:var(--zaid); } .play.huda { background:var(--huda); } .play.qari { background:var(--green); }
+  .play.zaid { background:var(--zaid); } .play.huda { background:var(--huda); } .play.qari { background:var(--green); } .play.old { background:#fff; color:var(--muted); border:2px dashed var(--line); box-shadow:none; }
   .src { font-size:11px; color:var(--muted); letter-spacing:.3px; }
   label { font-size:13px; display:flex; gap:6px; align-items:center; color:var(--red); cursor:pointer; }
   input[type=text] { font:inherit; font-weight:700; font-size:13px; border:2px solid var(--line); border-radius:10px; padding:6px 8px; width:100%; }
@@ -37,7 +37,7 @@
 <script>
 const C = window.QQ_CONTENT, Q = window.QQ_AUDIO || {}, B = window.QQ_AUDIO_BUDDY || {};
 const VOICE = { zaid: 'Anas', huda: 'Habibah' };
-let SRC = {}, SILENT = [], EAR = [];
+let SRC = {}, SILENT = [], EAR = [], OLD = {};
 const KEY = 'qalam-audio-review-2';
 const store = (() => { try { return JSON.parse(localStorage.getItem(KEY)) || { marks: {}, picks: {} }; } catch (e) { return { marks: {}, picks: {} }; } })();
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} document.getElementById('n').textContent = Object.keys(store.marks).length + Object.keys(store.picks).length; };
@@ -50,7 +50,8 @@ function play(btn) {
   cur = new Audio(btn.dataset.src + '?' + Date.now()); cur.onended = () => curItem.classList.remove('playing'); cur.play();
 }
 const btns = (t) => (Q[t] ? `<button class="play qari" data-src="../assets/audio/${Q[t]}.mp3">▶ Qāriʾ</button>` : '')
-  + ['zaid', 'huda'].filter((b) => B[b] && B[b][t]).map((b) => `<button class="play ${b}" data-src="../assets/audio/${b}/${B[b][t]}.mp3">▶ ${VOICE[b]}</button>`).join('');
+  + ['zaid', 'huda'].filter((b) => B[b] && B[b][t]).map((b) => `<button class="play ${b}" data-src="../assets/audio/${b}/${B[b][t]}.mp3">▶ ${VOICE[b]}</button>`).join('')
+  + ['zaid', 'huda'].filter((b) => OLD[b] && OLD[b][t]).map((b) => `<button class="play old" data-src="voice-pick/old/${b}/${OLD[b][t]}.mp3" title="the previous version, to compare">before</button>`).join('');
 function card(t) {
   const has = Q[t] || ['zaid', 'huda'].some((b) => B[b] && B[b][t]); const m = store.marks[t];
   const how = Q[t] ? 'Qāriʾ recitation (Quran.com)' : ['zaid', 'huda'].filter((b) => B[b] && B[b][t]).map((b) => VOICE[b]).join(' + ') || 'Silent in the game';
@@ -67,6 +68,7 @@ function earCard(e, i) {
 (async () => {
   try { SRC = await (await fetch('audio-sources.json', { cache: 'no-store' })).json(); } catch (e) {}
   try { SILENT = await (await fetch('audio-silent.json', { cache: 'no-store' })).json(); } catch (e) {}
+  try { OLD = await (await fetch('voice-pick/old/index.json', { cache: 'no-store' })).json(); } catch (e) {}
   try { EAR = await (await fetch('audio-needs-ear.json', { cache: 'no-store' })).json(); } catch (e) {}
   const all = [...new Set(Object.keys(Q).concat(...['zaid', 'huda'].map((b) => Object.keys(B[b] || {}))).concat(SILENT))];
   const names = Object.values(C.SAY_NAME).map((x) => x.normalize('NFC'));

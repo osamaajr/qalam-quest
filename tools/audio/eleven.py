@@ -41,7 +41,8 @@ def needed():
     silent = json.load(open(os.path.join(ROOT, 'tools/audio-silent.json'), encoding='utf-8'))
     src = json.load(open(os.path.join(ROOT, 'tools/audio-sources.json'), encoding='utf-8'))
     buddy = read_json_js(os.path.join(ROOT, 'js/audio-manifest.js'), 'QQ_AUDIO_BUDDY')
-    items = list(dict.fromkeys(list(man) + [t for m in buddy.values() for t in m] + list(silent)))
+    every = json.load(open(os.path.join(HERE, 'sounds.json'), encoding='utf-8'))   # the full list of sounds the game says
+    items = list(dict.fromkeys(every + list(man) + [t for m in buddy.values() for t in m] + list(silent)))
     return items, man, src, silent
 
 
@@ -97,91 +98,89 @@ def call(method, path, body=None, query=None, raw=False):
 
 
 def tts(voice, text, seed, model, out):
-    body = {'text': text, 'model_id': model, 'language_code': 'ar', 'seed': seed, 'apply_text_normalization': 'off',
-            'voice_settings': {'stability': 0.55, 'similarity_boost': 0.8, 'style': 0.25, 'speed': 0.9, 'use_speaker_boost': True}}
+    vs = {'stability': 0.5, 'similarity_boost': 0.8, 'style': 0.0, 'use_speaker_boost': True}
+    if model != 'eleven_v3': vs['speed'] = 0.95          # v3 takes no speed; slower than this starts to drag and warble
+    body = {'text': text, 'model_id': model, 'language_code': 'ar', 'seed': seed, 'voice_settings': vs}
     audio = call('POST', f'/v1/text-to-speech/{voice}', body, {'output_format': 'mp3_44100_128'}, raw=True)
     open(out, 'wb').write(audio)
 
 
-def polish(src, dst):
-    """trim quiet margins (keeping ~120 ms), level to a classroom-friendly loudness, small mono mp3 like the rest.
-    Returns False for an empty or broken take."""
+def _env(y, sr=16000, win=0.02):
+    import numpy as np
+    n = int(sr * win); return np.sqrt(np.convolve(y ** 2, np.ones(n) / n, 'same'))
+
+
+def after_carrier(path, check):
+    """the time the sound starts: just before the last clear pause (the voice said "قُلْ: …" first). None if no pause."""
+    import numpy as np
+    y = check.pcm16k(path)
+    if len(y) < 1600: return None
+    e = _env(y); quiet = e < e.max() * 0.04; sr = 16000
+    edges = np.nonzero(np.diff(np.concatenate([[0], quiet.astype(int), [0]])))[0].reshape(-1, 2)
+    loud = np.nonzero(~quiet)[0]
+    if not len(loud): return None
+    gaps = [(x, z) for x, z in edges if z - x >= 0.12 * sr and x > loud.min() and z < loud.max()]
+    return max(0.0, gaps[-1][1] / sr - 0.06) if gaps else None
+
+
+def polish(src, dst, check, start=0.0):
+    """Cut the sound out cleanly and level it: keep the natural attack and tail (no time-stretching, no compressor:
+    those made clips warble and pump), set a steady loudness with one plain gain, short fades so nothing clicks.
+    Returns False for an empty take."""
+    import numpy as np
     if not os.path.exists(src) or os.path.getsize(src) < 800: return False
-    af = ('highpass=f=60,silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.12,areverse,'
-          'silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.16,areverse,'
-          'loudnorm=I=-16:TP=-1.5:LRA=11,adelay=60,apad=pad_dur=0.12')
-    r = subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', src, '-af', af, '-ar', '24000', '-ac', '1', '-b:a', '64k', dst], capture_output=True)
+    y = check.pcm16k(src)
+    if len(y) < 1600: return False
+    e = _env(y); sr = 16000; s = int(start * sr)
+    loud = np.nonzero(e[s:] > e.max() * 0.015)[0]
+    if not len(loud) or e.max() < 1e-4: return False
+    st = max(start, (s + loud.min()) / sr - 0.04); en = min(len(y) / sr, (s + loud.max()) / sr + 0.06)
+    seg = y[int(st * sr):int(en * sr)]
+    if len(seg) < 800: return False
+    es = _env(seg); body = seg[es > es.max() * 0.1]
+    rms = float(np.sqrt(np.mean(body ** 2))) if len(body) else 1e-3; peak = float(np.abs(seg).max())
+    g = min(10 ** (-19 / 20) / max(rms, 1e-6), 10 ** (-1.5 / 20) / max(peak, 1e-6))
+    af = (f'atrim={st:.3f}:{en:.3f},asetpts=PTS-STARTPTS,highpass=f=70,volume={g:.4f},afade=t=in:d=0.012,'
+          f'areverse,afade=t=in:d=0.07,areverse,adelay=50,apad=pad_dur=0.15')
+    r = subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', src, '-af', af, '-ar', '44100', '-ac', '1', '-b:a', '96k', dst], capture_output=True)
     return r.returncode == 0 and os.path.exists(dst) and os.path.getsize(dst) > 800
 
 
-MADD_SECONDS = 0.45      # a two-count madd at a calm teaching pace
-SHORT_MAX = 0.30          # a short vowel longer than this starts to sound like a madd
-
-
-def shape(text, path, check):
-    """Make the clip say the vowel length the lesson teaches, and end cleanly:
-    * cut where the voice stops (drops the breath many voices add) and fade out;
-    * if the sound ends in a long vowel (بَا, بُو, بِي) stretch that vowel to two counts, pitch unchanged;
-      if it ends in a short vowel that the voice dragged, tighten it.
-    Drills (بَ بِ بُ) only get the clean ending."""
-    import numpy as np
-    y = check.pcm16k(path)
-    if len(y) < 1600: return
-    e = np.sqrt(np.convolve(y ** 2, np.ones(320) / 320, 'same'))
-    loud = np.nonzero(e > e.max() * 0.08)[0]
-    if not len(loud) or e.max() <= 1e-6: return                     # a silent take: the checker will reject it
-    end = min(len(y), loud.max() + int(0.05 * 16000)) / 16000
-    want = check.target(text)
-    tempo = None; v0 = None
-    if not check.is_drill(check.parts_of(text)) and want[-1] in check.LONG + 'َُِ':
-        heard, _, times = check.hear(path)
-        vi = [i for i, c in enumerate(heard) if c in 'َُِ']
-        if vi:
-            v0 = max(0.0, times[vi[-1]] - 0.04)
-            cur = end - v0
-            goal = MADD_SECONDS if want[-1] in check.LONG else min(cur, SHORT_MAX)
-            if cur > 0.06 and abs(cur - goal) > 0.04: tempo = cur / goal
-    tmp = path + '.shape.mp3'
-    if tempo:
-        stages, f = [], tempo
-        while f < 0.5: stages.append(0.5); f /= 0.5
-        while f > 2.0: stages.append(2.0); f /= 2.0
-        stages.append(f)
-        at = ','.join(f'atempo={x:.4f}' for x in stages)
-        graph = (f'[0]asplit[x][y];[x]atrim=0:{v0:.3f},asetpts=PTS-STARTPTS[a];[y]atrim={v0:.3f}:{end:.3f},asetpts=PTS-STARTPTS,{at}[b];'
-                 f'[a][b]concat=n=2:v=0:a=1,areverse,afade=t=in:d=0.06,areverse,apad=pad_dur=0.1[o]')
-    else:
-        graph = f'[0]atrim=0:{end:.3f},asetpts=PTS-STARTPTS,areverse,afade=t=in:d=0.06,areverse,apad=pad_dur=0.1[o]'
-    r = subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', path, '-filter_complex', graph, '-map', '[o]', '-ar', '24000', '-ac', '1', '-b:a', '64k', tmp], capture_output=True)
-    if r.returncode == 0 and os.path.getsize(tmp) > 800: os.replace(tmp, path)
+CARRIERS = ['قُلْ: {}.', 'اِقْرَأْ مَعِي: {}.', 'قُلْ: {}!', 'هَيَّا نَقُولُ: {}.']
 
 
 def forms_for(text, check):
-    """the texts sent for one sound, tried in turn: exact IPA, vowelled Arabic, IPA with a full stop, Arabic said
-    to a child (with "!"). The checker decides which take is right, whatever form produced it."""
-    parts = check.parts_of(text)
-    if check.is_drill(parts):                                       # said one at a time: "ba, bi, bu"
-        ipas = [to_ipa(check.target(p)) for p in parts]
-        return ' '.join(ipas), [', '.join(f'/{x}/' for x in ipas), '، '.join(parts), ' ... '.join(f'/{x}/' for x in ipas), '، '.join(parts) + '!']
-    ipa = to_ipa(check.target(text)); ar = check.tidy(text)
-    return ipa, [f'/{ipa}/', ar, f'/{ipa}/.', ar + '!', f'/{ipa}/!', ar + '،', f'«{ar}»', f'/{ipa}/ ...']
+    """(model, text sent, carrier?) tried in turn. The voice says the sound the way a teacher does: inside a short
+    prompt ("قُلْ: بَ.") so it gets a full, clear, stressed delivery, and only the sound is kept. Plain vowelled
+    Arabic first; the exact pronunciation (IPA) inside the same prompt only as a late fallback."""
+    ar = check.tidy(text); ipa = to_ipa(check.target(text))
+    f = [('eleven_v4', c.format(ar), True) for c in CARRIERS]
+    f += [('eleven_v3', CARRIERS[0].format(ar), True), ('eleven_v4', CARRIERS[0].format(f'/{ipa}/'), True),
+          ('eleven_v4', CARRIERS[1].format(ar), True), ('eleven_v3', CARRIERS[1].format(ar), True),
+          ('eleven_v4', CARRIERS[2].format(f'/{ipa}/'), True), ('eleven_v4', ar, False)]
+    spelt = ar.replace('ٌ', 'ُنْ').replace('ً', 'َنْ').replace('ٍ', 'ِنْ')      # tanwīn written out: same sound
+    if spelt != ar: f += [('eleven_v4', c.format(spelt), True) for c in CARRIERS] + [('eleven_v3', CARRIERS[0].format(spelt), True)]
+    return ipa, f
 
 
-def make(voice, text, check, takes=8, need=1, log=print):
+SUFFIX = '.c3'          # takes made the carrier way (older takes in the cache are ignored)
+
+
+def make(voice, text, check, takes=10, need=1, log=print):
     """Make takes of one sound until `need` pass the check (or `takes` run out). -> (best or None, all results)"""
     ipa, forms = forms_for(text, check)
     d = os.path.join(CACHE, voice); os.makedirs(d, exist_ok=True)
     results, best = [], None
     for n in range(takes):
-        form, model = forms[n % len(forms)], MODELS[(n // len(forms)) % len(MODELS)]
-        raw = os.path.join(d, f'{cid(text)}-{n}.raw.mp3'); fin = os.path.join(d, f'{cid(text)}-{n}.v2.mp3')
+        model, form, carrier = forms[n % len(forms)]
+        raw = os.path.join(d, f'{cid(text)}-{n}{SUFFIX}.raw.mp3'); fin = os.path.join(d, f'{cid(text)}-{n}{SUFFIX}.mp3')
         if not os.path.exists(fin):
-            if not os.path.exists(raw): tts(voice, form, 1000 + n, model, raw)    # raw takes are kept: no credit spent twice
-            if not polish(raw, fin): log(f'   take {n} {model:10} {form:18} empty'); continue
-            shape(text, fin, check)
+            if not os.path.exists(raw): tts(voice, form, 1000 + n + 97 * (n // len(forms)), model, raw)
+            start = after_carrier(raw, check) if carrier else 0.0
+            if start is None or not polish(raw, fin, check, start): log(f'   take {n} {model:10} {form:24} no clean cut'); continue
         r = check.check(text, fin); r.pop('times', None); r.update(take=n, form=form, model=model, file=fin)
         results.append(r)
-        log(f'   take {n} {model:10} {form:18} {r["verdict"]:5} heard {r["heard"]}')
+        log(f'   take {n} {model:10} {form:24} {r["verdict"]:5} heard {r["heard"]}')
         if r['verdict'] == 'ok' and (not best or r['conf'] > best['conf']): best = r
         if sum(x['verdict'] == 'ok' for x in results) >= need: break
     return best, results
@@ -240,21 +239,21 @@ def cmd_pick(vid):
 
 
 BUDDY_DIR = {b: os.path.join(OUT, b) for b in ('zaid', 'huda')}
-GAP = 0.35   # pause between the sounds of a drill (بَ ، بِ ، بُ)
+GAP = 0.25   # pause between the sounds of a drill (بَ ، بِ ، بُ)
 
 
 def join(files, dst):
     """drills are joined from that voice's verified single sounds, with a short pause between"""
     args, parts = [], []
     for i, f in enumerate(files):
-        args += ['-i', f]; parts.append(f'[{i}]aresample=24000,aformat=channel_layouts=mono[s{i}]')
+        args += ['-i', f]; parts.append(f'[{i}]aresample=44100,aformat=channel_layouts=mono[s{i}]')
     chain = ''.join(f'[s{i}]' + (f'[g{i}]' if i < len(files) - 1 else '') for i in range(len(files)))
-    gaps = ''.join(f'aevalsrc=0:d={GAP}:s=24000[g{i}];' for i in range(len(files) - 1))
+    gaps = ''.join(f'aevalsrc=0:d={GAP}:s=44100[g{i}];' for i in range(len(files) - 1))
     graph = gaps + ';'.join(parts) + f';{chain}concat=n={2 * len(files) - 1}:v=0:a=1[o]'
-    subprocess.run(['ffmpeg', '-v', 'error', '-y', *args, '-filter_complex', graph, '-map', '[o]', '-ar', '24000', '-ac', '1', '-b:a', '64k', dst], check=True)
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', *args, '-filter_complex', graph, '-map', '[o]', '-ar', '44100', '-ac', '1', '-b:a', '96k', dst], check=True)
 
 
-def cmd_build(voices, only=None, takes=12, dry=False):
+def cmd_build(voices, only=None, takes=10, dry=False, fresh=False):
     """voices: {'zaid': voice_id, 'huda': voice_id}. Every non-Qur'an sound is made in both voices; the game
     plays the one matching the child's buddy (falling back to the other voice)."""
     import check
@@ -272,7 +271,7 @@ def cmd_build(voices, only=None, takes=12, dry=False):
         for t in singles: print(f'  {t:16} /{forms_for(t, check)[0]}/')
         return
     old = json.load(open(os.path.join(HERE, 'build.json'), encoding='utf-8')) if os.path.exists(os.path.join(HERE, 'build.json')) else {}
-    state = {b: dict(old.get(b, {})) for b in set(old) | set(voices)}   # buddy -> {text: info}; other voices kept
+    state = {b: ({} if fresh else dict(old.get(b, {}))) for b in set(old) | set(voices)}   # buddy -> {text: info}; other voices kept
     report = []
     for buddy, vid in voices.items():
         os.makedirs(BUDDY_DIR[buddy], exist_ok=True)
@@ -317,7 +316,7 @@ def write_review(report=None):
         for t in items:
             if (src.get(t) or '').startswith('qari') or t in state.get(buddy, {}): continue
             if check.is_drill(check.parts_of(t)): continue          # drills follow once their pieces are approved
-            takes = sorted(glob.glob(os.path.join(CACHE, vid, f'{cid(t)}-*.v2.mp3')), key=lambda f: int(os.path.basename(f).split('-')[1].split('.')[0]))[:4]
+            takes = sorted(glob.glob(os.path.join(CACHE, vid, f'{cid(t)}-*{SUFFIX}.mp3')), key=lambda f: int(os.path.basename(f).split('-')[1].split('.')[0]))[:4]
             files = []
             for f in takes:
                 n = os.path.basename(f).split('-')[1].split('.')[0]
@@ -332,7 +331,7 @@ def write_review(report=None):
 def cmd_approve(buddy, text, take):
     """install a take you approved by ear for a sound the checker could not confirm"""
     vid = {'zaid': 'R6nda3uM038xEEKi7GFl', 'huda': 'w4LX7bK479eHGM1k15Em'}[buddy]
-    f = os.path.join(CACHE, vid, f'{cid(text)}-{take}.v2.mp3')
+    f = os.path.join(CACHE, vid, f'{cid(text)}-{take}{SUFFIX}.mp3')
     os.makedirs(BUDDY_DIR[buddy], exist_ok=True)
     subprocess.run(['cp', f, os.path.join(BUDDY_DIR[buddy], cid(text) + '.mp3')], check=True)
     st = json.load(open(os.path.join(HERE, 'build.json'), encoding='utf-8'))
@@ -374,8 +373,8 @@ if __name__ == '__main__':
     a = sys.argv[1:]
     if not a: sys.exit(__doc__)
     only = set(a[a.index('--only') + 1].split(',')) if '--only' in a else None
-    takes = int(a[a.index('--takes') + 1]) if '--takes' in a else 12
+    takes = int(a[a.index('--takes') + 1]) if '--takes' in a else 10
     voices = dict(v.split('=') for v in a[a.index('--voices') + 1].split(',')) if '--voices' in a else \
         {'zaid': 'R6nda3uM038xEEKi7GFl', 'huda': 'w4LX7bK479eHGM1k15Em'}      # Anas for Zaid, Habibah for Huda
     sys.path.insert(0, HERE)
-    {'voices': lambda: cmd_voices([x for x in a[1:] if not x.startswith('--')] or None), 'pick': lambda: cmd_pick(a[1]), 'build': lambda: cmd_build(voices, only, takes, '--dry' in a), 'approve': lambda: cmd_approve(a[1], a[2], a[3]), 'review': lambda: write_review()}[a[0]]()
+    {'voices': lambda: cmd_voices([x for x in a[1:] if not x.startswith('--')] or None), 'pick': lambda: cmd_pick(a[1]), 'build': lambda: cmd_build(voices, only, takes, '--dry' in a, '--fresh' in a), 'approve': lambda: cmd_approve(a[1], a[2], a[3]), 'review': lambda: write_review()}[a[0]]()
