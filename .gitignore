@@ -5,3 +5,5 @@ node_modules/
 tools/voice-pick/
 tools/.audio-cache/
 tools/.audio-job.json
+.env
+tools/audio/report.json

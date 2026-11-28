@@ -38,7 +38,7 @@ const marks = (() => { try { return JSON.parse(localStorage.getItem(KEY)) || {};
 const saveMarks = () => { try { localStorage.setItem(KEY, JSON.stringify(marks)); } catch (e) {} document.getElementById('n').textContent = Object.keys(marks).length; };
 const nameOf = Object.fromEntries(Object.entries(C.SAY_NAME).map(([k, v]) => [v.normalize('NFC'), k]));
 const letters = (t) => t.replace(/[ً-ٰٟ\s]/g, '').length;
-function who(t) { const s = SRC[t] || ''; return s.startsWith('qari') ? 'Qāriʾ recitation' : s.startsWith('teach') ? 'Teacher voice' + ((/heard ([\d.]+)/.exec(s) || [])[1] ? ' · heard ' + Math.round(/heard ([\d.]+)/.exec(s)[1] * 100) + '%' : '') : s.startsWith('hamed') || s.startsWith('zariyah') ? 'Native Arabic teacher' : s.startsWith('human') ? 'Human alphabet recording' : s.startsWith('joined') ? 'Joined letters' : s ? s : '—'; }
+function who(t) { const s = SRC[t] || ''; return s.startsWith('qari') ? 'Qāriʾ recitation' : s.startsWith('eleven') ? 'ElevenLabs teacher · passed the pronunciation check' : s.startsWith('teach') ? 'Teacher voice' + ((/heard ([\d.]+)/.exec(s) || [])[1] ? ' · heard ' + Math.round(/heard ([\d.]+)/.exec(s)[1] * 100) + '%' : '') : s.startsWith('hamed') || s.startsWith('zariyah') ? 'Native Arabic teacher' : s.startsWith('human') ? 'Human alphabet recording' : s.startsWith('joined') ? 'Joined letters' : s ? s : '—'; }
 let cur, queue = [];
 function play(btn) {
   if (cur) cur.pause(); document.querySelectorAll('.playing').forEach((x) => x.classList.remove('playing'));
